@@ -1,7 +1,9 @@
 <template>
-  <HelloWorld />
+      <Background />
 </template>
 
-<script setup>
+<script>
+
+import Background from '@/components/landingpage/Background.vue';
   //
 </script>
