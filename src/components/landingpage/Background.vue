@@ -1,17 +1,13 @@
 <template>
     <div>
-        <h1>This is the Background</h1>
+       
+       <Menu/>
+      
     </div>
 </template>
 
 <script>
-export default {
-    setup () {
-        
-
-        return {}
-    }
-}
+import Menu from '@/components/Menu/Menu.vue';
 </script>
 
 <style lang="scss" scoped>
