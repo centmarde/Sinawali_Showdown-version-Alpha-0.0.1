@@ -76,7 +76,7 @@
     localStorage.setItem('selectedCharacter', selectedCharacter.value)
     console.log(localStorage.getItem('selectedCharacter'))
     dialog.value = false
-    router.push({ name: '/battle_loading' })
+    router.push({ name: '/battle_area' })
   }
   
   // Function to handle keyboard arrow keys
