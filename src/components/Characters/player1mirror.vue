@@ -12,7 +12,7 @@
   </template>
   
   <script>
-  import playerImageSrc from '@/assets/anim/man2.png'; // Import sprite for Player 2
+  import playerImageSrc from '@/assets/anim/man1.png'; // Import sprite for Player 2
   
   export default {
     data() {
