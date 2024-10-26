@@ -1,12 +1,13 @@
 <template>
     <div>
-        <h1>This is the Background</h1>
-        <Menu/>
-        <Male/>
+       
+       <Menu/>
+      
     </div>
 </template>
 
 <script>
+import Menu from '@/components/Menu/Menu.vue';
 </script>
 
 <style lang="scss" scoped>
