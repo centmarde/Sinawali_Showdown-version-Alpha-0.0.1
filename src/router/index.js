@@ -14,7 +14,7 @@ import Hero from '../pages/index.vue'
 import Notfound from '@/pages/not_found.vue'
 import Test from '@/pages/Test.vue'
 import select_character from '@/pages/select_character.vue'
-import battle_loading from '@/pages/battle_loading.vue'
+import battle from '@/pages/battle_area.vue'
 
 
 const routes = setupLayouts([
@@ -23,7 +23,7 @@ const routes = setupLayouts([
   { path: '/Test', component: Test },
   { path: '/select_character', component: select_character },
   { path: "/:pathMatch(.*)*", component: Notfound },
-  { path: '/battle_loading', component: battle_loading },
+  { path: '/battle_area', component: battle },
 
 
 

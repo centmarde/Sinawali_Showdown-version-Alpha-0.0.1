@@ -5,7 +5,7 @@
       <v-row>
         <v-col class="d-flex justify-content-center">
           <!-- Button toggles between Attack and Idle states -->
-          <button @click="toggleAnimation">{{ isAttacking ? 'Switch to Idle' : 'Attack' }}</button>
+          <!-- <button @click="toggleAnimation">{{ isAttacking ? 'Switch to Idle' : 'Attack' }}</button> -->
         </v-col>
       </v-row>
     </div>
@@ -121,9 +121,29 @@
   }
   
   .moveLeft {
-    transform: translateX(-620px); // Move canvas left when attacking
+  transform: translateX(600px); /* Default for large screens */
+}
+
+/* For medium screens (tablets) */
+@media (max-width: 1024px) {
+  .moveLeft {
+    transform: translateX(-400px); /* Adjust as needed for medium screens */
   }
-  
+}
+
+/* For small screens (mobile devices) */
+@media (max-width: 768px) {
+  .moveLeft {
+    transform: translateX(-200px); /* Adjust as needed for small screens */
+  }
+}
+
+/* For extra small screens (very small mobile devices) */
+@media (max-width: 480px) {
+  .moveLeft {
+    transform: translateX(-100px); /* Further adjust for very small screens */
+  }
+}
   button {
     margin-top: 5px; // Add space above button
   }

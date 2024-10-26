@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import battle from '@/components/battle_loading/battle.vue';
+import battle from '@/components/battle_page/battle.vue';
 </script>
 
 <style lang="scss" scoped>
