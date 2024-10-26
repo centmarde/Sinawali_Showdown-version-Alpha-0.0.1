@@ -10,14 +10,12 @@
             <v-divider></v-divider>
             <v-card-actions class="d-flex flex-column">
               <v-card-actions class="d-flex flex-column">
-                <v-btn class="my-2" color="primary" block to="/Test">
-                  Test
-                </v-btn>
-                <v-btn class="my-2" color="primary" block to="/Start">
+               
+                <v-btn class="my-2" color="primary" block to="/select_character">
                   Quickstart
                 </v-btn>
                 <v-btn class="my-2" color="primary" block to="/multiplier">
-                  Multiplier
+                  Multiplayer
                 </v-btn>
                 <v-btn class="my-2" color="primary" block to="/cards">
                   Cards

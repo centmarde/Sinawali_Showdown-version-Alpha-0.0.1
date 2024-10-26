@@ -12,7 +12,7 @@
 </template>
 
 <script>
-import playerImageSrc from '@/assets/anim/man1.png'; // Import Player 1's sprite image
+import playerImageSrc from '@/assets/anim/man2.png'; // Import Player 1's sprite image
 
 export default {
   data() {
@@ -109,8 +109,8 @@ export default {
 
 #canvas {
   margin-top: 18rem;
-  width: 13rem; 
-  transition: transform 0.5s ease; /* Smooth transition when moving left */
+    width: 13rem; // Set canvas width
+    transition: transform 0.5s ease; // Smooth transition when moving left
 }
 
 .moveLeft {
