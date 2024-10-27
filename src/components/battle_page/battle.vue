@@ -69,6 +69,7 @@ import player2mirror from '../Characters/player2mirror.vue';
 import player1mirror from '../Characters/player1mirror.vue';
 import { ref, onMounted } from 'vue';
 import { supabase } from "../../lib/supabase";
+import router from '@/router';
 
 export default {
   components: {
@@ -147,10 +148,15 @@ export default {
         if (updateError) {
           console.error('Error updating character health:', updateError);
         }
+        
       }
 
       closeDialog();
-    };
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      router.push({ name: 'next_phase' });
+  }
+      
+    ;
 
     return { 
       cards, 
