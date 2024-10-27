@@ -37,7 +37,7 @@
 
 <script>
 import { ref, computed, onMounted, onUnmounted, watch } from "vue";
-import { supabase } from "../../lib/supabase"; // Ensure this path is correct
+import { supabase } from "../../lib/supabase"; 
 
 export default {
   setup() {
@@ -45,6 +45,9 @@ export default {
     const player2 = ref({ name: "", health: 100 });
     const maxHealth = 100;
     const selectedChar = localStorage.getItem('selectedCharacter');
+
+    // Subscriptions array to manage active subscriptions
+    let subscriptions = [];
 
     // Computed properties for dynamic health values
     const currentPlayerHealth = computed(() => {
@@ -96,7 +99,7 @@ export default {
         })
         .subscribe();
 
-      return channel;
+      subscriptions.push(channel); // Add the subscription to the list for cleanup
     };
 
     // Watch for changes in health to make the UI health bar respond in real-time
@@ -117,14 +120,18 @@ export default {
       setupRealtimeSubscription();
     });
 
-    onUnmounted(() => {
-      supabase.removeAllSubscriptions();
-    });
+   /*  onUnmounted(() => {
+      subscriptions.forEach((subscription) => {
+        supabase.removeSubscription(subscription);
+      });
+      subscriptions = []; // Clear subscriptions array
+    }); */
 
-    return { player1, player2, maxHealth, selectedChar, currentPlayerHealth, currentPlayer2Health }; // Ensure selectedChar is returned
+    return { player1, player2, maxHealth, selectedChar, currentPlayerHealth, currentPlayer2Health };
   },
 };
 </script>
+
 
 <style scoped>
 /* Common styles for both health bars */
