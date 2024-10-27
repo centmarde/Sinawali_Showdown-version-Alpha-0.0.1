@@ -1,4 +1,5 @@
 <template>
+  <health_bar class="hp"/>
   <div class="floating-card-container">
     <v-container>
       <v-row class="d-flex justify-center">
@@ -82,7 +83,7 @@ export default {
     const selectedCard = ref(null);
     const cards = ref([]);
     const player1Ref = ref(null); 
-    const player_variant1Ref = ref(null);  // Updated to reflect the change
+    const player_variant1Ref = ref(null); 
 
     const fetchRandomCards = async () => {
       const { data, error } = await supabase
@@ -112,12 +113,42 @@ export default {
       selectedCard.value = null;
     };
 
-    const confirmSelection = () => {
+    const confirmSelection = async () => {
       // Trigger attack animation only if the selected card is of type "attack"
       if (selectedCard.value && selectedCard.value.type === "attack") {
         player1Ref.value?.toggleAnimation(); // Trigger Player1's attack animation
         player_variant1Ref.value?.toggleAnimation(); // Trigger Player2's attack animation
+
+        // Delay to allow the animation to play before updating health
+        await new Promise(resolve => setTimeout(resolve, 500)); // Adjust delay as needed
+
+        // Get current health of the targeted character (e.g., player2)
+        const targetCharacterId = selectedCharacter.value === 1 ? 2 : 1;
+        const { data, error } = await supabase
+          .from('characters')
+          .select('health')
+          .eq('id', targetCharacterId)
+          .single();
+
+        if (error) {
+          console.error('Error fetching character health:', error);
+          return;
+        }
+
+        // Subtract card power from target's health
+        const newHealth = Math.max(0, data.health - selectedCard.value.power);
+
+        // Update health in the database
+        const { error: updateError } = await supabase
+          .from('characters')
+          .update({ health: newHealth })
+          .eq('id', targetCharacterId);
+
+        if (updateError) {
+          console.error('Error updating character health:', updateError);
+        }
       }
+
       closeDialog();
     };
 
@@ -130,7 +161,7 @@ export default {
       confirmSelection, 
       selectedCharacter, 
       player1Ref,
-      player_variant1Ref,  // Updated to reflect the change
+      player_variant1Ref,  
     };
   },
 };
@@ -142,7 +173,7 @@ export default {
   overflow: hidden;
   width: 100vw;
   height: 100vh;
-  background-image: url('https://img.freepik.com/premium-photo/pixel-art-dungeon-background-8-bit-games_334978-2385.jpg?w=826'); 
+   background-image: url('https://img.freepik.com/premium-photo/pixel-art-dungeon-background-8-bit-games_334978-2385.jpg?w=826'); 
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -191,5 +222,10 @@ export default {
   .floating-card-container {
     top: 50%;
   }
+}
+.hp {
+  position: fixed;
+  top: 30px;
+  z-index: 99;
 }
 </style>
