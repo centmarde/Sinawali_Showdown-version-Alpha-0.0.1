@@ -53,49 +53,99 @@
   </template>
   
   <script setup>
-  import { ref, onMounted, onBeforeUnmount } from 'vue'
-  import { useRouter } from 'vue-router'
-  
-  // Track the selected character
-  const selectedCharacter = ref(1)
-  const dialog = ref(false)
-  const router = useRouter()
-  
-  // Function to change character on mouse click
-  const selectCharacter = (character) => {
-    selectedCharacter.value = character
-  }
-  
-  // Function to open confirmation dialog
-  const openDialog = () => {
-    dialog.value = true
-  }
-  
-  // Function to confirm choice and redirect to 'battle_loading'
-  const confirmChoice = () => {
-    localStorage.setItem('selectedCharacter', selectedCharacter.value)
-    console.log(localStorage.getItem('selectedCharacter'))
+import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { useRouter } from 'vue-router'
+import { supabase } from '../../lib/supabase' // Adjust the import path for your Supabase client
+
+// Track the selected character
+const selectedCharacter = ref(1)
+const dialog = ref(false)
+const router = useRouter()
+
+// Function to change character on mouse click
+const selectCharacter = (character) => {
+  selectedCharacter.value = character
+}
+
+// Function to open confirmation dialog
+const openDialog = () => {
+  dialog.value = true
+}
+
+// Function to confirm choice and insert a battle record in the database
+const confirmChoice = async () => {
+  // Store selected character in local storage
+  localStorage.setItem('selectedCharacter', selectedCharacter.value)
+  console.log(localStorage.getItem('selectedCharacter'))
+
+  // Get character IDs
+  const player1CharacterId = await getCharacterId(selectedCharacter.value)
+  const player2CharacterId = await getOtherCharacterId(selectedCharacter.value)
+
+  // Insert a new battle record
+  const { data, error } = await supabase
+    .from('battles')
+    .insert([
+      {
+        player1_character_id: player1CharacterId,
+        player2_character_id: player2CharacterId,
+        turn_number: 1,
+        updated_at: new Date().toISOString(),
+        created_at: new Date().toISOString(), // Timestamp for battle creation
+      }
+    ])
+
+  if (error) {
+    console.error('Error inserting battle:', error)
+  } else {
+    console.log('Battle inserted successfully:', data)
     dialog.value = false
     router.push({ name: '/battle_area' })
   }
-  
-  // Function to handle keyboard arrow keys
-  const handleKeyDown = (event) => {
-    if (event.key === 'ArrowLeft') {
-      selectedCharacter.value = Math.max(1, selectedCharacter.value - 1)
-    } else if (event.key === 'ArrowRight') {
-      selectedCharacter.value = Math.min(2, selectedCharacter.value + 1)
-    }
+}
+
+// Helper function to get character ID based on character number
+const getCharacterId = async (characterNumber) => {
+  const characterName = characterNumber === 1 ? 'char1' : 'char2'
+  const { data, error } = await supabase
+    .from('characters')
+    .select('id')
+    .eq('name', characterName)
+    .single()
+
+  if (error) {
+    console.error('Error fetching character ID:', error)
+    return null
   }
-  
-  // Mount and cleanup event listeners
-  onMounted(() => {
-    window.addEventListener('keydown', handleKeyDown)
-  })
-  onBeforeUnmount(() => {
-    window.removeEventListener('keydown', handleKeyDown)
-  })
-  </script>
+
+  return data.id
+}
+
+// Helper function to get the other character ID based on the selected character
+const getOtherCharacterId = async (selectedCharacter) => {
+  const otherCharacter = selectedCharacter === 1 ? 2 : 1
+  return await getCharacterId(otherCharacter)
+}
+
+// Function to handle keyboard arrow keys
+const handleKeyDown = (event) => {
+  if (event.key === 'ArrowLeft') {
+    selectedCharacter.value = Math.max(1, selectedCharacter.value - 1)
+  } else if (event.key === 'ArrowRight') {
+    selectedCharacter.value = Math.min(2, selectedCharacter.value + 1)
+  }
+}
+
+// Mount and cleanup event listeners
+onMounted(() => {
+  window.addEventListener('keydown', handleKeyDown)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('keydown', handleKeyDown)
+})
+</script>
+
   
   <style scoped>
   /* Canvas-like border styling for selected card */
