@@ -4,10 +4,9 @@
     <v-container>
       <v-row class="d-flex justify-center">
         <v-col
-        v-col
+          v-col
           v-for="card in onhandCards"
-          :key="card.id" 
-         
+          :key="card.id"
           cols="8"
           lg="4"
           sm="4"
@@ -69,7 +68,6 @@
         </v-col>
         <v-col cols="6">
           <div class="char2">
-           
             <Player2 v-if="selectedCharacter === 1" ref="player2Ref" />
             <player1mirror
               v-if="selectedCharacter === 2"
@@ -112,95 +110,86 @@ export default {
     const player1Ref = ref(null);
     const player_variant2Ref = ref(null);
     const player_variant1Ref = ref(null);
-  
 
     const fetchRandomCards = async () => {
-  const { data, error } = await supabase
-    .from("cards")
-    .select("id");
+      const { data, error } = await supabase.from("cards").select("id");
 
-  if (error) {
-    console.error("Error fetching cards:", error);
-    return [];
-  }
+      if (error) {
+        console.error("Error fetching cards:", error);
+        return [];
+      }
 
-  // Shuffle the array and limit to 5
-  const shuffledCards = data.sort(() => 0.5 - Math.random()).slice(0, 5);
-  return shuffledCards.map(card => card.id);
-};
-
-
+      // Shuffle the array and limit to 5
+      const shuffledCards = data.sort(() => 0.5 - Math.random()).slice(0, 5);
+      return shuffledCards.map((card) => card.id);
+    };
 
     // Function to insert cards into onhand_cards
     const insertCardsToOnHand = async (cardIds) => {
       const { error } = await supabase
         .from("onhand_cards")
-        .insert(cardIds.map(cardId => ({ card_id: cardId, character_id: 1 })))
+        .insert(cardIds.map((cardId) => ({ card_id: cardId, character_id: 2 })))
         .select();
-      
+
       if (error) {
         console.error("Error inserting cards to onhand:", error);
       }
     };
 
     const fetchOnHandCards = async () => {
-  const { data, error } = await supabase
-    .from("onhand_cards")
-    .select("*");
+      const { data, error } = await supabase.from("onhand_cards").select("*");
 
-  if (error) {
-    console.error("Error fetching onhand cards:", error);
-    return;
-  }
+      if (error) {
+        console.error("Error fetching onhand cards:", error);
+        return;
+      }
 
-  const cardIds = data.map(card => card.card_id);
-  fetchCardDetails(cardIds); // Fetch card details using the IDs
-};
+      const cardIds = data.map((card) => card.card_id);
+      fetchCardDetails(cardIds); // Fetch card details using the IDs
+    };
 
-const fetchCardDetails = async (cardIds) => {
-  const { data, error } = await supabase
-    .from("cards")
-    .select("id, name, type, power, mana_cost")
-    .in("id", cardIds);
+    const fetchCardDetails = async (cardIds) => {
+      const { data, error } = await supabase
+        .from("cards")
+        .select("id, name, type, power, mana_cost")
+        .in("id", cardIds);
 
-  if (error) {
-    console.error("Error fetching card details:", error);
-    return;
-  }
+      if (error) {
+        console.error("Error fetching card details:", error);
+        return;
+      }
 
-  // Merge the card details with onhand cards
-  onhandCards.value = data.map(card => ({
-    id: card.id,
-    name: card.name,
-    type: card.type,
-    power: card.power,
-    mana_cost: card.mana_cost,
-    // Additional properties as necessary
-  }));
-};
-
-
-
+      // Merge the card details with onhand cards
+      onhandCards.value = data.map((card) => ({
+        id: card.id,
+        name: card.name,
+        type: card.type,
+        power: card.power,
+        mana_cost: card.mana_cost,
+        // Additional properties as necessary
+      }));
+    };
 
     const manageCards = async () => {
       const { count, error } = await supabase
         .from("onhand_cards")
-        .select("id", { count: "exact" });
+        .select("id", { count: "exact" })
+        .eq("character_id", 2);
 
       if (error) {
         console.error("Error counting onhand cards:", error);
         return;
-        
-      }else{
+      } else {
         console.log("counting");
-       
       }
 
       // If there are less than 5 cards in onhand_cards, fetch and insert
       if (count < 5) {
-        const existingCardIds = onhandCards.value.map(card => card.card_id);
+        const existingCardIds = onhandCards.value.map((card) => card.card_id);
         const randomCardIds = await fetchRandomCards();
-        const newCardIds = randomCardIds.filter(cardId => !existingCardIds.includes(cardId));
+        const newCardIds = randomCardIds.filter(
+          (cardId) => !existingCardIds.includes(cardId)
+        );
 
         // Limit to 5 cards in total, ensuring no duplicates
         const cardsToInsert = newCardIds.slice(0, 5 - existingCardIds.length);
@@ -213,7 +202,7 @@ const fetchCardDetails = async (cardIds) => {
       // Fetch the updated onhand cards
       await fetchOnHandCards();
     };
-    
+
     const selectCard = async (selectedCardId) => {
       const { error } = await supabase
         .from("onhand_cards")
@@ -223,14 +212,16 @@ const fetchCardDetails = async (cardIds) => {
       if (error) {
         console.error("Error removing selected card:", error);
         return;
-      }else{
+      } else {
         console.log("succes deleting choosen card");
       }
 
       // Fetch new random card and insert it
       const randomCardIds = await fetchRandomCards();
-      const existingCardIds = onhandCards.value.map(card => card.card_id);
-      const newCardIds = randomCardIds.filter(cardId => !existingCardIds.includes(cardId));
+      const existingCardIds = onhandCards.value.map((card) => card.card_id);
+      const newCardIds = randomCardIds.filter(
+        (cardId) => !existingCardIds.includes(cardId)
+      );
 
       // Insert a new card if there's space
       if (newCardIds.length > 0) {
@@ -267,11 +258,11 @@ const fetchCardDetails = async (cardIds) => {
     const confirmSelection = async () => {
       if (selectedCard.value && selectedCard.value.type === "attack") {
         player2Ref.value?.toggleAttack();
-        
+
         setTimeout(() => {
           player_variant1Ref.value?.toggleHurt();
           player1Ref.value?.toggleHurt();
-    }, 300);
+        }, 300);
         await selectCard(selectedCard.value.id);
         player_variant2Ref.value?.toggleAttack();
         closeDialog();
@@ -288,8 +279,6 @@ const fetchCardDetails = async (cardIds) => {
           console.error("Error fetching character stats:", error);
           return;
         }
-        console.log(selectedCard);
-       
 
         const { health, defense, agility, critical_rate } = data;
         const missChance = Math.random() * 100;
@@ -297,7 +286,7 @@ const fetchCardDetails = async (cardIds) => {
           showMessage("Attack missed due to agility!");
           closeDialog();
           await new Promise((resolve) => setTimeout(resolve, 1500));
-         
+
           router.push({ name: "battle_area" });
           return;
         }
@@ -338,9 +327,9 @@ const fetchCardDetails = async (cardIds) => {
         }
       }
 
-      if(selectedCard.value && selectedCard.value.type === "buff"){
-        player_variant2Ref.value?.toggleBuff(); 
-        player2Ref.value?.toggleBuff(); 
+      if (selectedCard.value && selectedCard.value.type === "buff") {
+        player_variant2Ref.value?.toggleBuff();
+        player2Ref.value?.toggleBuff();
 
         await selectCard(selectedCard.value.id);
       }

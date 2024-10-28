@@ -66,7 +66,6 @@
         </v-col>
         <v-col cols="6">
           <div class="char2">
-         
             <Player2 v-if="selectedCharacter === 1" ref="player2Ref" />
             <player1mirror
               v-if="selectedCharacter === 2"
@@ -109,7 +108,6 @@ export default {
     const player_variant1Ref = ref(null);
     const player_variant2Ref = ref(null);
 
-
     const fetchRandomCards = async () => {
       const { data, error } = await supabase
         .from("cards")
@@ -151,12 +149,12 @@ export default {
       // Trigger attack animation only if the selected card is of type "attack"
       if (selectedCard.value && selectedCard.value.type === "attack") {
         player1Ref.value?.toggleAttack(); // Trigger Player1's attack animation
-        player_variant1Ref.value?.toggleAttack(); 
+        player_variant1Ref.value?.toggleAttack();
 
         setTimeout(() => {
           player_variant2Ref.value?.toggleHurt();
           player2Ref.value?.toggleHurt();
-    }, 300);
+        }, 300);
         closeDialog();
         // Delay to allow the animation to play before updating health
         await new Promise((resolve) => setTimeout(resolve, 500)); // Adjust delay as needed
@@ -231,8 +229,8 @@ export default {
         }
       }
 
-      if(selectedCard.value && selectedCard.value.type === "buff"){
-        player1Ref.value?.toggleBuff(); 
+      if (selectedCard.value && selectedCard.value.type === "buff") {
+        player1Ref.value?.toggleBuff();
         player_variant1Ref.value?.toggleBuff();
       }
 
