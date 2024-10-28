@@ -4,32 +4,34 @@
       <!-- Player 1 Health Bar -->
       <v-col cols="5">
         <v-progress-linear
-          class="player1-health" 
+          class="player1-health"
           v-model="currentPlayerHealth"
           :buffer-value="maxHealth"
           height="20"
           rounded
         >
-          <span style="color: aliceblue;">
-            {{ selectedChar === '1' ? player1.health : player2.health }} / {{ maxHealth }}
+          <span style="color: aliceblue">
+            {{ selectedChar === "1" ? player1.health : player2.health }} /
+            {{ maxHealth }}
           </span>
         </v-progress-linear>
       </v-col>
       <v-col cols="2" lg="2">
-       <!--  <timer/> -->
+        <!--  <timer/> -->
       </v-col>
       <!-- Player 2 Health Bar -->
       <v-col cols="5">
         <v-progress-linear
-          class="player2-health" 
+          class="player2-health"
           v-model="currentPlayer2Health"
           :buffer-value="maxHealth"
-          height="20"  
+          height="20"
           rounded
-          reverse 
+          reverse
         >
-          <span style="color: aliceblue;">
-            {{ selectedChar === '2' ? player1.health : player2.health }} / {{ maxHealth }}
+          <span style="color: aliceblue">
+            {{ selectedChar === "2" ? player1.health : player2.health }} /
+            {{ maxHealth }}
           </span>
         </v-progress-linear>
       </v-col>
@@ -48,15 +50,15 @@ export default {
     const playerStore = usePlayerStore();
     const { player1, player2 } = playerStore;
     const maxHealth = 100;
-    const selectedChar = localStorage.getItem('selectedCharacter');
+    const selectedChar = localStorage.getItem("selectedCharacter");
 
     // Computed properties for dynamic health values
     const currentPlayerHealth = computed(() => {
-      return selectedChar === '1' ? player1.health : player2.health;
+      return selectedChar === "1" ? player1.health : player2.health;
     });
 
     const currentPlayer2Health = computed(() => {
-      return selectedChar === '1' ? player2.health : player1.health;
+      return selectedChar === "1" ? player2.health : player1.health;
     });
 
     const fetchCharacterData = async () => {
@@ -83,14 +85,18 @@ export default {
     const setupRealtimeSubscription = () => {
       const channel = supabase
         .channel("public:characters")
-        .on("postgres_changes", { event: "*", schema: "public", table: "characters" }, (payload) => {
-          if (payload.new.id === 1) {
-            player1.health = payload.new.health;
+        .on(
+          "postgres_changes",
+          { event: "*", schema: "public", table: "characters" },
+          (payload) => {
+            if (payload.new.id === 1) {
+              player1.health = payload.new.health;
+            }
+            if (payload.new.id === 2) {
+              player2.health = payload.new.health;
+            }
           }
-          if (payload.new.id === 2) {
-            player2.health = payload.new.health;
-          }
-        })
+        )
         .subscribe();
     };
 
@@ -99,12 +105,17 @@ export default {
       setupRealtimeSubscription();
     });
 
-    return { player1, player2, maxHealth, selectedChar, currentPlayerHealth, currentPlayer2Health };
+    return {
+      player1,
+      player2,
+      maxHealth,
+      selectedChar,
+      currentPlayerHealth,
+      currentPlayer2Health,
+    };
   },
 };
 </script>
-
-
 
 <style scoped>
 /* Common styles for both health bars */

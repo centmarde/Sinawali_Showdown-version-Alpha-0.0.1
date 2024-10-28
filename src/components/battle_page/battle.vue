@@ -1,5 +1,5 @@
 <template>
-  <health_bar class="hp"/>
+  <health_bar class="hp" />
   <div class="floating-card-container">
     <v-container>
       <v-row class="d-flex justify-center">
@@ -12,10 +12,7 @@
           md="5"
           class="text-center"
         >
-          <v-card
-            class="hoverable-card"
-            @click="openDialog(card)"
-          >
+          <v-card class="hoverable-card" @click="openDialog(card)">
             <v-card-title>{{ card.name }}</v-card-title>
             <v-card-subtitle>Type: {{ card.type }}</v-card-subtitle>
             <v-card-subtitle>Power: {{ card.power }}</v-card-subtitle>
@@ -25,7 +22,7 @@
       </v-row>
     </v-container>
 
-    <v-dialog v-model="dialog" max-width="500" style="z-index: 99999;">
+    <v-dialog v-model="dialog" max-width="500" style="z-index: 99999">
       <v-card>
         <v-card-title>{{ selectedCard?.name }}</v-card-title>
         <v-card-subtitle>Type: {{ selectedCard?.type }}</v-card-subtitle>
@@ -42,16 +39,18 @@
     </v-dialog>
   </div>
 
-   <!-- New dialog for messages -->
-   <v-dialog v-model="messageDialog" max-width="500" style="z-index: 99999;">
-      <v-card>
-       
-        <v-card-text>
-          <p>{{ messageText }}</p>
-        </v-card-text>
-        
-      </v-card>
-    </v-dialog>
+  <v-dialog
+    v-model="messageDialog"
+    max-width="500"
+    persistent
+    style="z-index: 99999"
+  >
+    <v-card>
+      <v-card-text>
+        <p>{{ messageText }}</p>
+      </v-card-text>
+    </v-card>
+  </v-dialog>
 
   <div class="battleground">
     <div class="bg1">
@@ -59,13 +58,20 @@
         <v-col cols="6">
           <div class="char1">
             <Player1 v-if="selectedCharacter === 1" ref="player1Ref" />
-            <player2mirror v-if="selectedCharacter === 2" ref="player_variant1Ref" />
+            <player2mirror
+              v-if="selectedCharacter === 2"
+              ref="player_variant1Ref"
+            />
           </div>
         </v-col>
         <v-col cols="6">
           <div class="char2">
-            <player1mirror v-if="selectedCharacter === 2" ref="player_variant2Ref" />
+         
             <Player2 v-if="selectedCharacter === 1" ref="player2Ref" />
+            <player1mirror
+              v-if="selectedCharacter === 2"
+              ref="player_variant2Ref"
+            />
           </div>
         </v-col>
       </v-row>
@@ -74,13 +80,13 @@
 </template>
 
 <script>
-import Player1 from '../Characters/Player1.vue';
-import Player2 from '../Characters/Player2.vue';
-import player2mirror from '../Characters/player2mirror.vue';
-import player1mirror from '../Characters/player1mirror.vue';
-import { ref, onMounted } from 'vue';
+import Player1 from "../Characters/Player1.vue";
+import Player2 from "../Characters/Player2.vue";
+import player2mirror from "../Characters/player2mirror.vue";
+import player1mirror from "../Characters/player1mirror.vue";
+import { ref, onMounted } from "vue";
 import { supabase } from "../../lib/supabase";
-import router from '@/router';
+import router from "@/router";
 
 export default {
   components: {
@@ -90,22 +96,27 @@ export default {
     player1mirror,
   },
   setup() {
-    const selectedCharacter = ref(Number(localStorage.getItem('selectedCharacter')));
+    const selectedCharacter = ref(
+      Number(localStorage.getItem("selectedCharacter"))
+    );
     const dialog = ref(false);
     const selectedCard = ref(null);
     const messageDialog = ref(false);
-    const messageText = ref('');
+    const messageText = ref("");
     const cards = ref([]);
-    const player1Ref = ref(null); 
-    const player_variant1Ref = ref(null); 
+    const player1Ref = ref(null);
+    const player2Ref = ref(null);
+    const player_variant1Ref = ref(null);
+    const player_variant2Ref = ref(null);
+
 
     const fetchRandomCards = async () => {
       const { data, error } = await supabase
-        .from('cards')
-        .select('id, name, power, mana_cost, type');
+        .from("cards")
+        .select("id, name, power, mana_cost, type");
 
       if (error) {
-        console.error('Error fetching cards:', error);
+        console.error("Error fetching cards:", error);
       } else {
         // Shuffle and select 5 random cards
         const shuffledCards = data.sort(() => 0.5 - Math.random());
@@ -124,7 +135,7 @@ export default {
 
     const closeDialog = () => {
       dialog.value = false;
-      selectedCard.value = null;
+      // selectedCard.value = null;
     };
 
     const closeMessageDialog = () => {
@@ -137,100 +148,116 @@ export default {
     };
 
     const confirmSelection = async () => {
-  // Trigger attack animation only if the selected card is of type "attack"
-  if (selectedCard.value && selectedCard.value.type === "attack") {
-    player1Ref.value?.toggleAnimation(); // Trigger Player1's attack animation
-    player_variant1Ref.value?.toggleAnimation(); // Trigger Player2's attack animation
+      // Trigger attack animation only if the selected card is of type "attack"
+      if (selectedCard.value && selectedCard.value.type === "attack") {
+        player1Ref.value?.toggleAttack(); // Trigger Player1's attack animation
+        player_variant1Ref.value?.toggleAttack(); 
 
-    // Delay to allow the animation to play before updating health
-    await new Promise(resolve => setTimeout(resolve, 500)); // Adjust delay as needed
+        setTimeout(() => {
+          player_variant2Ref.value?.toggleHurt();
+          player2Ref.value?.toggleHurt();
+    }, 300);
+        closeDialog();
+        // Delay to allow the animation to play before updating health
+        await new Promise((resolve) => setTimeout(resolve, 500)); // Adjust delay as needed
 
-    // Get current health and stats of the targeted character (e.g., player2)
-    const targetCharacterId = selectedCharacter.value === 1 ? 2 : 1;
-    const { data, error } = await supabase
-      .from('characters')
-      .select('health, defense, agility, critical_rate') // Select relevant columns
-      .eq('id', targetCharacterId)
-      .single();
+        // Get current health and stats of the targeted character (e.g., player2)
+        const targetCharacterId = selectedCharacter.value === 1 ? 2 : 1;
+        const { data, error } = await supabase
+          .from("characters")
+          .select("health, defense, agility, critical_rate") // Select relevant columns
+          .eq("id", targetCharacterId)
+          .single();
 
-    if (error) {
-      console.error('Error fetching character stats:', error);
-      return;
-    }
+        if (error) {
+          console.error("Error fetching character stats:", error);
+          return;
+        }
 
-    // Destructure the fetched stats into individual variables
-    const { health, defense, agility, critical_rate } = data;
+        // Destructure the fetched stats into individual variables
+        const { health, defense, agility, critical_rate } = data;
 
-    // Calculate the chance to miss the attack based on agility
-    const missChance = Math.random() * 100; // Random number between 0 and 100
-    if (missChance < agility) {
-      showMessage("Attack missed due to agility!");
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      closeDialog();
-      router.push({ name: 'next_phase' });
-     
-      return; // Exit if the attack misses
-    }
+        // Calculate the chance to miss the attack based on agility
+        const missChance = Math.random() * 100; // Random number between 0 and 100
+        if (missChance < agility) {
+          showMessage("Attack missed due to agility!");
+          await new Promise((resolve) => setTimeout(resolve, 1500));
+          closeDialog();
+          router.push({ name: "next_phase" });
 
-  // Calculate the damage reduction as a percentage
-  const defensePercentage = defense / 100; // Convert defense to a decimal
-const damageAfterDefense = Math.max(0, Math.floor(selectedCard.value.power * (1 - defensePercentage))); // Apply percentage reduction and convert to integer
+          return; // Exit if the attack misses
+        }
 
-console.log(defensePercentage);
+        // Calculate the damage reduction as a percentage
+        const defensePercentage = defense / 100; // Convert defense to a decimal
+        const damageAfterDefense = Math.max(
+          0,
+          Math.floor(selectedCard.value.power * (1 - defensePercentage))
+        ); // Apply percentage reduction and convert to integer
 
-    // Calculate critical hit
-  // Check if the attack is a critical hit based on critical_rate
-  const isCriticalHit = Math.random() * 100 < critical_rate; // Check if critical rate is 100% or more
-const finalDamage = isCriticalHit ? damageAfterDefense * 2 : damageAfterDefense; // Double damage if critical hit
+        console.log(defensePercentage);
 
-// Alert for the damage dealt
-if (isCriticalHit) {
+        // Calculate critical hit
+        // Check if the attack is a critical hit based on critical_rate
+        const isCriticalHit = Math.random() * 100 < critical_rate; // Check if critical rate is 100% or more
+        const finalDamage = isCriticalHit
+          ? damageAfterDefense * 2
+          : damageAfterDefense; // Double damage if critical hit
+
+        // Alert for the damage dealt
+        if (isCriticalHit) {
           showMessage(`Critical Hit! You dealt ${finalDamage} damage!`);
           closeDialog();
-          await new Promise(resolve => setTimeout(resolve, 2000));
-          router.push({ name: 'next_phase' });
+          await new Promise((resolve) => setTimeout(resolve, 2000));
+          router.push({ name: "next_phase" });
         } else {
           showMessage(`You dealt ${finalDamage} damage.`);
           closeDialog();
-          await new Promise(resolve => setTimeout(resolve, 2000));
-          router.push({ name: 'next_phase' });
+          await new Promise((resolve) => setTimeout(resolve, 2000));
+          router.push({ name: "next_phase" });
         }
 
+        // Subtract final damage from target's health
+        const newHealth = Math.max(0, health - finalDamage);
 
-    // Subtract final damage from target's health
-    const newHealth = Math.max(0, health - finalDamage);
+        // Update health in the database
+        const { error: updateError } = await supabase
+          .from("characters")
+          .update({ health: newHealth })
+          .eq("id", targetCharacterId);
 
-    // Update health in the database
-    const { error: updateError } = await supabase
-      .from('characters')
-      .update({ health: newHealth })
-      .eq('id', targetCharacterId);
+        if (updateError) {
+          console.error("Error updating character health:", updateError);
+        }
+      }
 
-    if (updateError) {
-      console.error('Error updating character health:', updateError);
-    }
-  }
+      if(selectedCard.value && selectedCard.value.type === "buff"){
+        player1Ref.value?.toggleBuff(); 
+        player_variant1Ref.value?.toggleBuff();
+      }
 
-  // Always navigate to the next phase
-  closeDialog();
-  await new Promise(resolve => setTimeout(resolve, 1000));
-  router.push({ name: 'next_phase' });
-};
+      // Always navigate to the next phase
+      closeDialog();
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      router.push({ name: "next_phase" });
+    };
 
-    return { 
-      cards, 
-      dialog, 
-      selectedCard, 
-      openDialog, 
-      closeDialog, 
-      confirmSelection, 
-      selectedCharacter, 
+    return {
+      cards,
+      dialog,
+      selectedCard,
+      openDialog,
+      closeDialog,
+      confirmSelection,
+      selectedCharacter,
       player1Ref,
-      player_variant1Ref, 
+      player2Ref,
+      player_variant1Ref,
       messageDialog,
       messageText,
       showMessage,
-      closeMessageDialog 
+      closeMessageDialog,
+      player_variant2Ref,
     };
   },
 };
@@ -242,7 +269,7 @@ if (isCriticalHit) {
   overflow: hidden;
   width: 100vw;
   height: 100vh;
-   background-image: url('https://img.freepik.com/premium-photo/pixel-art-dungeon-background-8-bit-games_334978-2385.jpg?w=826'); 
+  background-image: url("https://img.freepik.com/premium-photo/pixel-art-dungeon-background-8-bit-games_334978-2385.jpg?w=826");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -258,7 +285,8 @@ if (isCriticalHit) {
   height: 100%;
 }
 
-.char1, .char2 {
+.char1,
+.char2 {
   margin-top: 5rem;
 }
 

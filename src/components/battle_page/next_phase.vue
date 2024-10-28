@@ -1,5 +1,5 @@
 <template>
-  <health_bar class="hp"/>
+  <health_bar class="hp" />
   <div class="floating-card-container">
     <v-container>
       <v-row class="d-flex justify-center">
@@ -12,10 +12,7 @@
           md="5"
           class="text-center"
         >
-          <v-card
-            class="hoverable-card"
-            @click="openDialog(card)"
-          >
+          <v-card class="hoverable-card" @click="openDialog(card)">
             <v-card-title>{{ card.name }}</v-card-title>
             <v-card-subtitle>Type: {{ card.type }}</v-card-subtitle>
             <v-card-subtitle>Power: {{ card.power }}</v-card-subtitle>
@@ -25,7 +22,7 @@
       </v-row>
     </v-container>
 
-    <v-dialog v-model="dialog" max-width="500" style="z-index: 99999;">
+    <v-dialog v-model="dialog" max-width="500" style="z-index: 99999">
       <v-card>
         <v-card-title>{{ selectedCard?.name }}</v-card-title>
         <v-card-subtitle>Type: {{ selectedCard?.type }}</v-card-subtitle>
@@ -42,13 +39,16 @@
     </v-dialog>
 
     <!-- New dialog for messages -->
-    <v-dialog v-model="messageDialog" max-width="500" style="z-index: 99999;">
+    <v-dialog
+      v-model="messageDialog"
+      max-width="500"
+      persistent
+      style="z-index: 99999"
+    >
       <v-card>
-      
         <v-card-text>
           <p>{{ messageText }}</p>
         </v-card-text>
-       
       </v-card>
     </v-dialog>
   </div>
@@ -59,13 +59,20 @@
         <v-col cols="6">
           <div class="char1">
             <Player1 v-if="selectedCharacter === 1" ref="player1Ref" />
-            <player2mirror v-if="selectedCharacter === 2" ref="player_variant1Ref" />
+            <player2mirror
+              v-if="selectedCharacter === 2"
+              ref="player_variant1Ref"
+            />
           </div>
         </v-col>
         <v-col cols="6">
           <div class="char2">
-            <player1mirror v-if="selectedCharacter === 2" ref="player_variant2Ref" />
+           
             <Player2 v-if="selectedCharacter === 1" ref="player2Ref" />
+            <player1mirror
+              v-if="selectedCharacter === 2"
+              ref="player_variant2Ref"
+            />
           </div>
         </v-col>
       </v-row>
@@ -74,13 +81,13 @@
 </template>
 
 <script>
-import Player1 from '../Characters/Player1.vue';
-import Player2 from '../Characters/Player2.vue';
-import player2mirror from '../Characters/player2mirror.vue';
-import player1mirror from '../Characters/player1mirror.vue';
-import { ref, onMounted } from 'vue';
+import Player1 from "../Characters/Player1.vue";
+import Player2 from "../Characters/Player2.vue";
+import player2mirror from "../Characters/player2mirror.vue";
+import player1mirror from "../Characters/player1mirror.vue";
+import { ref, onMounted } from "vue";
 import { supabase } from "../../lib/supabase";
-import router from '@/router';
+import router from "@/router";
 
 export default {
   components: {
@@ -90,22 +97,27 @@ export default {
     player1mirror,
   },
   setup() {
-    const selectedCharacter = ref(Number(localStorage.getItem('selectedCharacter')));
+    const selectedCharacter = ref(
+      Number(localStorage.getItem("selectedCharacter"))
+    );
     const dialog = ref(false);
     const messageDialog = ref(false); // Dialog for messages
-    const messageText = ref(''); // Text to display in message dialog
+    const messageText = ref(""); // Text to display in message dialog
     const selectedCard = ref(null);
     const cards = ref([]);
     const player2Ref = ref(null);
+    const player1Ref = ref(null);
     const player_variant2Ref = ref(null);
+    const player_variant1Ref = ref(null);
+  
 
     const fetchRandomCards = async () => {
       const { data, error } = await supabase
-        .from('cards')
-        .select('id, name, power, mana_cost, type');
+        .from("cards")
+        .select("id, name, power, mana_cost, type");
 
       if (error) {
-        console.error('Error fetching cards:', error);
+        console.error("Error fetching cards:", error);
       } else {
         const shuffledCards = data.sort(() => 0.5 - Math.random());
         cards.value = shuffledCards.slice(0, 5);
@@ -123,7 +135,7 @@ export default {
 
     const closeDialog = () => {
       dialog.value = false;
-      selectedCard.value = null;
+      // selectedCard.value = null;
     };
 
     const closeMessageDialog = () => {
@@ -137,84 +149,103 @@ export default {
 
     const confirmSelection = async () => {
       if (selectedCard.value && selectedCard.value.type === "attack") {
-        player2Ref.value?.toggleAnimation();
-        player_variant2Ref.value?.toggleAnimation();
+        player2Ref.value?.toggleAttack();
+        
+        setTimeout(() => {
+          player_variant1Ref.value?.toggleHurt();
+          player1Ref.value?.toggleHurt();
+    }, 300);
 
-        await new Promise(resolve => setTimeout(resolve, 500)); 
+        player_variant2Ref.value?.toggleAttack();
+        closeDialog();
+        await new Promise((resolve) => setTimeout(resolve, 500));
 
         const targetCharacterId = selectedCharacter.value === 2 ? 2 : 1;
         const { data, error } = await supabase
-          .from('characters')
-          .select('health, defense, agility, critical_rate')
-          .eq('id', targetCharacterId)
+          .from("characters")
+          .select("health, defense, agility, critical_rate")
+          .eq("id", targetCharacterId)
           .single();
 
         if (error) {
-          console.error('Error fetching character stats:', error);
+          console.error("Error fetching character stats:", error);
           return;
         }
 
         const { health, defense, agility, critical_rate } = data;
-        const missChance = Math.random() * 100; 
+        const missChance = Math.random() * 100;
         if (missChance < agility) {
           showMessage("Attack missed due to agility!");
-          await new Promise(resolve => setTimeout(resolve, 1500));
           closeDialog();
-          router.push({ name: 'battle_area' });
+          await new Promise((resolve) => setTimeout(resolve, 1500));
+         
+          router.push({ name: "battle_area" });
           return;
         }
 
-        const defensePercentage = defense / 100; 
-        const damageAfterDefense = Math.max(0, Math.floor(selectedCard.value.power * (1 - defensePercentage))); 
-        
+        const defensePercentage = defense / 100;
+        const damageAfterDefense = Math.max(
+          0,
+          Math.floor(selectedCard.value.power * (1 - defensePercentage))
+        );
 
         const isCriticalHit = Math.random() * 100 < critical_rate;
-        const finalDamage = isCriticalHit ? damageAfterDefense * 2 : damageAfterDefense;
+        const finalDamage = isCriticalHit
+          ? damageAfterDefense * 2
+          : damageAfterDefense;
 
         if (isCriticalHit) {
           showMessage(`
            Critical Hit! You dealt ${finalDamage} damage!`);
           closeDialog();
-          await new Promise(resolve => setTimeout(resolve, 2000));
-          router.push({ name: 'battle_area' });
+          await new Promise((resolve) => setTimeout(resolve, 2000));
+          router.push({ name: "battle_area" });
         } else {
           showMessage(`
           You dealt ${finalDamage} damage.`);
           closeDialog();
-          await new Promise(resolve => setTimeout(resolve, 2000));
-          router.push({ name: 'battle_area' });
+          await new Promise((resolve) => setTimeout(resolve, 2000));
+          router.push({ name: "battle_area" });
         }
 
         const newHealth = Math.max(0, health - finalDamage);
         const { error: updateError } = await supabase
-          .from('characters')
+          .from("characters")
           .update({ health: newHealth })
-          .eq('id', targetCharacterId);
+          .eq("id", targetCharacterId);
 
         if (updateError) {
-          console.error('Error updating character health:', updateError);
+          console.error("Error updating character health:", updateError);
         }
       }
 
+      if(selectedCard.value && selectedCard.value.type === "buff"){
+        player_variant2Ref.value?.toggleBuff(); 
+        player2Ref.value?.toggleBuff(); 
+      }
+
       closeDialog();
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      router.push({ name: 'battle_area' });
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      router.push({ name: "battle_area" });
     };
 
-    return { 
-      cards, 
-      dialog, 
-      selectedCard, 
-      openDialog, 
-      closeDialog, 
-      confirmSelection, 
-      selectedCharacter, 
+    return {
+      cards,
+      dialog,
+      selectedCard,
+      openDialog,
+      closeDialog,
+      player1Ref,
+      confirmSelection,
+      selectedCharacter,
       player2Ref,
       player_variant2Ref,
       messageDialog,
       messageText,
+      player1Ref,
       showMessage,
-      closeMessageDialog
+      closeMessageDialog,
+      player_variant1Ref,
     };
   },
 };
@@ -226,7 +257,7 @@ export default {
   overflow: hidden;
   width: 100vw;
   height: 100vh;
-  background-image: url('https://img.freepik.com/premium-photo/pixel-art-dungeon-background-8-bit-games_334978-2385.jpg?w=826'); 
+  background-image: url("https://img.freepik.com/premium-photo/pixel-art-dungeon-background-8-bit-games_334978-2385.jpg?w=826");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -242,7 +273,8 @@ export default {
   height: 100%;
 }
 
-.char1, .char2 {
+.char1,
+.char2 {
   margin-top: 5rem;
 }
 
