@@ -4,8 +4,10 @@
     <v-container>
       <v-row class="d-flex justify-center">
         <v-col
-          v-for="(card, index) in cards"
-          :key="card.id"
+        v-col
+          v-for="card in onhandCards"
+          :key="card.id" 
+         
           cols="8"
           lg="4"
           sm="4"
@@ -100,6 +102,7 @@ export default {
     const selectedCharacter = ref(
       Number(localStorage.getItem("selectedCharacter"))
     );
+    const onhandCards = ref([]);
     const dialog = ref(false);
     const messageDialog = ref(false); // Dialog for messages
     const messageText = ref(""); // Text to display in message dialog
@@ -112,20 +115,134 @@ export default {
   
 
     const fetchRandomCards = async () => {
-      const { data, error } = await supabase
-        .from("cards")
-        .select("id, name, power, mana_cost, type");
+  const { data, error } = await supabase
+    .from("cards")
+    .select("id");
 
+  if (error) {
+    console.error("Error fetching cards:", error);
+    return [];
+  }
+
+  // Shuffle the array and limit to 5
+  const shuffledCards = data.sort(() => 0.5 - Math.random()).slice(0, 5);
+  return shuffledCards.map(card => card.id);
+};
+
+
+
+    // Function to insert cards into onhand_cards
+    const insertCardsToOnHand = async (cardIds) => {
+      const { error } = await supabase
+        .from("onhand_cards")
+        .insert(cardIds.map(cardId => ({ card_id: cardId, character_id: 1 })))
+        .select();
+      
       if (error) {
-        console.error("Error fetching cards:", error);
-      } else {
-        const shuffledCards = data.sort(() => 0.5 - Math.random());
-        cards.value = shuffledCards.slice(0, 5);
+        console.error("Error inserting cards to onhand:", error);
       }
     };
 
+    const fetchOnHandCards = async () => {
+  const { data, error } = await supabase
+    .from("onhand_cards")
+    .select("*");
+
+  if (error) {
+    console.error("Error fetching onhand cards:", error);
+    return;
+  }
+
+  const cardIds = data.map(card => card.card_id);
+  fetchCardDetails(cardIds); // Fetch card details using the IDs
+};
+
+const fetchCardDetails = async (cardIds) => {
+  const { data, error } = await supabase
+    .from("cards")
+    .select("id, name, type, power, mana_cost")
+    .in("id", cardIds);
+
+  if (error) {
+    console.error("Error fetching card details:", error);
+    return;
+  }
+
+  // Merge the card details with onhand cards
+  onhandCards.value = data.map(card => ({
+    id: card.id,
+    name: card.name,
+    type: card.type,
+    power: card.power,
+    mana_cost: card.mana_cost,
+    // Additional properties as necessary
+  }));
+};
+
+
+
+
+    const manageCards = async () => {
+      const { count, error } = await supabase
+        .from("onhand_cards")
+        .select("id", { count: "exact" });
+
+      if (error) {
+        console.error("Error counting onhand cards:", error);
+        return;
+        
+      }else{
+        console.log("counting");
+       
+      }
+
+      // If there are less than 5 cards in onhand_cards, fetch and insert
+      if (count < 5) {
+        const existingCardIds = onhandCards.value.map(card => card.card_id);
+        const randomCardIds = await fetchRandomCards();
+        const newCardIds = randomCardIds.filter(cardId => !existingCardIds.includes(cardId));
+
+        // Limit to 5 cards in total, ensuring no duplicates
+        const cardsToInsert = newCardIds.slice(0, 5 - existingCardIds.length);
+
+        if (cardsToInsert.length > 0) {
+          await insertCardsToOnHand(cardsToInsert);
+        }
+      }
+
+      // Fetch the updated onhand cards
+      await fetchOnHandCards();
+    };
+    
+    const selectCard = async (selectedCardId) => {
+      const { error } = await supabase
+        .from("onhand_cards")
+        .delete()
+        .eq("card_id", selectedCardId);
+
+      if (error) {
+        console.error("Error removing selected card:", error);
+        return;
+      }else{
+        console.log("succes deleting choosen card");
+      }
+
+      // Fetch new random card and insert it
+      const randomCardIds = await fetchRandomCards();
+      const existingCardIds = onhandCards.value.map(card => card.card_id);
+      const newCardIds = randomCardIds.filter(cardId => !existingCardIds.includes(cardId));
+
+      // Insert a new card if there's space
+      if (newCardIds.length > 0) {
+        await insertCardsToOnHand(newCardIds.slice(0, 1)); // Insert only one new card
+      }
+
+      // Fetch the updated onhand cards
+      await fetchOnHandCards();
+    };
+
     onMounted(() => {
-      fetchRandomCards();
+      manageCards();
     });
 
     const openDialog = (card) => {
@@ -155,7 +272,7 @@ export default {
           player_variant1Ref.value?.toggleHurt();
           player1Ref.value?.toggleHurt();
     }, 300);
-
+        await selectCard(selectedCard.value.id);
         player_variant2Ref.value?.toggleAttack();
         closeDialog();
         await new Promise((resolve) => setTimeout(resolve, 500));
@@ -171,6 +288,8 @@ export default {
           console.error("Error fetching character stats:", error);
           return;
         }
+        console.log(selectedCard);
+       
 
         const { health, defense, agility, critical_rate } = data;
         const missChance = Math.random() * 100;
@@ -222,6 +341,8 @@ export default {
       if(selectedCard.value && selectedCard.value.type === "buff"){
         player_variant2Ref.value?.toggleBuff(); 
         player2Ref.value?.toggleBuff(); 
+
+        await selectCard(selectedCard.value.id);
       }
 
       closeDialog();
@@ -230,6 +351,8 @@ export default {
     };
 
     return {
+      onhandCards,
+      selectCard,
       cards,
       dialog,
       selectedCard,

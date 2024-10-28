@@ -113,7 +113,7 @@ export default {
     const fetchRandomCards = async () => {
       const { data, error } = await supabase
         .from("cards")
-        .select("id, name, power, mana_cost, type");
+        .select("*,card_effects(*)");
 
       if (error) {
         console.error("Error fetching cards:", error);
