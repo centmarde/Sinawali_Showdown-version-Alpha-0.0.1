@@ -42,6 +42,17 @@
     </v-dialog>
   </div>
 
+   <!-- New dialog for messages -->
+   <v-dialog v-model="messageDialog" max-width="500" style="z-index: 99999;">
+      <v-card>
+       
+        <v-card-text>
+          <p>{{ messageText }}</p>
+        </v-card-text>
+        
+      </v-card>
+    </v-dialog>
+
   <div class="battleground">
     <div class="bg1">
       <v-row class="fill-height">
@@ -82,6 +93,8 @@ export default {
     const selectedCharacter = ref(Number(localStorage.getItem('selectedCharacter')));
     const dialog = ref(false);
     const selectedCard = ref(null);
+    const messageDialog = ref(false);
+    const messageText = ref('');
     const cards = ref([]);
     const player1Ref = ref(null); 
     const player_variant1Ref = ref(null); 
@@ -114,49 +127,95 @@ export default {
       selectedCard.value = null;
     };
 
+    const closeMessageDialog = () => {
+      messageDialog.value = false;
+    };
+
+    const showMessage = (text) => {
+      messageText.value = text;
+      messageDialog.value = true;
+    };
+
     const confirmSelection = async () => {
-      // Trigger attack animation only if the selected card is of type "attack"
-      if (selectedCard.value && selectedCard.value.type === "attack") {
-        player1Ref.value?.toggleAnimation(); // Trigger Player1's attack animation
-        player_variant1Ref.value?.toggleAnimation(); // Trigger Player2's attack animation
+  // Trigger attack animation only if the selected card is of type "attack"
+  if (selectedCard.value && selectedCard.value.type === "attack") {
+    player1Ref.value?.toggleAnimation(); // Trigger Player1's attack animation
+    player_variant1Ref.value?.toggleAnimation(); // Trigger Player2's attack animation
 
-        // Delay to allow the animation to play before updating health
-        await new Promise(resolve => setTimeout(resolve, 500)); // Adjust delay as needed
+    // Delay to allow the animation to play before updating health
+    await new Promise(resolve => setTimeout(resolve, 500)); // Adjust delay as needed
 
-        // Get current health of the targeted character (e.g., player2)
-        const targetCharacterId = selectedCharacter.value === 1 ? 2 : 1;
-        const { data, error } = await supabase
-          .from('characters')
-          .select('health')
-          .eq('id', targetCharacterId)
-          .single();
+    // Get current health and stats of the targeted character (e.g., player2)
+    const targetCharacterId = selectedCharacter.value === 1 ? 2 : 1;
+    const { data, error } = await supabase
+      .from('characters')
+      .select('health, defense, agility, critical_rate') // Select relevant columns
+      .eq('id', targetCharacterId)
+      .single();
 
-        if (error) {
-          console.error('Error fetching character health:', error);
-          return;
-        }
+    if (error) {
+      console.error('Error fetching character stats:', error);
+      return;
+    }
 
-        // Subtract card power from target's health
-        const newHealth = Math.max(0, data.health - selectedCard.value.power);
+    // Destructure the fetched stats into individual variables
+    const { health, defense, agility, critical_rate } = data;
 
-        // Update health in the database
-        const { error: updateError } = await supabase
-          .from('characters')
-          .update({ health: newHealth })
-          .eq('id', targetCharacterId);
-
-        if (updateError) {
-          console.error('Error updating character health:', updateError);
-        }
-        
-      }
-
+    // Calculate the chance to miss the attack based on agility
+    const missChance = Math.random() * 100; // Random number between 0 and 100
+    if (missChance < agility) {
+      showMessage("Attack missed due to agility!");
+      await new Promise(resolve => setTimeout(resolve, 1500));
       closeDialog();
-      await new Promise(resolve => setTimeout(resolve, 2000));
       router.push({ name: 'next_phase' });
+     
+      return; // Exit if the attack misses
+    }
+
+  // Calculate the damage reduction as a percentage
+  const defensePercentage = defense / 100; // Convert defense to a decimal
+const damageAfterDefense = Math.max(0, Math.floor(selectedCard.value.power * (1 - defensePercentage))); // Apply percentage reduction and convert to integer
+
+console.log(defensePercentage);
+
+    // Calculate critical hit
+  // Check if the attack is a critical hit based on critical_rate
+  const isCriticalHit = Math.random() * 100 < critical_rate; // Check if critical rate is 100% or more
+const finalDamage = isCriticalHit ? damageAfterDefense * 2 : damageAfterDefense; // Double damage if critical hit
+
+// Alert for the damage dealt
+if (isCriticalHit) {
+          showMessage(`Critical Hit! You dealt ${finalDamage} damage!`);
+          closeDialog();
+          await new Promise(resolve => setTimeout(resolve, 2000));
+          router.push({ name: 'next_phase' });
+        } else {
+          showMessage(`You dealt ${finalDamage} damage.`);
+          closeDialog();
+          await new Promise(resolve => setTimeout(resolve, 2000));
+          router.push({ name: 'next_phase' });
+        }
+
+
+    // Subtract final damage from target's health
+    const newHealth = Math.max(0, health - finalDamage);
+
+    // Update health in the database
+    const { error: updateError } = await supabase
+      .from('characters')
+      .update({ health: newHealth })
+      .eq('id', targetCharacterId);
+
+    if (updateError) {
+      console.error('Error updating character health:', updateError);
+    }
   }
-      
-    ;
+
+  // Always navigate to the next phase
+  closeDialog();
+  await new Promise(resolve => setTimeout(resolve, 1000));
+  router.push({ name: 'next_phase' });
+};
 
     return { 
       cards, 
@@ -167,7 +226,11 @@ export default {
       confirmSelection, 
       selectedCharacter, 
       player1Ref,
-      player_variant1Ref,  
+      player_variant1Ref, 
+      messageDialog,
+      messageText,
+      showMessage,
+      closeMessageDialog 
     };
   },
 };
@@ -201,8 +264,8 @@ export default {
 
 .floating-card-container {
   position: fixed;
-  z-index: 9999;
-  top: 35%;
+  z-index: 99;
+  top: 40%;
   left: 50%;
   transform: translate(-50%, -50%);
   transition: all 0.3s ease;
