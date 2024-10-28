@@ -9,7 +9,7 @@
             class="text-center"
             @click="selectCharacter(1)"
           >
-            <v-img src="https://cdn.vuetifyjs.com/images/john.jpg" aspect-ratio="1.75" class="mb-2"></v-img>
+            <v-img src="https://yt3.googleusercontent.com/FhDSZHUteOxNvKiNpCStHHiBc24KlkODDmLyS4Wp324NaGkO6FrS93ewubrWnM7BhpCrn9iXkIg=s900-c-k-c0x00ffffff-no-rj" aspect-ratio="1.75" class="mb-2"></v-img>
             <v-row>
               <v-col>Character 1</v-col>
               <v-col>Details</v-col>
@@ -25,7 +25,7 @@
             class="text-center"
             @click="selectCharacter(2)"
           >
-            <v-img src="https://cdn.vuetifyjs.com/images/john.jpg" aspect-ratio="1.75" class="mb-2"></v-img>
+            <v-img src="https://cnnvoice.com/wp-content/uploads/2024/03/Eva-Elfie.jpg" aspect-ratio="1.75" class="mb-2"></v-img>
             <v-row>
               <v-col>Character 2</v-col>
               <v-col>Details</v-col>

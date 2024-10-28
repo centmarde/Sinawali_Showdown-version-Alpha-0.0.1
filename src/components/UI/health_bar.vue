@@ -2,7 +2,7 @@
   <v-container fluid fill-height class="d-flex align-center justify-center">
     <v-row class="d-flex justify-content-center">
       <!-- Player 1 Health Bar -->
-      <v-col cols="6">
+      <v-col cols="5">
         <v-progress-linear
           class="player1-health" 
           v-model="currentPlayerHealth"
@@ -15,9 +15,11 @@
           </span>
         </v-progress-linear>
       </v-col>
-
+      <v-col cols="2" lg="2">
+       <!--  <timer/> -->
+      </v-col>
       <!-- Player 2 Health Bar -->
-      <v-col cols="6">
+      <v-col cols="5">
         <v-progress-linear
           class="player2-health" 
           v-model="currentPlayer2Health"
@@ -36,47 +38,40 @@
 </template>
 
 <script>
-import { ref, computed, onMounted, onUnmounted, watch } from "vue";
-import { supabase } from "../../lib/supabase"; 
+import { computed, onMounted, watch } from "vue";
+import timer from "./timer.vue";
+import { supabase } from "../../lib/supabase";
+import { usePlayerStore } from "../../stores/healtbar";
 
 export default {
   setup() {
-    const player1 = ref({ name: "", health: 100 });
-    const player2 = ref({ name: "", health: 100 });
+    const playerStore = usePlayerStore();
+    const { player1, player2 } = playerStore;
     const maxHealth = 100;
     const selectedChar = localStorage.getItem('selectedCharacter');
 
-    // Subscriptions array to manage active subscriptions
-    let subscriptions = [];
-
     // Computed properties for dynamic health values
     const currentPlayerHealth = computed(() => {
-      return selectedChar === '1' ? player1.value.health : player2.value.health;
+      return selectedChar === '1' ? player1.health : player2.health;
     });
 
     const currentPlayer2Health = computed(() => {
-      return selectedChar === '1' ? player2.value.health : player1.value.health;
+      return selectedChar === '1' ? player2.health : player1.health;
     });
 
     const fetchCharacterData = async () => {
-      const char1Id = 1;
-      const char2Id = 2;
-
       try {
-        const { data: player1Data, error: player1Error } = await supabase
+        const { data: player1Data } = await supabase
           .from("characters")
           .select("name, health")
-          .eq("id", char1Id)
+          .eq("id", 1)
           .single();
 
-        const { data: player2Data, error: player2Error } = await supabase
+        const { data: player2Data } = await supabase
           .from("characters")
           .select("name, health")
-          .eq("id", char2Id)
+          .eq("id", 2)
           .single();
-
-        if (player1Error) throw player1Error;
-        if (player2Error) throw player2Error;
 
         if (player1Data) player1.value = player1Data;
         if (player2Data) player2.value = player2Data;
@@ -89,48 +84,26 @@ export default {
       const channel = supabase
         .channel("public:characters")
         .on("postgres_changes", { event: "*", schema: "public", table: "characters" }, (payload) => {
-          // Check if the health update is for Player 1 or Player 2
           if (payload.new.id === 1) {
-            player1.value.health = payload.new.health;
+            player1.health = payload.new.health;
           }
           if (payload.new.id === 2) {
-            player2.value.health = payload.new.health;
+            player2.health = payload.new.health;
           }
         })
         .subscribe();
-
-      subscriptions.push(channel); // Add the subscription to the list for cleanup
     };
-
-    // Watch for changes in health to make the UI health bar respond in real-time
-    watch(player1, (newVal, oldVal) => {
-      if (newVal.health < oldVal.health) {
-        console.log("Player 1 took damage:", oldVal.health - newVal.health);
-      }
-    });
-
-    watch(player2, (newVal, oldVal) => {
-      if (newVal.health < oldVal.health) {
-        console.log("Player 2 took damage:", oldVal.health - newVal.health);
-      }
-    });
 
     onMounted(() => {
       fetchCharacterData();
       setupRealtimeSubscription();
     });
 
-   /*  onUnmounted(() => {
-      subscriptions.forEach((subscription) => {
-        supabase.removeSubscription(subscription);
-      });
-      subscriptions = []; // Clear subscriptions array
-    }); */
-
     return { player1, player2, maxHealth, selectedChar, currentPlayerHealth, currentPlayer2Health };
   },
 };
 </script>
+
 
 
 <style scoped>
