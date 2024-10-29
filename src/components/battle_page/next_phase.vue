@@ -1,7 +1,7 @@
 <template>
   <health_bar class="hp" />
   <div class="floating-card-container">
-    <v-container>
+    <v-container v-if="showCards">
       <v-row class="d-flex justify-center">
         <v-col
          v-for="(card, index) in onHandCards"
@@ -98,6 +98,7 @@ export default {
     player1mirror,
   },
   setup() {
+    const showCards = ref(true);
     const cardStore = useCardStore2();
     const { onHandCards, addCard, removeCardAndAddNew } = cardStore;
     
@@ -155,6 +156,7 @@ export default {
     };
 
     const confirmSelection = async () => {
+      showCards.value = false;
       const cardIndex = onHandCards.findIndex(
         (card) => card.id === selectedCard.value.id
       );
@@ -252,6 +254,7 @@ export default {
     };
 
     return {
+      showCards,
       cards,
       dialog,
       selectedCard,
