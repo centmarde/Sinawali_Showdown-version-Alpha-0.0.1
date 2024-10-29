@@ -4,8 +4,8 @@
     <v-container>
       <v-row class="d-flex justify-center">
         <v-col
-          v-for="(card, index) in cards"
-          :key="card.id"
+         v-for="(card, index) in onHandCards"
+         :key="card.id"
           cols="8"
           lg="4"
           sm="4"
@@ -86,6 +86,8 @@ import player1mirror from "../Characters/player1mirror.vue";
 import { ref, onMounted } from "vue";
 import { supabase } from "../../lib/supabase";
 import router from "@/router";
+import { useCardStore1 } from "../../stores/cardsPlayer1Onhand";
+
 
 export default {
   components: {
@@ -95,36 +97,42 @@ export default {
     player1mirror,
   },
   setup() {
-    const selectedCharacter = ref(
-      Number(localStorage.getItem("selectedCharacter"))
-    );
+    const cardStore = useCardStore1();
+    const { onHandCards, addCard, removeCardAndAddNew } = cardStore;
+    
+    const selectedCharacter = ref(Number(localStorage.getItem("selectedCharacter")));
     const dialog = ref(false);
-    const selectedCard = ref(null);
     const messageDialog = ref(false);
     const messageText = ref("");
+    const selectedCard = ref(null);
     const cards = ref([]);
-    const player1Ref = ref(null);
     const player2Ref = ref(null);
-    const player_variant1Ref = ref(null);
+    const player1Ref = ref(null);
     const player_variant2Ref = ref(null);
+    const player_variant1Ref = ref(null);
 
     const fetchRandomCards = async () => {
       const { data, error } = await supabase
         .from("cards")
-        .select("*,card_effects(*)");
+        .select("id, name, power, mana_cost, type");
 
       if (error) {
         console.error("Error fetching cards:", error);
       } else {
-        // Shuffle and select 5 random cards
         const shuffledCards = data.sort(() => 0.5 - Math.random());
         cards.value = shuffledCards.slice(0, 5);
+        
+        if (onHandCards.length === 0) {
+          onHandCards.push(...cards.value.slice(0, 5));
+        }
       }
     };
-
-    onMounted(() => {
-      fetchRandomCards();
+    
+    onMounted(async () => {
+      await fetchRandomCards();
     });
+
+  
 
     const openDialog = (card) => {
       selectedCard.value = card;
@@ -146,6 +154,23 @@ export default {
     };
 
     const confirmSelection = async () => {
+      const cardIndex = onHandCards.findIndex(
+        (card) => card.id === selectedCard.value.id
+      );
+
+      if (cardIndex !== -1) {
+        const { data, error } = await supabase
+          .from("cards")
+          .select("id, name, power, mana_cost, type")
+          .order("id", { ascending: false })
+          .limit(1);
+
+        if (!error) {
+          removeCardAndAddNew(cardIndex, data[0]);
+        }
+      }
+
+      dialog.value = false;
       // Trigger attack animation only if the selected card is of type "attack"
       if (selectedCard.value && selectedCard.value.type === "attack") {
         player1Ref.value?.toggleAttack(); // Trigger Player1's attack animation
@@ -246,16 +271,18 @@ export default {
       selectedCard,
       openDialog,
       closeDialog,
+      player1Ref,
       confirmSelection,
       selectedCharacter,
-      player1Ref,
       player2Ref,
-      player_variant1Ref,
+      player_variant2Ref,
       messageDialog,
       messageText,
+      player1Ref,
       showMessage,
       closeMessageDialog,
-      player_variant2Ref,
+      player_variant1Ref,
+      onHandCards,
     };
   },
 };
