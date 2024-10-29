@@ -1,11 +1,11 @@
 <template>
   <health_bar class="hp" />
   <div class="floating-card-container">
-    <v-container>
+    <v-container v-if="showCards">
       <v-row class="d-flex justify-center">
         <v-col
-          v-for="(card, index) in cards"
-          :key="card.id"
+         v-for="(card, index) in onHandCards"
+         :key="card.id"
           cols="8"
           lg="4"
           sm="4"
@@ -88,6 +88,7 @@ import player1mirror from "../Characters/player1mirror.vue";
 import { ref, onMounted } from "vue";
 import { supabase } from "../../lib/supabase";
 import router from "@/router";
+import { useCardStore2 } from "../../stores/cardsPlayer2Onhand";
 
 export default {
   components: {
@@ -97,18 +98,21 @@ export default {
     player1mirror,
   },
   setup() {
-    const selectedCharacter = ref(
-      Number(localStorage.getItem("selectedCharacter"))
-    );
+    const showCards = ref(true);
+    const cardStore = useCardStore2();
+    const { onHandCards, addCard, removeCardAndAddNew } = cardStore;
+    
+    const selectedCharacter = ref(Number(localStorage.getItem("selectedCharacter")));
     const dialog = ref(false);
-    const messageDialog = ref(false); // Dialog for messages
-    const messageText = ref(""); // Text to display in message dialog
+    const messageDialog = ref(false);
+    const messageText = ref("");
     const selectedCard = ref(null);
     const cards = ref([]);
     const player2Ref = ref(null);
     const player1Ref = ref(null);
     const player_variant2Ref = ref(null);
     const player_variant1Ref = ref(null);
+
   
 
     const fetchRandomCards = async () => {
@@ -121,21 +125,25 @@ export default {
       } else {
         const shuffledCards = data.sort(() => 0.5 - Math.random());
         cards.value = shuffledCards.slice(0, 5);
+        
+        if (onHandCards.length === 0) {
+          onHandCards.push(...cards.value.slice(0, 5));
+        }
       }
     };
-
-    onMounted(() => {
-      fetchRandomCards();
+    
+    onMounted(async () => {
+      await fetchRandomCards();
     });
 
-    const openDialog = (card) => {
+
+     const openDialog = (card) => {
       selectedCard.value = card;
       dialog.value = true;
     };
 
     const closeDialog = () => {
       dialog.value = false;
-      // selectedCard.value = null;
     };
 
     const closeMessageDialog = () => {
@@ -148,13 +156,32 @@ export default {
     };
 
     const confirmSelection = async () => {
+      showCards.value = false;
+      const cardIndex = onHandCards.findIndex(
+        (card) => card.id === selectedCard.value.id
+      );
+
+      if (cardIndex !== -1) {
+        const { data, error } = await supabase
+          .from("cards")
+          .select("id, name, power, mana_cost, type")
+          .order("id", { ascending: false })
+          .limit(1);
+
+        if (!error) {
+          removeCardAndAddNew(cardIndex, data[0]);
+        }
+      }
+
+      dialog.value = false;
+
       if (selectedCard.value && selectedCard.value.type === "attack") {
         player2Ref.value?.toggleAttack();
-        
+
         setTimeout(() => {
           player_variant1Ref.value?.toggleHurt();
           player1Ref.value?.toggleHurt();
-    }, 300);
+        }, 300);
 
         player_variant2Ref.value?.toggleAttack();
         closeDialog();
@@ -178,7 +205,6 @@ export default {
           showMessage("Attack missed due to agility!");
           closeDialog();
           await new Promise((resolve) => setTimeout(resolve, 1500));
-         
           router.push({ name: "battle_area" });
           return;
         }
@@ -195,14 +221,12 @@ export default {
           : damageAfterDefense;
 
         if (isCriticalHit) {
-          showMessage(`
-           Critical Hit! You dealt ${finalDamage} damage!`);
+          showMessage(`Critical Hit! You dealt ${finalDamage} damage!`);
           closeDialog();
           await new Promise((resolve) => setTimeout(resolve, 2000));
           router.push({ name: "battle_area" });
         } else {
-          showMessage(`
-          You dealt ${finalDamage} damage.`);
+          showMessage(`You dealt ${finalDamage} damage.`);
           closeDialog();
           await new Promise((resolve) => setTimeout(resolve, 2000));
           router.push({ name: "battle_area" });
@@ -219,9 +243,9 @@ export default {
         }
       }
 
-      if(selectedCard.value && selectedCard.value.type === "buff"){
-        player_variant2Ref.value?.toggleBuff(); 
-        player2Ref.value?.toggleBuff(); 
+      if (selectedCard.value && selectedCard.value.type === "buff") {
+        player_variant2Ref.value?.toggleBuff();
+        player2Ref.value?.toggleBuff();
       }
 
       closeDialog();
@@ -230,6 +254,7 @@ export default {
     };
 
     return {
+      showCards,
       cards,
       dialog,
       selectedCard,
@@ -246,10 +271,12 @@ export default {
       showMessage,
       closeMessageDialog,
       player_variant1Ref,
+      onHandCards,
     };
   },
 };
 </script>
+
 
 <style lang="scss" scoped>
 .battleground {
