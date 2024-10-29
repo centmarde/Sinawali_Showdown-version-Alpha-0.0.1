@@ -29,6 +29,7 @@
         <v-card-text>
           <p>Power: {{ selectedCard?.power }}</p>
           <p>Mana Cost: {{ selectedCard?.mana_cost }}</p>
+          <p>Description: {{ selectedCard?.description }}</p>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
@@ -89,6 +90,10 @@ import { ref, onMounted } from "vue";
 import { supabase } from "../../lib/supabase";
 import router from "@/router";
 import { useCardStore2 } from "../../stores/cardsPlayer2Onhand";
+import { useStore2 } from "../../stores/cardEffects2";
+import { useCharacterStatusStore2 } from "../../stores/characterStatus2";
+
+
 
 export default {
   components: {
@@ -98,11 +103,18 @@ export default {
     player1mirror,
   },
   setup() {
+    const characterStatusStore2 = useCharacterStatusStore2();
+
     const showCards = ref(true);
     const cardStore = useCardStore2();
     const { onHandCards, addCard, removeCardAndAddNew } = cardStore;
     
-    const selectedCharacter = ref(Number(localStorage.getItem("selectedCharacter")));
+    const selectedCharacter = ref(
+      Number(localStorage.getItem("selectedCharacter"))
+    );
+    const revertedCharacter = computed(() => {
+  return selectedCharacter.value === 1 ? 1 : 2;
+});
     const dialog = ref(false);
     const messageDialog = ref(false);
     const messageText = ref("");
@@ -118,7 +130,7 @@ export default {
     const fetchRandomCards = async () => {
       const { data, error } = await supabase
         .from("cards")
-        .select("id, name, power, mana_cost, type");
+        .select("*");
 
       if (error) {
         console.error("Error fetching cards:", error);
@@ -176,6 +188,80 @@ export default {
       dialog.value = false;
 
       if (selectedCard.value && selectedCard.value.type === "attack") {
+
+        const { data: dataChar, error: errorChar } = await supabase
+          .from("cards")
+          .select(
+            "is_poison, is_burn, is_def_amp, is_crit_amp, is_agil_amp, is_def_debuff, is_agil_debuff, is_atk_debuff, turn_count, is_stunned"
+          )
+          .eq("id", selectedCard.value.id); // Assuming selectedCard has an id
+
+        // Handle errors in fetching card details
+        if (errorChar) {
+          console.error("Error fetching card details:", errorChar);
+          return;
+        }
+
+        // Process fetched data if available
+        if (dataChar && dataChar.length > 0) {
+          // Convert the first result row into an array
+          const cardEffectsArray = [
+            dataChar[0].is_poison,
+            dataChar[0].is_burn,
+            dataChar[0].is_def_debuff,
+            dataChar[0].is_agil_debuff,
+            dataChar[0].is_atk_debuff,
+            dataChar[0].turn_count,
+            dataChar[0].is_stunned,
+          ];
+
+          // Assuming you want to add these effects to the character status store
+          const characterStatusStore2 = useCharacterStatusStore2();
+          characterStatusStore2.addEffect({
+            is_poison: cardEffectsArray[0],
+            is_burn: cardEffectsArray[1],
+            is_def_debuff: cardEffectsArray[2],
+            is_agil_debuff: cardEffectsArray[3],
+            is_atk_debuff: cardEffectsArray[4],
+            turn_count: cardEffectsArray[5],
+            is_stunned: cardEffectsArray[6],
+          });
+
+          console.log("reverted:", revertedCharacter.value);
+
+          // Constant character ID
+          const characterId = revertedCharacter.value;
+
+
+
+
+          // Function to process game turn for the character
+          async function gameTurn() {
+            // Apply effects for the character with ID 2
+            await characterStatusStore2.applyEffects(characterId);
+
+            // Log the updated character stats
+            const updatedCharacter = await characterStatusStore2.fetchCharacter(
+              characterId
+            );
+            if (updatedCharacter) {
+              console.log(
+                `Updated Character Stats: Health - ${updatedCharacter.health}, Defense - ${updatedCharacter.defense}, Agility - ${updatedCharacter.agility}`
+              );
+            }
+          }
+
+          // Call gameTurn
+          await gameTurn();
+
+          // Log the array to the console
+          console.log("Card Effects Array:", cardEffectsArray);
+
+          // Store the array in Pinia
+          const store = useStore2();
+          store.setCardEffects(cardEffectsArray);
+        }
+
         player2Ref.value?.toggleAttack();
 
         setTimeout(() => {
@@ -246,6 +332,77 @@ export default {
       if (selectedCard.value && selectedCard.value.type === "buff") {
         player_variant2Ref.value?.toggleBuff();
         player2Ref.value?.toggleBuff();
+
+        const { data: dataChar, error: errorChar } = await supabase
+          .from("cards")
+          .select(
+            "is_poison, is_burn, is_def_amp, is_crit_amp, is_agil_amp, is_def_debuff, is_agil_debuff, is_atk_debuff, turn_count, is_stunned"
+          )
+          .eq("id", selectedCard.value.id); // Assuming selectedCard has an id
+
+        // Handle errors in fetching card details
+        if (errorChar) {
+          console.error("Error fetching card details:", errorChar);
+          return;
+        }
+
+        // Process fetched data if available
+        if (dataChar && dataChar.length > 0) {
+          // Convert the first result row into an array
+          const cardEffectsArray = [
+            dataChar[0].is_poison,
+            dataChar[0].is_burn,
+            dataChar[0].is_def_debuff,
+            dataChar[0].is_agil_debuff,
+            dataChar[0].is_atk_debuff,
+            dataChar[0].turn_count,
+            dataChar[0].is_stunned,
+          ];
+
+          // Assuming you want to add these effects to the character status store
+          const characterStatusStore2 = useCharacterStatusStore2();
+          characterStatusStore2.addEffect({
+            is_poison: cardEffectsArray[0],
+            is_burn: cardEffectsArray[1],
+            is_def_debuff: cardEffectsArray[2],
+            is_agil_debuff: cardEffectsArray[3],
+            is_atk_debuff: cardEffectsArray[4],
+            turn_count: cardEffectsArray[5],
+            is_stunned: cardEffectsArray[6],
+          });
+
+          // Constant character ID
+        const characterId = revertedCharacter.value;
+
+
+
+
+          // Function to process game turn for the character
+          async function gameTurn() {
+            // Apply effects for the character with ID 2
+            await characterStatusStore2.applyEffects(characterId);
+
+            // Log the updated character stats
+            const updatedCharacter = await characterStatusStore2.fetchCharacter(
+              characterId
+            );
+            if (updatedCharacter) {
+              console.log(
+                `Updated Character Stats: Health - ${updatedCharacter.health}, Defense - ${updatedCharacter.defense}, Agility - ${updatedCharacter.agility}`
+              );
+            }
+          }
+
+          // Call gameTurn
+          await gameTurn();
+
+          // Log the array to the console
+          console.log("Card Effects Array:", cardEffectsArray);
+
+          // Store the array in Pinia
+          const store = useStore2();
+          store.setCardEffects(cardEffectsArray);
+        }
       }
 
       closeDialog();

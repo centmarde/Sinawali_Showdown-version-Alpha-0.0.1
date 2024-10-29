@@ -2,7 +2,7 @@
 import { defineStore } from "pinia";
 import { supabase } from "../lib/supabase"; // Adjust the import path as necessary
 
-export const useCharacterStatusStore = defineStore("characterStatus", {
+export const useCharacterStatusStore2 = defineStore("characterStatus2", {
   state: () => ({
     effects: [], // Array to hold active effects
     appliedEffects: {}, // Object to track applied effects per turn
