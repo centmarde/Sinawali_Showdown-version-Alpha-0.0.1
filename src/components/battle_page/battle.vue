@@ -29,6 +29,7 @@
         <v-card-text>
           <p>Power: {{ selectedCard?.power }}</p>
           <p>Mana Cost: {{ selectedCard?.mana_cost }}</p>
+          <p>Description: {{ selectedCard?.description }}</p>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
@@ -124,7 +125,7 @@ export default {
     const fetchRandomCards = async () => {
       const { data, error } = await supabase
         .from("cards")
-        .select("id, name, power, mana_cost, type");
+        .select("*");
 
       if (error) {
         console.error("Error fetching cards:", error);
