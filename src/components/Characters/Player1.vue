@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import playerImageSrc from '@/assets/anim/man1.png'; // Import Player 1's sprite image
+import playerImageSrc from '@/assets/anim/man1base.png'; // Import Player 1's sprite image
 
 export default {
   data() {

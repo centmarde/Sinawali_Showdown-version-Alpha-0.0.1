@@ -449,11 +449,16 @@ export default {
   overflow: hidden;
   width: 100vw;
   height: 100vh;
-  background-image: url("https://img.freepik.com/premium-photo/pixel-art-dungeon-background-8-bit-games_334978-2385.jpg?w=826");
+  background-image: url("../../assets/background/bg.png");
   background-size: cover;
-  background-position: center;
+  background-position: bottom;
   background-repeat: no-repeat;
+
 }
+
+
+
+
 
 .bg1 {
   position: relative;
