@@ -6,10 +6,10 @@
         <v-col
          v-for="(card, index) in onHandCards"
          :key="card.id"
-          cols="8"
-          lg="4"
-          sm="4"
-          md="5"
+          cols="12"
+          lg="2"
+          sm="2"
+          md="2"
           class="text-center"
         >
           <v-card class="hoverable-card" @click="openDialog(card)">
@@ -188,11 +188,13 @@ export default {
       dialog.value = false;
 
       if (selectedCard.value && selectedCard.value.type === "attack") {
+        player2Ref.value?.toggleAttack();
+        player_variant2Ref.value?.toggleAttack();
 
         const { data: dataChar, error: errorChar } = await supabase
           .from("cards")
           .select(
-            "is_poison, is_burn, is_def_amp, is_crit_amp, is_agil_amp, is_def_debuff, is_agil_debuff, is_atk_debuff, turn_count, is_stunned"
+            "is_poison, is_burn, is_def_amp, is_crit_amp, is_agil_amp, is_def_debuff, is_agil_debuff, turn_count, is_stunned"
           )
           .eq("id", selectedCard.value.id); // Assuming selectedCard has an id
 
@@ -206,13 +208,15 @@ export default {
         if (dataChar && dataChar.length > 0) {
           // Convert the first result row into an array
           const cardEffectsArray = [
-            dataChar[0].is_poison,
+          dataChar[0].is_poison,
             dataChar[0].is_burn,
             dataChar[0].is_def_debuff,
             dataChar[0].is_agil_debuff,
-            dataChar[0].is_atk_debuff,
             dataChar[0].turn_count,
             dataChar[0].is_stunned,
+            dataChar[0].is_def_amp,
+            dataChar[0].is_agil_amp,
+            dataChar[0].is_crit_amp,
           ];
 
           // Assuming you want to add these effects to the character status store
@@ -222,12 +226,14 @@ export default {
             is_burn: cardEffectsArray[1],
             is_def_debuff: cardEffectsArray[2],
             is_agil_debuff: cardEffectsArray[3],
-            is_atk_debuff: cardEffectsArray[4],
-            turn_count: cardEffectsArray[5],
-            is_stunned: cardEffectsArray[6],
+            turn_count: cardEffectsArray[4],
+            is_stunned: cardEffectsArray[5],
+            is_def_amp: cardEffectsArray[6],
+            is_agil_amp: cardEffectsArray[7],
+            is_crit_amp: cardEffectsArray[8],
           });
 
-          console.log("reverted:", revertedCharacter.value);
+        
 
           // Constant character ID
           const characterId = revertedCharacter.value;
@@ -244,32 +250,26 @@ export default {
             const updatedCharacter = await characterStatusStore2.fetchCharacter(
               characterId
             );
-            if (updatedCharacter) {
-              console.log(
-                `Updated Character Stats: Health - ${updatedCharacter.health}, Defense - ${updatedCharacter.defense}, Agility - ${updatedCharacter.agility}`
-              );
-            }
+            
           }
 
           // Call gameTurn
           await gameTurn();
 
-          // Log the array to the console
-          console.log("Card Effects Array:", cardEffectsArray);
+    
 
           // Store the array in Pinia
           const store = useStore2();
           store.setCardEffects(cardEffectsArray);
         }
 
-        player2Ref.value?.toggleAttack();
+      
 
         setTimeout(() => {
           player_variant1Ref.value?.toggleHurt();
           player1Ref.value?.toggleHurt();
         }, 300);
-
-        player_variant2Ref.value?.toggleAttack();
+       
         closeDialog();
         await new Promise((resolve) => setTimeout(resolve, 500));
 
@@ -336,7 +336,7 @@ export default {
         const { data: dataChar, error: errorChar } = await supabase
           .from("cards")
           .select(
-            "is_poison, is_burn, is_def_amp, is_crit_amp, is_agil_amp, is_def_debuff, is_agil_debuff, is_atk_debuff, turn_count, is_stunned"
+            "is_poison, is_burn, is_def_amp, is_crit_amp, is_agil_amp, is_def_debuff, is_agil_debuff,  turn_count, is_stunned"
           )
           .eq("id", selectedCard.value.id); // Assuming selectedCard has an id
 
@@ -350,13 +350,15 @@ export default {
         if (dataChar && dataChar.length > 0) {
           // Convert the first result row into an array
           const cardEffectsArray = [
-            dataChar[0].is_poison,
+          dataChar[0].is_poison,
             dataChar[0].is_burn,
             dataChar[0].is_def_debuff,
             dataChar[0].is_agil_debuff,
-            dataChar[0].is_atk_debuff,
             dataChar[0].turn_count,
             dataChar[0].is_stunned,
+            dataChar[0].is_def_amp,
+            dataChar[0].is_agil_amp,
+            dataChar[0].is_crit_amp,
           ];
 
           // Assuming you want to add these effects to the character status store
@@ -366,9 +368,11 @@ export default {
             is_burn: cardEffectsArray[1],
             is_def_debuff: cardEffectsArray[2],
             is_agil_debuff: cardEffectsArray[3],
-            is_atk_debuff: cardEffectsArray[4],
-            turn_count: cardEffectsArray[5],
-            is_stunned: cardEffectsArray[6],
+            turn_count: cardEffectsArray[4],
+            is_stunned: cardEffectsArray[5],
+            is_def_amp: cardEffectsArray[6],
+            is_agil_amp: cardEffectsArray[7],
+            is_crit_amp: cardEffectsArray[8],
           });
 
           // Constant character ID
@@ -386,19 +390,13 @@ export default {
             const updatedCharacter = await characterStatusStore2.fetchCharacter(
               characterId
             );
-            if (updatedCharacter) {
-              console.log(
-                `Updated Character Stats: Health - ${updatedCharacter.health}, Defense - ${updatedCharacter.defense}, Agility - ${updatedCharacter.agility}`
-              );
-            }
+            
           }
 
           // Call gameTurn
           await gameTurn();
 
-          // Log the array to the console
-          console.log("Card Effects Array:", cardEffectsArray);
-
+         
           // Store the array in Pinia
           const store = useStore2();
           store.setCardEffects(cardEffectsArray);
@@ -465,12 +463,14 @@ export default {
 .floating-card-container {
   position: fixed;
   z-index: 99;
-  top: 40%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  top: 10%;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  transform: none;
   transition: all 0.3s ease;
-  width: auto;
 }
+
 
 .v-card {
   margin-bottom: 10px;

@@ -69,7 +69,7 @@ export default {
       cancelAnimationFrame(this.animationFrame);
       frameY = 5;
       drawPlayer();
-      if (gameFrame % 15 === 0) frameX = frameX < 4 ? frameX + 1 : 0;
+      if (gameFrame % 30 === 0) frameX = frameX < 4 ? frameX + 1 : 0;
       gameFrame++;
       this.animationFrame = requestAnimationFrame(buff);
     };
