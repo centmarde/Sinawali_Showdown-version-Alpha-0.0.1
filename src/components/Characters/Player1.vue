@@ -2,27 +2,27 @@
   <div class="canvas-container">
     <!-- Canvas for Player 1's animations, toggles moveLeft class based on isattack state -->
     <canvas id="canvas" ref="canvas1" :class="{ moveLeft: isattack }"></canvas>
-    <v-row>
+   <!--  <v-row>
       <v-col class="d-flex justify-content-center">
        
-        <!-- <button @click="toggleAttack">{{ isattack ? 'Switch to Idle' : 'Attack' }}</button>
-      
+        <button @click="toggleAttack">{{ isattack ? 'Switch to Idle' : 'Attack' }}</button>
         <button @click="toggleHurt">Hurt</button>
-       
-        <button @click="toggleBuff">Buff</button> -->
+        <button @click="toggleBuff">Buff</button>
       </v-col>
-    </v-row>
+    </v-row> -->
   </div>
 </template>
 
 <script>
-import playerImageSrc from '@/assets/anim/man1base.png'; // Import Player 1's sprite image
+import playerImageSrc from '@/assets/anim/man1base.png';
 
 export default {
   data() {
     return {
-      isattack: false, // State to track if player is attacking
-      animationFrame: null, // Reference for the animation frame ID
+      isattack: false,
+      animationFrame: null,
+      buffActive: false, // Flag for buff animation
+      hurtActive: false, // Flag for hurt animation
     };
   },
   mounted() {
@@ -60,7 +60,7 @@ export default {
     };
 
     const buff = () => {
-      cancelAnimationFrame(this.animationFrame);
+      if (!this.buffActive) return; // Stop if buff is no longer active
 
       ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
       frameY = 5;
@@ -75,13 +75,23 @@ export default {
         spriteWidth,
         spriteHeight
       );
-      if (gameFrame % 30 === 0) frameX = frameX < 4 ? frameX + 1 : 0;
+      if (gameFrame % 30 === 0) {
+        frameX = frameX < 4 ? frameX + 1 : 0;
+
+        // End buff animation cycle if it reaches the last frame
+        if (frameX === 0) {
+          this.buffActive = false; // Deactivate buff
+          idle(); // Return to idle animation
+          return;
+        }
+      }
+
       gameFrame++;
       this.animationFrame = requestAnimationFrame(buff);
     };
 
     const hurt = () => {
-      cancelAnimationFrame(this.animationFrame);
+      if (!this.hurtActive) return; // Stop if hurt is no longer active
 
       ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
       frameY = 4;
@@ -96,7 +106,17 @@ export default {
         spriteWidth,
         spriteHeight
       );
-      if (gameFrame % 70 === 0) frameX = frameX < 1 ? frameX + 1 : 0;
+      if (gameFrame % 70 === 0) {
+        frameX = frameX < 1 ? frameX + 1 : 0;
+
+        // End hurt animation cycle if it reaches the last frame
+        if (frameX === 0) {
+          this.hurtActive = false; // Deactivate hurt
+          idle(); // Return to idle animation
+          return;
+        }
+      }
+
       gameFrame++;
       this.animationFrame = requestAnimationFrame(hurt);
     };
@@ -138,12 +158,14 @@ export default {
     this.toggleHurt = () => {
       cancelAnimationFrame(this.animationFrame);
       frameX = 0;
+      this.hurtActive = true; // Set hurt active flag
       hurt();
     };
 
     this.toggleBuff = () => {
       cancelAnimationFrame(this.animationFrame);
       frameX = 0;
+      this.buffActive = true; // Set buff active flag
       buff();
     };
 
@@ -163,7 +185,7 @@ export default {
 }
 
 #canvas {
-  margin-top: 18rem;
+  margin-top: 15rem;
   width: 13rem;
   transition: transform 0.5s ease;
 }
@@ -177,9 +199,9 @@ export default {
     transform: translateX(400px);
   }
   #canvas {
-  margin-top: 23rem;
-  width: 13rem;
-  transition: transform 0.5s ease;
+    margin-top: 23rem;
+    width: 13rem;
+    transition: transform 0.5s ease;
   }
 }
 
@@ -188,9 +210,9 @@ export default {
     transform: translateX(200px);
   }
   #canvas {
-  margin-top: 23rem;
-  width: 13rem;
-  transition: transform 0.5s ease;
+    margin-top: 23rem;
+    width: 13rem;
+    transition: transform 0.5s ease;
   }
 }
 
@@ -199,10 +221,10 @@ export default {
     transform: translateX(100px);
   }
   #canvas {
-  margin-top: 23rem;
-  width: 13rem;
-  transition: transform 0.5s ease;
-}
+    margin-top: 23rem;
+    width: 13rem;
+    transition: transform 0.5s ease;
+  }
 }
 
 button {

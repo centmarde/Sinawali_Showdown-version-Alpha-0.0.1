@@ -134,7 +134,7 @@ export default {
 }
 
 #canvas {
-  margin-top: 18rem;
+  margin-top: 15rem;
   width: 13rem;
   transition: transform 0.5s ease;
 }
