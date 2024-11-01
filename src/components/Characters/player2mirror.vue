@@ -4,8 +4,12 @@
     <canvas id="canvas" ref="canvas1" :class="{ moveLeft: isattack }"></canvas>
     <v-row>
       <v-col class="d-flex justify-content-center">
-        <!-- Button to toggle between Attack and Idle states -->
-        <!-- <button @click="toggleAnimation">{{ isattack ? 'Switch to Idle' : 'Attack' }}</button> -->
+       
+        <!-- <button @click="toggleAttack">{{ isattack ? 'Switch to Idle' : 'Attack' }}</button>
+      
+        <button @click="toggleHurt">Hurt</button>
+       
+        <button @click="toggleBuff">Buff</button> -->
       </v-col>
     </v-row>
   </div>
@@ -22,80 +26,131 @@ export default {
     };
   },
   mounted() {
-    const canvas = this.$refs.canvas1; // Reference to canvas element
-    const ctx = canvas.getContext('2d'); // 2D drawing context for the canvas
-    const CANVAS_WIDTH = (canvas.width = 600); // Set canvas width
-    const CANVAS_HEIGHT = (canvas.height = 600); // Set canvas height
+    const canvas = this.$refs.canvas1;
+    const ctx = canvas.getContext('2d');
+    const CANVAS_WIDTH = (canvas.width = 600);
+    const CANVAS_HEIGHT = (canvas.height = 600);
 
-    const playerImage = new Image(); // Create new image element for player sprite
-    playerImage.src = playerImageSrc; // Set image source to imported sprite
-    const spriteWidth = 575; // Width of a single frame in the sprite sheet
-    const spriteHeight = 523; // Height of a single frame in the sprite sheet
-    let frameX = 0; // Horizontal frame index for animations
-    let frameY = 0; // Vertical frame index for animations
-    let gameFrame = 0; // Tracks game frames to manage staggered animation
-    const staggerFrames = 10; // Controls frame speed for smoother animation
+    const playerImage = new Image();
+    playerImage.src = playerImageSrc;
+    const spriteWidth = 575;
+    const spriteHeight = 523;
+    let frameX = 0;
+    let frameY = 0;
+    let gameFrame = 0;
+    const staggerFrames = 10;
 
-    // Idle animation function
     const idle = () => {
-      ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT); // Clear previous frame
-      frameY = 0; // Set to idle row in sprite sheet
+      ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+      frameY = 0;
       ctx.drawImage(
         playerImage,
         frameX * spriteWidth,
         frameY * spriteHeight,
         spriteWidth,
         spriteHeight,
-        CANVAS_WIDTH / 2 - spriteWidth / 2, // Center player horizontally
-        CANVAS_HEIGHT / 2 - spriteHeight / 2, // Center player vertically
+        CANVAS_WIDTH / 2 - spriteWidth / 2,
+        CANVAS_HEIGHT / 2 - spriteHeight / 2,
         spriteWidth,
         spriteHeight
       );
-      if (gameFrame % staggerFrames === 0) frameX = frameX < 3 ? frameX + 1 : 0; // Loop idle frames
-      gameFrame++; // Increment game frame counter
-      this.animationFrame = requestAnimationFrame(idle); // Repeat idle animation
+      if (gameFrame % staggerFrames === 0) frameX = frameX < 3 ? frameX + 1 : 0;
+      gameFrame++;
+      this.animationFrame = requestAnimationFrame(idle);
     };
 
-    // Attack animation function
+    const buff = () => {
+      cancelAnimationFrame(this.animationFrame);
+
+      ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+      frameY = 5;
+      ctx.drawImage(
+        playerImage,
+        frameX * spriteWidth,
+        frameY * spriteHeight,
+        spriteWidth,
+        spriteHeight,
+        CANVAS_WIDTH / 2 - spriteWidth / 2,
+        CANVAS_HEIGHT / 2 - spriteHeight / 2,
+        spriteWidth,
+        spriteHeight
+      );
+      if (gameFrame % 30 === 0) frameX = frameX < 4 ? frameX + 1 : 0;
+      gameFrame++;
+      this.animationFrame = requestAnimationFrame(buff);
+    };
+
+    const hurt = () => {
+      cancelAnimationFrame(this.animationFrame);
+
+      ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+      frameY = 4;
+      ctx.drawImage(
+        playerImage,
+        frameX * spriteWidth,
+        frameY * spriteHeight,
+        spriteWidth,
+        spriteHeight,
+        CANVAS_WIDTH / 2 - spriteWidth / 2,
+        CANVAS_HEIGHT / 2 - spriteHeight / 2,
+        spriteWidth,
+        spriteHeight
+      );
+      if (gameFrame % 70 === 0) frameX = frameX < 1 ? frameX + 1 : 0;
+      gameFrame++;
+      this.animationFrame = requestAnimationFrame(hurt);
+    };
+
     const attack = () => {
-      ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT); // Clear previous frame
-      frameY = 2; // Set to attack row in sprite sheet
+      ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+      frameY = 2;
       ctx.drawImage(
         playerImage,
         frameX * spriteWidth,
         frameY * spriteHeight,
         spriteWidth,
         spriteHeight,
-        CANVAS_WIDTH / 2 - spriteWidth / 2, // Center player horizontally
-        CANVAS_HEIGHT / 2 - spriteHeight / 2, // Center player vertically
+        CANVAS_WIDTH / 2 - spriteWidth / 2,
+        CANVAS_HEIGHT / 2 - spriteHeight / 2,
         spriteWidth,
         spriteHeight
       );
-      if (gameFrame % staggerFrames === 0) frameX = frameX < 7 ? frameX + 1 : 0; // Loop attack frames
-      gameFrame++; // Increment game frame counter
+      if (gameFrame % staggerFrames === 0) frameX = frameX < 7 ? frameX + 1 : 0;
+      gameFrame++;
       if (frameX < 7) {
-        this.animationFrame = requestAnimationFrame(attack); // Continue attack animation
+        this.animationFrame = requestAnimationFrame(attack);
       } else {
-        frameX = 0; // Reset to first frame of sprite
-        this.isattack = false; // Set state back to idle
-        idle(); // Return to idle animation
+        frameX = 0;
+        this.isattack = false;
+        idle();
       }
     };
 
-    // Toggle between attack and idle animations
-    this.toggleAnimation = () => {
-      cancelAnimationFrame(this.animationFrame); // Cancel ongoing animation frame
+    this.toggleAttack = () => {
+      cancelAnimationFrame(this.animationFrame);
       if (!this.isattack) {
-        this.isattack = true; // Set attacking state
-        frameX = 0; // Reset to first frame of attack
-        attack(); // Trigger attack animation
+        this.isattack = true;
+        frameX = 0;
+        attack();
       }
     };
 
-    idle(); // Start with Idle animation by default
+    this.toggleHurt = () => {
+      cancelAnimationFrame(this.animationFrame);
+      frameX = 0;
+      hurt();
+    };
+
+    this.toggleBuff = () => {
+      cancelAnimationFrame(this.animationFrame);
+      frameX = 0;
+      buff();
+    };
+
+    idle();
   },
   beforeUnmount() {
-    cancelAnimationFrame(this.animationFrame); // Clean up animation frame on unmount
+    cancelAnimationFrame(this.animationFrame);
   },
 };
 </script>
@@ -104,42 +159,38 @@ export default {
 .canvas-container {
   display: flex;
   flex-direction: column;
-  align-items: center; /* Centers the canvas and button horizontally */
+  align-items: center;
 }
 
 #canvas {
   margin-top: 18rem;
-    width: 13rem; // Set canvas width
-    transition: transform 0.5s ease; // Smooth transition when moving left
+  width: 13rem;
+  transition: transform 0.5s ease;
 }
 
 .moveLeft {
-  transform: translateX(600px); /* Default for large screens */
+  transform: translateX(600px);
 }
 
-/* For medium screens (tablets) */
 @media (max-width: 1024px) {
   .moveLeft {
-    transform: translateX(400px); /* Adjust as needed for medium screens */
+    transform: translateX(400px);
   }
 }
 
-/* For small screens (mobile devices) */
 @media (max-width: 768px) {
   .moveLeft {
-    transform: translateX(200px); /* Adjust as needed for small screens */
+    transform: translateX(200px);
   }
 }
 
-/* For extra small screens (very small mobile devices) */
 @media (max-width: 480px) {
   .moveLeft {
-    transform: translateX(100px); /* Further adjust for very small screens */
+    transform: translateX(100px);
   }
 }
 
-
 button {
-  margin-top: 5px; /* Space above the button */
+  margin-top: 5px;
 }
 </style>

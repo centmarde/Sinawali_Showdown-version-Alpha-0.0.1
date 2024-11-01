@@ -1,153 +1,167 @@
 <template>
-    <div class="canvas-container">
-      <!-- Canvas for Player 2 animations; adds 'moveLeft' class when isAttacking is true -->
-      <canvas id="canvas" ref="canvas1" :class="{ moveLeft: isAttacking }"></canvas>
-      <v-row>
-        <v-col class="d-flex justify-content-center">
-          <!-- Button toggles between Attack and Idle states -->
-          <!-- <button @click="toggleAnimation">{{ isAttacking ? 'Switch to Idle' : 'Attack' }}</button> -->
-        </v-col>
-      </v-row>
-    </div>
-  </template>
-  
-  <script>
-  import playerImageSrc from '@/assets/anim/man2.png'; // Import sprite for Player 2
-  
-  export default {
-    data() {
-      return {
-        isAttacking: false, // State tracking whether player is attacking
-        animationFrame: null, // Stores current animation frame ID
-      };
-    },
-    mounted() {
-      const canvas = this.$refs.canvas1; // Reference to the canvas element
-      const ctx = canvas.getContext('2d'); // 2D context for drawing on the canvas
-      const CANVAS_WIDTH = (canvas.width = 600); // Set canvas width
-      const CANVAS_HEIGHT = (canvas.height = 600); // Set canvas height
-  
-      const playerImage = new Image(); // New image element for player sprite
-      playerImage.src = playerImageSrc; // Assign source to imported sprite
-      const spriteWidth = 575; // Width of each frame in the sprite sheet
-      const spriteHeight = 523; // Height of each frame in the sprite sheet
-      let frameX = 0; // Horizontal frame index for animation
-      let frameY = 0; // Vertical frame index for animation (row)
-      let gameFrame = 0; // Tracks overall frames for staggered animation
-      const staggerFrames = 10; // Frame delay for smooth animation
-      const yOffset = 40; // Offset for positioning player on canvas
-  
-      // Idle animation function for player
-      const idle = () => {
-        ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT); // Clear previous frame
-        ctx.save(); // Save current context settings
-        ctx.scale(-1, 1); // Flip player horizontally for orientation
-        frameY = 0; // Set to row for idle animation
-        ctx.drawImage(
-          playerImage,
-          frameX * spriteWidth, // Horizontal frame position in sprite
-          frameY * spriteHeight, // Vertical frame position in sprite
-          spriteWidth, // Width of frame in sprite sheet
-          spriteHeight, // Height of frame in sprite sheet
-          -spriteWidth, // Horizontal position on canvas (flipped)
-          yOffset, // Vertical position on canvas
-          spriteWidth, // Drawn width on canvas
-          spriteHeight // Drawn height on canvas
-        );
-        ctx.restore(); // Restore context to undo flipping
-        if (gameFrame % staggerFrames === 0) frameX = frameX < 3 ? frameX + 1 : 0; // Loop idle frames
-        gameFrame++; // Increment game frame count
-        this.animationFrame = requestAnimationFrame(idle); // Call idle on each frame
-      };
-  
-      // Attack animation function for player
-      const attack = () => {
-        ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT); // Clear previous frame
-        ctx.save(); // Save context state before flipping
-        ctx.scale(-1, 1); // Flip player for left-side orientation
-        frameY = 2; // Set to attack row in sprite sheet
-        ctx.drawImage(
-          playerImage,
-          frameX * spriteWidth, // Horizontal frame position for attack
-          frameY * spriteHeight, // Vertical frame position for attack
-          spriteWidth, // Width of sprite frame
-          spriteHeight, // Height of sprite frame
-          -spriteWidth, // Position on canvas (flipped horizontally)
-          yOffset, // Offset from top for consistent alignment
-          spriteWidth, // Drawn width on canvas
-          spriteHeight // Drawn height on canvas
-        );
-        ctx.restore(); // Restore context after flipping
-        if (gameFrame % staggerFrames === 0) frameX = frameX < 7 ? frameX + 1 : 0; // Advance attack frames
-        gameFrame++; // Increment frame count
-        if (frameX < 7) {
-          this.animationFrame = requestAnimationFrame(attack); // Continue attack animation
-        } else {
-          frameX = 0; // Reset frame index to start
-          this.isAttacking = false; // Reset attack state
-          idle(); // Return to idle animation
-        }
-      };
-  
-      // Function to toggle between attack and idle animations
-      this.toggleAnimation = () => {
-        cancelAnimationFrame(this.animationFrame); // Stop any ongoing animation
-        if (!this.isAttacking) {
-          this.isAttacking = true; // Set attacking state
-          frameX = 0; // Start from first attack frame
-          attack(); // Start attack animation
-        }
-      };
-  
-      idle(); // Start with idle animation by default
-    },
-    beforeUnmount() {
-      cancelAnimationFrame(this.animationFrame); // Cleanup animation on component unmount
-    },
-  };
-  </script>
-  
-  <style lang="scss" scoped>
-  .canvas-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center; // Centers canvas and button horizontally
-  }
-  
-  #canvas {
-    margin-top: 18rem;
-    width: 13rem; // Set canvas width
-    transition: transform 0.5s ease; // Smooth transition when moving left
-  }
-  
-  .moveLeft {
-  transform: translateX(-600px); /* Default for large screens */
+  <div class="canvas-container">
+    <!-- Canvas for Player 1's animations, toggles moveLeft class based on isattack state -->
+    <canvas id="canvas" ref="canvas1" :class="{ moveLeft: isattack }"></canvas>
+    <v-row>
+      <v-col class="d-flex justify-content-center">
+        <!-- Buttons for controlling animations -->
+      
+        <!-- <<button @click="toggleAttack">{{ isattack ? 'Switch to Idle' : 'Attack' }}</button>
+        <button @click="toggleHurt">Hurt</button>
+        <button @click="toggleBuff">Buff</button>  -->
+      </v-col>
+    </v-row>
+  </div>
+</template>
+
+<script>
+import playerImageSrc from '@/assets/anim/man2.png'; // Import Player 1's sprite image
+
+export default {
+  data() {
+    return {
+      isattack: false, // State to track if player is attacking
+      animationFrame: null, // Reference for the animation frame ID
+    };
+  },
+  mounted() {
+    const canvas = this.$refs.canvas1;
+    const ctx = canvas.getContext('2d');
+    const CANVAS_WIDTH = (canvas.width = 600);
+    const CANVAS_HEIGHT = (canvas.height = 600);
+
+    const playerImage = new Image();
+    playerImage.src = playerImageSrc;
+    const spriteWidth = 575;
+    const spriteHeight = 523;
+    let frameX = 0;
+    let frameY = 0;
+    let gameFrame = 0;
+    const staggerFrames = 10;
+
+    const drawPlayer = () => {
+      ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+      ctx.save(); // Save the current context state
+      ctx.scale(-1, 1); // Flip horizontally
+      ctx.drawImage(
+        playerImage,
+        frameX * spriteWidth,
+        frameY * spriteHeight,
+        spriteWidth,
+        spriteHeight,
+        -CANVAS_WIDTH / 2 - spriteWidth / 2, // Adjust for flipped image
+        CANVAS_HEIGHT / 2 - spriteHeight / 2,
+        spriteWidth,
+        spriteHeight
+      );
+      ctx.restore(); // Restore the context to its original state
+    };
+
+    const idle = () => {
+      frameY = 0;
+      drawPlayer();
+      if (gameFrame % staggerFrames === 0) frameX = frameX < 3 ? frameX + 1 : 0;
+      gameFrame++;
+      this.animationFrame = requestAnimationFrame(idle);
+    };
+
+    const buff = () => {
+      cancelAnimationFrame(this.animationFrame);
+      frameY = 5;
+      drawPlayer();
+      if (gameFrame % 30 === 0) frameX = frameX < 4 ? frameX + 1 : 0;
+      gameFrame++;
+      this.animationFrame = requestAnimationFrame(buff);
+    };
+
+    const hurt = () => {
+      cancelAnimationFrame(this.animationFrame);
+      frameY = 4;
+      drawPlayer();
+      if (gameFrame % 70 === 0) frameX = frameX < 1 ? frameX + 1 : 0;
+      gameFrame++;
+      this.animationFrame = requestAnimationFrame(hurt);
+    };
+
+    const attack = () => {
+      frameY = 2;
+      drawPlayer();
+      if (gameFrame % staggerFrames === 0) frameX = frameX < 7 ? frameX + 1 : 0;
+      gameFrame++;
+      if (frameX < 7) {
+        this.animationFrame = requestAnimationFrame(attack);
+      } else {
+        frameX = 0;
+        this.isattack = false;
+        idle();
+      }
+    };
+
+    this.toggleAttack = () => {
+      cancelAnimationFrame(this.animationFrame);
+      if (!this.isattack) {
+        this.isattack = true;
+        frameX = 0;
+        attack();
+      }
+    };
+
+    this.toggleHurt = () => {
+      cancelAnimationFrame(this.animationFrame);
+      frameX = 0;
+      hurt();
+    };
+
+    this.toggleBuff = () => {
+      cancelAnimationFrame(this.animationFrame);
+      frameX = 0;
+      buff();
+    };
+
+    idle();
+  },
+  beforeUnmount() {
+    cancelAnimationFrame(this.animationFrame);
+  },
+};
+</script>
+
+<style lang="scss" scoped>
+.canvas-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-/* For medium screens (tablets) */
+#canvas {
+  margin-top: 18rem;
+  width: 13rem;
+  transition: transform 0.5s ease;
+}
+
+.moveLeft {
+  transform: translateX(-600px);
+}
+
 @media (max-width: 1024px) {
   .moveLeft {
-    transform: translateX(-400px); /* Adjust as needed for medium screens */
+    transform: translateX(-400px);
   }
 }
 
-/* For small screens (mobile devices) */
 @media (max-width: 768px) {
   .moveLeft {
-    transform: translateX(-200px); /* Adjust as needed for small screens */
+    transform: translateX(-200px);
   }
 }
 
-/* For extra small screens (very small mobile devices) */
 @media (max-width: 480px) {
   .moveLeft {
-    transform: translateX(-100px); /* Further adjust for very small screens */
+    transform: translateX(-100px);
   }
 }
 
-  
-  button {
-    margin-top: 5px; // Add space above button
-  }
-  </style>
-  
+button {
+  margin-top: 5px;
+}
+</style>
