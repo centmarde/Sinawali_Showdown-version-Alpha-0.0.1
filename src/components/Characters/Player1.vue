@@ -176,11 +176,21 @@ export default {
   .moveLeft {
     transform: translateX(400px);
   }
+  #canvas {
+  margin-top: 23rem;
+  width: 13rem;
+  transition: transform 0.5s ease;
+  }
 }
 
 @media (max-width: 768px) {
   .moveLeft {
     transform: translateX(200px);
+  }
+  #canvas {
+  margin-top: 23rem;
+  width: 13rem;
+  transition: transform 0.5s ease;
   }
 }
 
@@ -188,6 +198,11 @@ export default {
   .moveLeft {
     transform: translateX(100px);
   }
+  #canvas {
+  margin-top: 23rem;
+  width: 13rem;
+  transition: transform 0.5s ease;
+}
 }
 
 button {
