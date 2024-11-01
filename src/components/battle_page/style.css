@@ -1,0 +1,53 @@
+@import url('https://fonts.googleapis.com/css?family=Poppins:200,300,400,500,600,700,800,900&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: #0f0f0f; /* Fixed background color syntax */
+    overflow: hidden;
+}
+
+.container {
+    position: fixed; /* Change to fixed positioning */
+    bottom: 0; /* Position at the bottom of the viewport */
+    width: 100%;
+    height: 35%; /* Set height to 30% of the viewport */
+    display: flex;
+    justify-content: center;
+
+}
+
+.container .card {
+    position: absolute; /* Change to relative positioning */
+    width: 200px;
+    height: 250px; /* Adjust height to a reasonable size */
+    margin: 0 10px; /* Add some margin between cards */
+    border-radius: 8px;
+    background: #5e5cfc;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: rgba(0, 0, 0, 0.2);
+    font-size: 8em;
+    font-weight: 700;
+    border: 10px solid rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    transition: 0.5s;
+    transform-origin: 50% 100%;
+    transform: rotate(calc(var(--i) * 3deg)) translate(calc(var(--i) * 150px), -50px);
+}
+
+.card:hover {
+    transform: rotate(calc(var(--i) * 3deg)) translate(calc(var(--i) * 150px), -150px);
+    
+   
+}

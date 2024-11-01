@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Playing Card Hover Effects</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="card" style="--i: -2;">1</div>
+        <div class="card" style="--i: -1;">2</div>
+        <div class="card" style="--i: 0;">3</div>
+        <div class="card" style="--i: 1;">4</div>
+        <div class="card" style="--i: 2;">5</div>
+
+    </div>
+
+    <script>
+        // Add event listeners to each card
+        const cards = document.querySelectorAll('.card');
+        cards.forEach(card => {
+            card.addEventListener('click', () => {
+                console.log(card.textContent);
+            });
+        });
+    </script>
+</body>
+</html>
