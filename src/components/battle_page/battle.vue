@@ -340,75 +340,78 @@ export default {
       }
 
       if (selectedCard.value && selectedCard.value.type === "buff") {
-    player1Ref.value?.toggleBuff();
-    player_variant1Ref.value?.toggleBuff();
+        player1Ref.value?.toggleBuff();
+        player_variant1Ref.value?.toggleBuff();
 
-    const { data: dataChar, error: errorChar } = await supabase
-      .from("cards")
-      .select(
-        "is_poison, is_burn, is_def_amp, is_crit_amp, is_agil_amp, is_def_debuff, is_agil_debuff, turn_count, is_stunned"
-      )
-      .eq("id", selectedCard.value.id);
+        const { data: dataChar, error: errorChar } = await supabase
+          .from("cards")
+          .select(
+            "is_poison, is_burn, is_def_amp, is_crit_amp, is_agil_amp, is_def_debuff, is_agil_debuff, turn_count, is_stunned"
+          )
+          .eq("id", selectedCard.value.id); // Assuming selectedCard has an id
 
-    if (errorChar) {
-      console.error("Error fetching card details:", errorChar);
-      return;
-    }
+        // Handle errors in fetching card details
+        if (errorChar) {
+          console.error("Error fetching card details:", errorChar);
+          return;
+        }
 
-    if (dataChar && dataChar.length > 0) {
-      const cardEffectsArray = [
-        dataChar[0].is_poison,
-        dataChar[0].is_burn,
-        dataChar[0].is_def_debuff,
-        dataChar[0].is_agil_debuff,
-        dataChar[0].turn_count,
-        dataChar[0].is_stunned,
-        dataChar[0].is_def_amp,
-        dataChar[0].is_agil_amp,
-        dataChar[0].is_crit_amp,
-      ];
+        // Process fetched data if available
+        if (dataChar && dataChar.length > 0) {
+          // Convert the first result row into an array
+          const cardEffectsArray = [
+            dataChar[0].is_poison,
+            dataChar[0].is_burn,
+            dataChar[0].is_def_debuff,
+            dataChar[0].is_agil_debuff,
+            dataChar[0].turn_count,
+            dataChar[0].is_stunned,
+            dataChar[0].is_def_amp,
+            dataChar[0].is_agil_amp,
+            dataChar[0].is_crit_amp,
+          ];
 
-      const characterStatusStore = useCharacterStatusStore();
-      
-      // Apply buffs to selectedCharacter (caster)
-      characterStatusStore.addEffect({
-        is_def_amp: cardEffectsArray[6], // Defense Amplification
-        is_agil_amp: cardEffectsArray[7], // Agility Amplification
-        is_crit_amp: cardEffectsArray[8], // Critical Rate Amplification
-        turn_count: cardEffectsArray[4],
-        type: "Buff", // Explicitly set as a Buff
-      });
+          // Assuming you want to add these effects to the character status store
+          const characterStatusStore = useCharacterStatusStore();
+          characterStatusStore.addEffect({
+            is_poison: cardEffectsArray[0],
+            is_burn: cardEffectsArray[1],
+            is_def_debuff: cardEffectsArray[2],
+            is_agil_debuff: cardEffectsArray[3],
+            turn_count: cardEffectsArray[4],
+            is_stunned: cardEffectsArray[5],
+            is_def_amp: cardEffectsArray[6],
+            is_agil_amp: cardEffectsArray[7],
+            is_crit_amp: cardEffectsArray[8],
+          });
 
-      // Apply remaining effects to revertedCharacter (target)
-      characterStatusStore.addEffect({
-        is_poison: cardEffectsArray[0],
-        is_burn: cardEffectsArray[1],
-        is_def_debuff: cardEffectsArray[2],
-        is_agil_debuff: cardEffectsArray[3],
-        turn_count: cardEffectsArray[4],
-        is_stunned: cardEffectsArray[5],
-        type: "Debuff", // Explicitly set as a Debuff
-      });
+          // Constant character ID
+        const characterId = revertedCharacter.value;
 
-      // Use characterId for revertedCharacter
-      const characterId = revertedCharacter.value;
 
-      async function gameTurn() {
-        // Apply effects to the selected character (the caster)
-        await characterStatusStore.applyEffects(selectedCharacter.value); // Pass the ID of selectedCharacter
 
-        // Log the updated character stats
-        const updatedCharacter = await characterStatusStore.fetchCharacter(characterId);
-        console.log('Updated Character Stats:', updatedCharacter);
+
+          // Function to process game turn for the character
+          async function gameTurn() {
+            // Apply effects for the character with ID 2
+            await characterStatusStore.applyEffects(characterId);
+
+            // Log the updated character stats
+            const updatedCharacter = await characterStatusStore.fetchCharacter(
+              characterId
+            );
+           
+          }
+
+          // Call gameTurn
+          await gameTurn();
+
+          // Store the array in Pinia
+          const store = useStore();
+          store.setCardEffects(cardEffectsArray);
+        }
+
       }
-
-      await gameTurn();
-      
-      // Store the array in Pinia
-      const store = useStore();
-      store.setCardEffects(cardEffectsArray);
-    }
-}
 
       // Always navigate to the next phase
       closeDialog();
