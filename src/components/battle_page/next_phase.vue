@@ -439,7 +439,7 @@ export default {
   overflow: hidden;
   width: 100vw;
   height: 100vh;
-  background-image: url("../../assets/background/bg.png");
+  background-image: url("../../assets/background/bg.gif");
   background-size: cover;
   background-position: bottom;
   background-repeat: no-repeat;
@@ -447,8 +447,14 @@ export default {
 
 .bg1 {
   position: relative;
-  z-index: 2;
-  color: white;
+  overflow: hidden;
+  width: 100vw;
+  height: 100vh;
+  background-image: url("../../assets/background/sr.gif");
+  background-size: cover;
+  background-position: bottom;
+  background-repeat: no-repeat;
+  z-index: 9;
 }
 
 .fill-height {

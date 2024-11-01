@@ -11,8 +11,9 @@
     </v-row> -->
     <div class="overlayBrand"></div>
     <Player1 class="overlay-content"/>
-    <SplineViewer/>
-    
+    <!-- <SplineViewer/> -->
+
+
   </div>
 </template>
 

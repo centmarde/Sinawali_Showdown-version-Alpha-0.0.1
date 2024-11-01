@@ -69,7 +69,7 @@
         </v-progress-linear>
         <v-progress-linear
           :model-value="character.mana"
-          max="100"
+          max="10"
           color="blue"
           height="20"
         >
@@ -77,7 +77,7 @@
         </v-progress-linear>
         <v-progress-linear
           :model-value="character.agility"
-          max="15"
+          max="10"
           color="green"
           height="20"
         >
@@ -85,7 +85,7 @@
         </v-progress-linear>
         <v-progress-linear
           :model-value="character.defense"
-          max="100"
+          max="10"
           color="orange"
           height="20"
         >
@@ -93,7 +93,7 @@
         </v-progress-linear>
         <v-progress-linear
           :model-value="parseFloat(character.critical_rate)"
-          max="150"
+          max="10"
           color="purple"
           height="20"
         >

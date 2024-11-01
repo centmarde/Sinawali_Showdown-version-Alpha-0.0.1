@@ -163,7 +163,7 @@ export default {
 }
 
 #canvas {
-  margin-top: 18rem;
+  margin-top: 15rem;
   width: 13rem;
   transition: transform 0.5s ease;
 }
@@ -171,22 +171,44 @@ export default {
 .moveLeft {
   transform: translateX(600px);
 }
+@media (max-width: 1524px) {
+  #canvas {
 
+  width: 13rem;
+  transition: transform 0.5s ease;
+  }
+}
 @media (max-width: 1024px) {
   .moveLeft {
     transform: translateX(400px);
   }
+  #canvas {
+  margin-top: 23rem;
+  width: 13rem;
+  transition: transform 0.5s ease;
+  }
+  
 }
 
 @media (max-width: 768px) {
   .moveLeft {
     transform: translateX(200px);
   }
+  #canvas {
+  margin-top: 23rem;
+  width: 13rem;
+  transition: transform 0.5s ease;
+  }
 }
 
 @media (max-width: 480px) {
   .moveLeft {
     transform: translateX(100px);
+  }
+  #canvas {
+  margin-top: 23rem;
+  width: 13rem;
+  transition: transform 0.5s ease;
   }
 }
 
