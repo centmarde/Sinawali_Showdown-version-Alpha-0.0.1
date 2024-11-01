@@ -69,7 +69,17 @@ export default {
       cancelAnimationFrame(this.animationFrame);
       frameY = 5;
       drawPlayer();
-      if (gameFrame % 30 === 0) frameX = frameX < 4 ? frameX + 1 : 0;
+      if (gameFrame % 30 === 0) {
+        frameX = frameX < 4 ? frameX + 1 : 0;
+
+        // End buff animation cycle if it reaches the last frame
+        if (frameX === 0) {
+          this.buffActive = false; // Deactivate buff
+          idle(); // Return to idle animation
+          return;
+        }
+      }
+
       gameFrame++;
       this.animationFrame = requestAnimationFrame(buff);
     };
@@ -78,9 +88,18 @@ export default {
       cancelAnimationFrame(this.animationFrame);
       frameY = 4;
       drawPlayer();
-      if (gameFrame % 70 === 0) frameX = frameX < 1 ? frameX + 1 : 0;
-      gameFrame++;
-      this.animationFrame = requestAnimationFrame(hurt);
+      if (gameFrame % 70 === 0) {
+        frameX = frameX < 1 ? frameX + 1 : 0;
+
+        // End hurt animation cycle if it reaches the last frame
+        if (frameX === 0) {
+          this.hurtActive = false; // Deactivate hurt
+          idle(); // Return to idle animation
+          return;
+        }}
+        gameFrame++;
+        this.animationFrame = requestAnimationFrame(hurt);
+        
     };
 
     const attack = () => {
