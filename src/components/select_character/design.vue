@@ -1,107 +1,347 @@
 <template>
-    <v-container class="d-flex justify-center align-center" fluid>
-      <v-row justify="center">
-        <!-- Player 1 Card -->
-        <v-col cols="12" lg="6">
-          <v-card
-            :class="{ 'highlight-border': selectedCharacter === 1 }"
-            outlined
-            class="text-center"
-            @click="selectCharacter(1)"
-          >
-            <v-img src="https://cdn.vuetifyjs.com/images/john.jpg" aspect-ratio="1.75" class="mb-2"></v-img>
-            <v-row>
-              <v-col>Character 1</v-col>
-              <v-col>Details</v-col>
+  <div class="csbackground">
+    <v-container>
+      <v-row class="mt-2 align-items-center">
+        <!-- Character Selection -->
+        <v-col cols="12" lg="4" md="6">
+          <v-card class="tilt-card">
+            <h2
+              class="text-uppercase font-weight-bold text-light text-center "
+              
+            >
+              Select Your Character
+            </h2>
+            <v-row no-gutters class="flex-grow-1">
+              <v-col
+                cols="6"
+                class="p-2"
+                :class="{ 'zoom-effect': selectedCharacter === 1 }"
+                outlined
+                @click="selectCharacter(1)"
+              >
+                <v-img
+                  src="../../assets/anim/red.jpg"
+                  alt="Character 1"
+                  class="character-image"
+                  contain
+                ></v-img>
+              </v-col>
+              <v-col
+                cols="6"
+                class="p-2"
+                :class="{ 'zoom-effect': selectedCharacter === 2 }"
+                outlined
+                @click="selectCharacter(2)"
+              >
+                <v-img
+                  src="../../assets/anim/yellow.jpg"
+                  alt="Character 2"
+                  class="character-image"
+                  contain
+                ></v-img>
+              </v-col>
+            </v-row>
+            <v-row no-gutters class="flex-grow-1">
+              <v-col cols="6" class="p-2">
+                <v-img
+                  src="../../assets/anim/lock1.png"
+                  alt="Character 3"
+                  class="character-image"
+                  contain
+                ></v-img>
+              </v-col>
+              <v-col cols="6" class="p-2">
+                <v-img
+                  src="../../assets/anim/lock2.png"
+                  alt="Character 4"
+                  class="character-image"
+                  contain
+                ></v-img>
+              </v-col>
             </v-row>
           </v-card>
         </v-col>
-        
-        <!-- Player 2 Card -->
-        <v-col cols="12" lg="6">
-          <v-card
-            :class="{ 'highlight-border': selectedCharacter === 2 }"
-            outlined
-            class="text-center"
-            @click="selectCharacter(2)"
-          >
-            <v-img src="https://cdn.vuetifyjs.com/images/john.jpg" aspect-ratio="1.75" class="mb-2"></v-img>
-            <v-row>
-              <v-col>Character 2</v-col>
-              <v-col>Details</v-col>
-            </v-row>
-          </v-card>
+
+        <!-- Character Display -->
+        <!-- Character Display -->
+        <!-- Character Display -->
+        <v-col
+          cols="12"
+          lg="5"
+          class="d-none d-lg-flex d-flex justify-content-center character-viewer"
+        >
+          <template v-if="selectedCharacter === 1">
+            <player1/>
+          </template>
+          <template v-else-if="selectedCharacter === 2">
+            <player2mirror />
+          </template>
+          <template v-else>
+            <!-- Show nothing or an empty element -->
+            <div></div>
+          </template>
         </v-col>
-        
-        <v-btn color="grey" to="/">Back</v-btn>
-        <v-btn color="primary" @click="openDialog" class="ml-4">Play</v-btn>
-  
+
+        <!-- Character Stats -->
+        <v-col cols="12" lg="3" md="6">
+          <div>
+            <h2 class="text-uppercase text-center">{{ character.name }}</h2>
+            <h6 class="text-center text-medium-emphasis font-weight-regular">
+              {{ character.role }}
+            </h6>
+
+            <div>
+              <small class="text-uppercase font-weight-medium">Health</small>
+              <v-progress-linear
+                class="mt-2 mb-4"
+                :model-value="character.health"
+                max="100"
+                color="#ffd82b"
+                height="10"
+                rounded
+              >
+              </v-progress-linear>
+
+              <small class="text-uppercase font-weight-medium">Mana</small>
+              <v-progress-linear
+                class="mt-2 mb-4"
+                :model-value="character.mana"
+                max="100"
+                color="#ffd82b"
+                height="10"
+                rounded
+              >
+              </v-progress-linear>
+
+              <small class="text-uppercase font-weight-medium">Agility</small>
+              <v-progress-linear
+                class="mt-2 mb-4"
+                :model-value="character.agility"
+                max="10"
+                color="#ffd82b"
+                height="10"
+                rounded
+              >
+              </v-progress-linear>
+
+              <small class="text-uppercase font-weight-medium">Defense</small>
+              <v-progress-linear
+                class="mt-2 mb-4"
+                :model-value="character.defense"
+                max="10"
+                color="#ffd82b"
+                height="10"
+                rounded
+              >
+              </v-progress-linear>
+
+              <small class="text-uppercase font-weight-medium"
+                >Critical Rate</small
+              >
+              <v-progress-linear
+                class="mt-2 mb-4"
+                :model-value="parseFloat(character.critical_rate)"
+                max="10"
+                color="#ffd82b"
+                height="10"
+                rounded
+              >
+              </v-progress-linear>
+            </div>
+
+            <div class="mt-4">
+              <small class="text-caption">
+                In a world where ancient clans wield elemental powers to protect
+                their land, warriors known as the Guardians of Valor must unite
+                to stop a ruthless warlord from plunging everything into eternal
+                darkness.</small
+              >
+            </div>
+          </div>
+        </v-col>
+
         <!-- Confirmation Dialog -->
-        <v-dialog v-model="dialog" max-width="400">
-          <v-card>
-            <v-card-title class="headline">Confirm Your Choice</v-card-title>
-            <v-card-text>Are you sure you want to proceed with Character {{ selectedCharacter }}?</v-card-text>
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn color="grey" text @click="dialog = false">Cancel</v-btn>
-              <v-btn color="primary" text @click="confirmChoice">Sure</v-btn>
+        <v-dialog
+          v-model="dialog"
+          max-width="400"
+          aria-labelledby="dialog-title"
+          aria-describedby="dialog-description"
+        >
+          <v-card class="game-dialog">
+            <!-- <v-card-title class="headline game-dialog-title" id="dialog-title">
+              Confirm Your Choice
+            </v-card-title> -->
+            <v-card-text class="game-dialog-text" id="dialog-description">
+              Are you sure you want to proceed with
+              <strong>{{ character.name }}</strong
+              >?
+            </v-card-text>
+            <v-card-actions class="game-dialog-actions">
+              <v-btn color="red darken-2" text @click="dialog = false"
+                >Cancel</v-btn
+              >
+              <v-btn color="yellow darken-4" text @click="confirmChoice"
+                >Sure</v-btn
+              >
             </v-card-actions>
           </v-card>
         </v-dialog>
       </v-row>
+
+      <v-row>
+        <v-col class="">
+          <SecBtn to="/" />
+          <PrimeBtn @click="openDialog" class="ml-4" />
+        </v-col>
+      </v-row>
     </v-container>
-  </template>
-  
-  <script setup>
-  import { ref, onMounted, onBeforeUnmount } from 'vue'
-  import { useRouter } from 'vue-router'
-  
-  // Track the selected character
-  const selectedCharacter = ref(1)
-  const dialog = ref(false)
-  const router = useRouter()
-  
-  // Function to change character on mouse click
-  const selectCharacter = (character) => {
-    selectedCharacter.value = character
+  </div>
+</template>
+
+<script setup>
+import { ref, onMounted, onBeforeUnmount, watch } from "vue";
+import { useRouter } from "vue-router";
+import { supabase } from "../../lib/supabase";
+import PrimeBtn from "../button/PrimBtn.vue";
+import SecBtn from "../button/SecBtn.vue";
+
+// Track the selected character
+const selectedCharacter = ref(1);
+const dialog = ref(false);
+const character = ref({});
+const router = useRouter();
+
+// Function to change character on mouse click
+const selectCharacter = (characterId) => {
+  selectedCharacter.value = characterId;
+};
+
+// Function to open confirmation dialog
+const openDialog = () => {
+  dialog.value = true;
+};
+
+// Function to confirm choice and redirect to 'battle_loading'
+// Function to confirm choice and redirect to 'battle_loading'
+const confirmChoice = async () => {
+  localStorage.setItem("selectedCharacter", selectedCharacter.value);
+  console.log(localStorage.getItem("selectedCharacter"));
+
+  // Insert a new battle row into the battles table
+  const { data: battleData, error: battleError } = await supabase
+    .from("battles")
+    .insert({
+      player1_character_id: selectedCharacter.value,
+      player2_character_id: selectedCharacter.value === 1 ? 2 : 1, // Assume player 2 is always the opposite
+      turn_number: 1, // Initialize turn number, can be adjusted later
+    })
+    .select(); // Use .select() to return the inserted row
+
+  if (battleError) {
+    console.error("Error inserting battle:", battleError);
+    return;
   }
-  
-  // Function to open confirmation dialog
-  const openDialog = () => {
-    dialog.value = true
+
+  const battleId = battleData[0].id; // Retrieve the generated battle ID
+  localStorage.setItem("battleId", battleId); // Save the battle ID to localStorage
+  console.log("Battle ID:", battleId);
+
+  dialog.value = false;
+  router.push({ name: "/battle_area" });
+};
+
+// Function to handle keyboard arrow keys
+const handleKeyDown = (event) => {
+  if (event.key === "ArrowLeft") {
+    selectedCharacter.value = Math.max(1, selectedCharacter.value - 1);
+  } else if (event.key === "ArrowRight") {
+    selectedCharacter.value = Math.min(2, selectedCharacter.value + 1);
   }
-  
-  // Function to confirm choice and redirect to 'battle_loading'
-  const confirmChoice = () => {
-    localStorage.setItem('selectedCharacter', selectedCharacter.value)
-    console.log(localStorage.getItem('selectedCharacter'))
-    dialog.value = false
-    router.push({ name: '/battle_area' })
+};
+
+// Fetch character details from Supabase
+const fetchCharacterDetails = async (characterId) => {
+  const { data, error } = await supabase
+    .from("characters")
+    .select("name, role, health, mana, agility, defense, critical_rate")
+    .eq("id", characterId)
+    .single();
+
+  if (error) {
+    console.error("Error fetching character details:", error);
+  } else {
+    character.value = data;
   }
-  
-  // Function to handle keyboard arrow keys
-  const handleKeyDown = (event) => {
-    if (event.key === 'ArrowLeft') {
-      selectedCharacter.value = Math.max(1, selectedCharacter.value - 1)
-    } else if (event.key === 'ArrowRight') {
-      selectedCharacter.value = Math.min(2, selectedCharacter.value + 1)
-    }
-  }
-  
-  // Mount and cleanup event listeners
-  onMounted(() => {
-    window.addEventListener('keydown', handleKeyDown)
-  })
-  onBeforeUnmount(() => {
-    window.removeEventListener('keydown', handleKeyDown)
-  })
-  </script>
-  
-  <style scoped>
-  /* Canvas-like border styling for selected card */
-  .highlight-border {
-    border: 4px solid #ff9d00;
-    transition: border-color 0.3s;
-  }
-  </style>
-  
+};
+
+// Watch for changes in selectedCharacter and fetch details
+watch(selectedCharacter, (newCharacterId) => {
+  fetchCharacterDetails(newCharacterId);
+});
+
+// Mount and cleanup event listeners
+onMounted(() => {
+  window.addEventListener("keydown", handleKeyDown);
+  fetchCharacterDetails(selectedCharacter.value); // Fetch initial character details
+});
+onBeforeUnmount(() => {
+  window.removeEventListener("keydown", handleKeyDown);
+});
+</script>
+
+<style scoped>
+.csbackground {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  background-image: url("../../assets/background/csbg.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.text-shadow {
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.tilt-card {
+  transform: perspective(1000px) rotateY(18deg); /* Adjust the degree as needed */
+  transition: transform 0.3s ease-in-out;
+  background-color: #00000025;
+}
+
+.character-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Ensure the image covers the available space */
+}
+
+/* Zoom effect for selected character */
+.zoom-effect {
+  transform: scale(1.1);
+  transition: transform 0.5s ease-in-out;
+}
+
+/* Dialog styling */
+.v-dialog {
+  transition: opacity 0.3s ease-in-out;
+}
+
+.tempcolor {
+  background-color: #00000025 !important;
+}
+
+.game-dialog {
+  /* background-image: url("/path/to/your/background-image.png"); */
+  background-size: cover;
+  border-radius: 10px;
+  color: #fff;
+}
+
+.game-dialog-actions {
+  justify-content: center;
+}
+/* .character-viewer{
+  position: absolute;
+} */
+</style>
