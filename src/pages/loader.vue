@@ -139,6 +139,13 @@ onMounted(() => {
   width: 80%;
 }
 
+@media (max-width: 768px) {
+  .bottom-loader {
+    bottom: 8rem; /* Elevate it slightly on smaller screens */
+  }
+}
+
+
 .third-text {
   text-align: center;
   color: #151515;
