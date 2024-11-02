@@ -85,7 +85,7 @@ onMounted(() => {
   left: 0;
   width: 100%;
   height: 100vh;
-  background-color: #FCD20E;
+  background-color: #FDD835;
   display: flex;
   flex-direction: column;
   align-items: center;

@@ -27,7 +27,17 @@
         <v-col cols="8" lg="4" sm="4" md="5" class="text-center skip">
           <div @click="openDialog(card91)"  style="cursor: pointer;">
           
-            <v-img src="../../assets/images/charge.png" style="width: 50%;"></v-img>
+            <v-img src="../../assets/images/charge.png" style="width: 40%;"></v-img>
+            <span class="bar">charge mana</span>
+            
+          </div>
+        </v-col>
+        <v-col cols="8" lg="4" sm="4" md="5" class="text-center bag">
+          <div @click="openDialog(card91)"  style="cursor: pointer;">
+          
+            <v-img src="../../assets/images/bag.png" style="width: 40%;"></v-img>
+            <span class="bar">Inventory</span>
+            
           </div>
         </v-col>
       </v-row>
@@ -553,8 +563,41 @@ export default {
   z-index: 99;
 }
 .skip {
-  top: 125%;
+  top: 132%;
   position: fixed;
-  left:125%;
+  left: 133%;
+  
+}
+.bag {
+  top: 132%;
+  position: fixed;
+  left: 118%;
+}
+.bar{
+  position: absolute;
+  left:13%;
+  font-size: 10px;
+ 
+}
+
+@media (max-width: 600px) { 
+  .skip {
+    top: auto; 
+    bottom: -12%;
+    left: 90%; 
+    right: auto; 
+  }
+  .bag {
+    top: auto; 
+    bottom: -12%;
+    left:65%; 
+    right: auto; 
+  }
+  .bar{
+  position: absolute;
+  left: 9%;
+  font-size: 7px;
+ 
+}
 }
 </style>
