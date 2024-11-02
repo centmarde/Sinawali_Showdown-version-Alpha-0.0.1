@@ -290,7 +290,7 @@ onBeforeUnmount(() => {
 .csbackground {
   position: relative;
   width: 100vw;
-  height: 100%;
+  height: 100vh;
   background-image: url("../../assets/background/csbg.png");
   background-size: cover;
   background-position: center;
