@@ -6,9 +6,10 @@ import { supabase } from "../lib/supabase";
 export const useCardStore1 = defineStore("cardStore1", () => {
   const onHandCards = ref([]);
 
-  // Adds a card to onHandCards if there are less than 5 cards in hand
+  // Adds a card to onHandCards if there are less than 5 cards in hand and card.id is not 91
   const addCard = (card) => {
     if (
+      card.id !== 91 && // Prevent card with id 91
       onHandCards.value.length < 5 &&
       !onHandCards.value.some((c) => c.id === card.id)
     ) {
@@ -16,7 +17,7 @@ export const useCardStore1 = defineStore("cardStore1", () => {
     }
   };
 
-  // Fetches a single random card from the database
+  // Fetches a single random card from the database, excluding card.id 91
   const fetchNewCard = async () => {
     try {
       const { data, error } = await supabase.from("cards").select("*");
@@ -24,7 +25,8 @@ export const useCardStore1 = defineStore("cardStore1", () => {
         throw new Error("Error fetching cards:", error);
       }
       const availableCards = data.filter(
-        (card) => !onHandCards.value.some((c) => c.id === card.id)
+        (card) => card.id !== 91 && // Exclude card with id 91
+          !onHandCards.value.some((c) => c.id === card.id)
       );
       if (availableCards.length) {
         const randomCard =

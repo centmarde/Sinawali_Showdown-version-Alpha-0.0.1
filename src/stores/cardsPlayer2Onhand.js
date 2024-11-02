@@ -9,6 +9,7 @@ export const useCardStore2 = defineStore("cardStore2", () => {
   // Adds a card to onHandCards if there are less than 5 cards in hand
   const addCard = (card) => {
     if (
+      card.id !== 91 && 
       onHandCards.value.length < 5 &&
       !onHandCards.value.some((c) => c.id === card.id)
     ) {
@@ -24,7 +25,8 @@ export const useCardStore2 = defineStore("cardStore2", () => {
         throw new Error("Error fetching cards:", error);
       }
       const availableCards = data.filter(
-        (card) => !onHandCards.value.some((c) => c.id === card.id)
+        (card) => card.id !== 91 && // Exclude card with id 91
+          !onHandCards.value.some((c) => c.id === card.id)
       );
       if (availableCards.length) {
         const randomCard =
