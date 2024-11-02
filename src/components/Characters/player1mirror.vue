@@ -15,7 +15,7 @@
 </template>
 
 <script>
-import playerImageSrc from '@/assets/anim/man1base.png'; // Import Player 1's sprite image
+import playerImageSrc from '@/assets/anim/man1.png'; // Import Player 1's sprite image
 
 export default {
   data() {
@@ -69,18 +69,37 @@ export default {
       cancelAnimationFrame(this.animationFrame);
       frameY = 5;
       drawPlayer();
-      if (gameFrame % 30 === 0) frameX = frameX < 4 ? frameX + 1 : 0;
+      if (gameFrame % 30 === 0) {
+        frameX = frameX < 4 ? frameX + 1 : 0;
+
+        // End buff animation cycle if it reaches the last frame
+        if (frameX === 0) {
+          this.buffActive = false; // Deactivate buff
+          idle(); // Return to idle animation
+          return;
+        }
+      }
+
       gameFrame++;
       this.animationFrame = requestAnimationFrame(buff);
     };
 
-    const hurt = () => {
-      cancelAnimationFrame(this.animationFrame);
-      frameY = 4;
+    const hurtAnimation = (animationFrameY) => {
+      if (!this.hurtActive) return; // Stop if hurt is no longer active
+
+      ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+      frameY = animationFrameY;
       drawPlayer();
-      if (gameFrame % 70 === 0) frameX = frameX < 1 ? frameX + 1 : 0;
+      if (gameFrame % 70 === 0) {
+        frameX = frameX < 1 ? frameX + 1 : 0;
+        if (frameX === 0) {
+          this.hurtActive = false; // Deactivate hurt
+          idle(); // Return to idle animation
+          return;
+        }
+      }
       gameFrame++;
-      this.animationFrame = requestAnimationFrame(hurt);
+      this.animationFrame = requestAnimationFrame(() => hurtAnimation(animationFrameY));
     };
 
     const attack = () => {
@@ -109,7 +128,22 @@ export default {
     this.toggleHurt = () => {
       cancelAnimationFrame(this.animationFrame);
       frameX = 0;
-      hurt();
+      this.hurtActive = true; // Set hurt active flag
+      hurtAnimation(4);
+    };
+
+    this.toggleHurtInjured = () => {
+      cancelAnimationFrame(this.animationFrame);
+      frameX = 0;
+      this.hurtActive = true; // Set hurt active flag
+      hurtAnimation(6.1); // Call for injured animation
+    };
+
+    this.toggleHurtSkinDamage = () => {
+      cancelAnimationFrame(this.animationFrame);
+      frameX = 0;
+      this.hurtActive = true; // Set hurt active flag
+      hurtAnimation(7.1); // Call for skin damage animation
     };
 
     this.toggleBuff = () => {
@@ -134,7 +168,7 @@ export default {
 }
 
 #canvas {
-  margin-top: 18rem;
+  margin-top: 15rem;
   width: 13rem;
   transition: transform 0.5s ease;
 }
@@ -147,17 +181,32 @@ export default {
   .moveLeft {
     transform: translateX(-400px);
   }
+   #canvas {
+  margin-top: 23rem;
+  width: 13rem;
+  transition: transform 0.5s ease;
+  }
 }
 
 @media (max-width: 768px) {
   .moveLeft {
     transform: translateX(-200px);
   }
+  #canvas {
+  margin-top: 23rem;
+  width: 13rem;
+  transition: transform 0.5s ease;
+  }
 }
 
 @media (max-width: 480px) {
   .moveLeft {
     transform: translateX(-100px);
+  }
+  #canvas {
+  margin-top: 23rem;
+  width: 13rem;
+  transition: transform 0.5s ease;
   }
 }
 

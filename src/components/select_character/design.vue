@@ -208,12 +208,34 @@ const openDialog = () => {
 };
 
 // Function to confirm choice and redirect to 'battle_loading'
-const confirmChoice = () => {
+// Function to confirm choice and redirect to 'battle_loading'
+const confirmChoice = async () => {
   localStorage.setItem("selectedCharacter", selectedCharacter.value);
   console.log(localStorage.getItem("selectedCharacter"));
+  
+  // Insert a new battle row into the battles table
+  const { data: battleData, error: battleError } = await supabase
+    .from("battles")
+    .insert({
+      player1_character_id: selectedCharacter.value,
+      player2_character_id: selectedCharacter.value === 1 ? 2 : 1, // Assume player 2 is always the opposite
+      turn_number: 1 // Initialize turn number, can be adjusted later
+    })
+    .select(); // Use .select() to return the inserted row
+
+  if (battleError) {
+    console.error("Error inserting battle:", battleError);
+    return;
+  }
+
+  const battleId = battleData[0].id; // Retrieve the generated battle ID
+  localStorage.setItem("battleId", battleId); // Save the battle ID to localStorage
+  console.log("Battle ID:", battleId);
+
   dialog.value = false;
   router.push({ name: "/battle_area" });
 };
+
 
 // Function to handle keyboard arrow keys
 const handleKeyDown = (event) => {

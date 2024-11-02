@@ -2,27 +2,22 @@
   <div class="canvas-container">
     <!-- Canvas for Player 1's animations, toggles moveLeft class based on isattack state -->
     <canvas id="canvas" ref="canvas1" :class="{ moveLeft: isattack }"></canvas>
-    <v-row>
-      <v-col class="d-flex justify-content-center">
-       
-        <!-- <button @click="toggleAttack">{{ isattack ? 'Switch to Idle' : 'Attack' }}</button>
-      
-        <button @click="toggleHurt">Hurt</button>
-       
-        <button @click="toggleBuff">Buff</button> -->
-      </v-col>
-    </v-row>
+   <!--  <button @click="toggleHurtInjured">Hurt (Injured)</button>
+        <button @click="toggleHurtSkinDamage">Hurt (Skin Damage)</button>
+        <button @click="toggleBuff">Buff</button>   -->
   </div>
 </template>
 
 <script>
-import playerImageSrc from '@/assets/anim/man1base.png'; // Import Player 1's sprite image
+import playerImageSrc from '@/assets/anim/man1.png';
 
 export default {
   data() {
     return {
-      isattack: false, // State to track if player is attacking
-      animationFrame: null, // Reference for the animation frame ID
+      isattack: false,
+      animationFrame: null,
+      buffActive: false, // Flag for buff animation
+      hurtActive: false, // Flag for hurt animation
     };
   },
   mounted() {
@@ -40,9 +35,8 @@ export default {
     let gameFrame = 0;
     const staggerFrames = 10;
 
-    const idle = () => {
+    const drawPlayer = () => {
       ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-      frameY = 0;
       ctx.drawImage(
         playerImage,
         frameX * spriteWidth,
@@ -54,67 +48,59 @@ export default {
         spriteWidth,
         spriteHeight
       );
+    };
+
+    const idle = () => {
+      frameY = 0;
+      drawPlayer();
       if (gameFrame % staggerFrames === 0) frameX = frameX < 3 ? frameX + 1 : 0;
       gameFrame++;
       this.animationFrame = requestAnimationFrame(idle);
     };
 
     const buff = () => {
-      cancelAnimationFrame(this.animationFrame);
+      if (!this.buffActive) return; // Stop if buff is no longer active
 
-      ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
       frameY = 5;
-      ctx.drawImage(
-        playerImage,
-        frameX * spriteWidth,
-        frameY * spriteHeight,
-        spriteWidth,
-        spriteHeight,
-        CANVAS_WIDTH / 2 - spriteWidth / 2,
-        CANVAS_HEIGHT / 2 - spriteHeight / 2,
-        spriteWidth,
-        spriteHeight
-      );
-      if (gameFrame % 30 === 0) frameX = frameX < 4 ? frameX + 1 : 0;
+      drawPlayer();
+      if (gameFrame % 30 === 0) {
+        frameX = frameX < 4 ? frameX + 1 : 0;
+
+        // End buff animation cycle if it reaches the last frame
+        if (frameX === 0) {
+          this.buffActive = false; // Deactivate buff
+          idle(); // Return to idle animation
+          return;
+        }
+      }
+
       gameFrame++;
       this.animationFrame = requestAnimationFrame(buff);
     };
 
-    const hurt = () => {
-      cancelAnimationFrame(this.animationFrame);
+    const hurtAnimation = (animationFrameY) => {
+      if (!this.hurtActive) return; // Stop if hurt is no longer active
 
-      ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-      frameY = 4;
-      ctx.drawImage(
-        playerImage,
-        frameX * spriteWidth,
-        frameY * spriteHeight,
-        spriteWidth,
-        spriteHeight,
-        CANVAS_WIDTH / 2 - spriteWidth / 2,
-        CANVAS_HEIGHT / 2 - spriteHeight / 2,
-        spriteWidth,
-        spriteHeight
-      );
-      if (gameFrame % 70 === 0) frameX = frameX < 1 ? frameX + 1 : 0;
+      frameY = animationFrameY;
+      drawPlayer();
+      if (gameFrame % 70 === 0) {
+        frameX = frameX < 1 ? frameX + 1 : 0;
+        // End hurt animation cycle if it reaches the last frame
+        if (frameX === 0) {
+          this.hurtActive = false; // Deactivate hurt
+          idle(); // Return to idle animation
+          return;
+        }
+      }
       gameFrame++;
-      this.animationFrame = requestAnimationFrame(hurt);
+      this.animationFrame = requestAnimationFrame(() => hurtAnimation(animationFrameY));
     };
 
     const attack = () => {
-      ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+      if (!this.isattack) return; // Stop if not attacking
+
       frameY = 2;
-      ctx.drawImage(
-        playerImage,
-        frameX * spriteWidth,
-        frameY * spriteHeight,
-        spriteWidth,
-        spriteHeight,
-        CANVAS_WIDTH / 2 - spriteWidth / 2,
-        CANVAS_HEIGHT / 2 - spriteHeight / 2,
-        spriteWidth,
-        spriteHeight
-      );
+      drawPlayer();
       if (gameFrame % staggerFrames === 0) frameX = frameX < 7 ? frameX + 1 : 0;
       gameFrame++;
       if (frameX < 7) {
@@ -138,12 +124,28 @@ export default {
     this.toggleHurt = () => {
       cancelAnimationFrame(this.animationFrame);
       frameX = 0;
-      hurt();
+      this.hurtActive = true; // Set hurt active flag
+      hurtAnimation(4); // Call for default hurt animation
+    };
+
+    this.toggleHurtInjured = () => {
+      cancelAnimationFrame(this.animationFrame);
+      frameX = 0;
+      this.hurtActive = true; // Set hurt active flag
+      hurtAnimation(6.1); // Call for injured animation
+    };
+
+    this.toggleHurtSkinDamage = () => {
+      cancelAnimationFrame(this.animationFrame);
+      frameX = 0;
+      this.hurtActive = true; // Set hurt active flag
+      hurtAnimation(7.1); // Call for skin damage animation
     };
 
     this.toggleBuff = () => {
       cancelAnimationFrame(this.animationFrame);
       frameX = 0;
+      this.buffActive = true; // Set buff active flag
       buff();
     };
 
@@ -163,7 +165,7 @@ export default {
 }
 
 #canvas {
-  margin-top: 18rem;
+  margin-top: 15rem;
   width: 13rem;
   transition: transform 0.5s ease;
 }
@@ -176,17 +178,32 @@ export default {
   .moveLeft {
     transform: translateX(400px);
   }
+  #canvas {
+    margin-top: 23rem;
+    width: 13rem;
+    transition: transform 0.5s ease;
+  }
 }
 
 @media (max-width: 768px) {
   .moveLeft {
     transform: translateX(200px);
   }
+  #canvas {
+    margin-top: 23rem;
+    width: 13rem;
+    transition: transform 0.5s ease;
+  }
 }
 
 @media (max-width: 480px) {
   .moveLeft {
     transform: translateX(100px);
+  }
+  #canvas {
+    margin-top: 23rem;
+    width: 13rem;
+    transition: transform 0.5s ease;
   }
 }
 

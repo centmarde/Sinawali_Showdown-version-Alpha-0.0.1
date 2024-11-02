@@ -264,11 +264,27 @@ export default {
         }
 
       
-
-        setTimeout(() => {
+  
+        if (selectedCard.value.is_burn > 0) {
+    alert("Burn effect triggered");
+    setTimeout(() => {
+        player_variant1Ref.value?.toggleHurtInjured();
+        player1Ref.value?.toggleHurtInjured(); 
+    }, 300);
+} else if (selectedCard.value.is_poison > 0) {
+    alert("Poison effect triggered"); // Changed alert message for clarity
+    setTimeout(() => {
+        player_variant1Ref.value?.toggleHurtSkinDamage();
+        player1Ref.value?.toggleHurtSkinDamage(); 
+    }, 300);
+} else {
+    player_variant1Ref.value?.toggleHurt();
+    player1Ref.value?.toggleHurt();
+}
+       /*  setTimeout(() => {
           player_variant1Ref.value?.toggleHurt();
           player1Ref.value?.toggleHurt();
-        }, 300);
+        }, 300); */
        
         closeDialog();
         await new Promise((resolve) => setTimeout(resolve, 500));
@@ -439,7 +455,7 @@ export default {
   overflow: hidden;
   width: 100vw;
   height: 100vh;
-  background-image: url("../../assets/background/bg.png");
+  background-image: url("../../assets/background/bg.gif");
   background-size: cover;
   background-position: bottom;
   background-repeat: no-repeat;
@@ -447,8 +463,14 @@ export default {
 
 .bg1 {
   position: relative;
-  z-index: 2;
-  color: white;
+  overflow: hidden;
+  width: 100vw;
+  height: 100vh;
+  background-image: url("../../assets/background/sr.gif");
+  background-size: cover;
+  background-position: bottom;
+  background-repeat: no-repeat;
+  z-index: 9;
 }
 
 .fill-height {

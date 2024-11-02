@@ -1,14 +1,12 @@
 <template>
   <div class="canvas-container">
-    <!-- Canvas for Player 1's animations, toggles moveLeft class based on isattack state -->
+    <!-- Canvas for Player 2's animations, toggles moveLeft class based on isattack state -->
     <canvas id="canvas" ref="canvas1" :class="{ moveLeft: isattack }"></canvas>
     <v-row>
       <v-col class="d-flex justify-content-center">
-       
-        <!-- <button @click="toggleAttack">{{ isattack ? 'Switch to Idle' : 'Attack' }}</button>
-      
-        <button @click="toggleHurt">Hurt</button>
-       
+       <!--  <button @click="toggleAttack">{{ isattack ? 'Switch to Idle' : 'Attack' }}</button>
+        <button @click="toggleHurtInjured">Hurt (Injured)</button>
+        <button @click="toggleHurtSkinDamage">Hurt (Skin Damage)</button>
         <button @click="toggleBuff">Buff</button> -->
       </v-col>
     </v-row>
@@ -16,13 +14,15 @@
 </template>
 
 <script>
-import playerImageSrc from '@/assets/anim/man2.png'; // Import Player 1's sprite image
+import playerImageSrc from '@/assets/anim/man2.png';
 
 export default {
   data() {
     return {
-      isattack: false, // State to track if player is attacking
-      animationFrame: null, // Reference for the animation frame ID
+      isattack: false,
+      animationFrame: null,
+      buffActive: false,
+      hurtActive: false,
     };
   },
   mounted() {
@@ -60,10 +60,10 @@ export default {
     };
 
     const buff = () => {
-      cancelAnimationFrame(this.animationFrame);
+      if (!this.buffActive) return;
 
       ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-      frameY = 5;
+      frameY = 5; // Buff animation frame
       ctx.drawImage(
         playerImage,
         frameX * spriteWidth,
@@ -75,16 +75,26 @@ export default {
         spriteWidth,
         spriteHeight
       );
-      if (gameFrame % 30 === 0) frameX = frameX < 4 ? frameX + 1 : 0;
+      if (gameFrame % 30 === 0) {
+        frameX = frameX < 4 ? frameX + 1 : 0;
+
+        // End buff animation cycle
+        if (frameX === 0) {
+          this.buffActive = false;
+          idle(); 
+          return;
+        }
+      }
+
       gameFrame++;
       this.animationFrame = requestAnimationFrame(buff);
     };
 
-    const hurt = () => {
-      cancelAnimationFrame(this.animationFrame);
+    const hurtAnimation = (animationFrameY) => {
+      if (!this.hurtActive) return;
 
       ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-      frameY = 4;
+      frameY = animationFrameY; // Use specified animation frame for hurt
       ctx.drawImage(
         playerImage,
         frameX * spriteWidth,
@@ -96,14 +106,21 @@ export default {
         spriteWidth,
         spriteHeight
       );
-      if (gameFrame % 70 === 0) frameX = frameX < 1 ? frameX + 1 : 0;
+      if (gameFrame % 70 === 0) {
+        frameX = frameX < 1 ? frameX + 1 : 0;
+        if (frameX === 0) {
+          this.hurtActive = false;
+          idle(); 
+          return;
+        }
+      }
       gameFrame++;
-      this.animationFrame = requestAnimationFrame(hurt);
+      this.animationFrame = requestAnimationFrame(() => hurtAnimation(animationFrameY));
     };
 
     const attack = () => {
       ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-      frameY = 2;
+      frameY = 2; // Attack animation frame
       ctx.drawImage(
         playerImage,
         frameX * spriteWidth,
@@ -138,12 +155,28 @@ export default {
     this.toggleHurt = () => {
       cancelAnimationFrame(this.animationFrame);
       frameX = 0;
-      hurt();
+      this.hurtActive = true; 
+      hurtAnimation(4); // Call with appropriate frame for hurt
+    };
+    
+    this.toggleHurtInjured = () => {
+      cancelAnimationFrame(this.animationFrame);
+      frameX = 0;
+      this.hurtActive = true; 
+      hurtAnimation(6.1);
+    };
+
+    this.toggleHurtSkinDamage = () => {
+      cancelAnimationFrame(this.animationFrame);
+      frameX = 0;
+      this.hurtActive = true; 
+      hurtAnimation(7.1);
     };
 
     this.toggleBuff = () => {
       cancelAnimationFrame(this.animationFrame);
       frameX = 0;
+      this.buffActive = true; 
       buff();
     };
 
@@ -163,7 +196,7 @@ export default {
 }
 
 #canvas {
-  margin-top: 18rem;
+  margin-top: 15rem;
   width: 13rem;
   transition: transform 0.5s ease;
 }
@@ -172,9 +205,21 @@ export default {
   transform: translateX(600px);
 }
 
+@media (max-width: 1524px) {
+  #canvas {
+    width: 13rem;
+    transition: transform 0.5s ease;
+  }
+}
+
 @media (max-width: 1024px) {
   .moveLeft {
     transform: translateX(400px);
+  }
+  #canvas {
+    margin-top: 23rem;
+    width: 13rem;
+    transition: transform 0.5s ease;
   }
 }
 
@@ -182,11 +227,21 @@ export default {
   .moveLeft {
     transform: translateX(200px);
   }
+  #canvas {
+    margin-top: 23rem;
+    width: 13rem;
+    transition: transform 0.5s ease;
+  }
 }
 
 @media (max-width: 480px) {
   .moveLeft {
     transform: translateX(100px);
+  }
+  #canvas {
+    margin-top: 23rem;
+    width: 13rem;
+    transition: transform 0.5s ease;
   }
 }
 
