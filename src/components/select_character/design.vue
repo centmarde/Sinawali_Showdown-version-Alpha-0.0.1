@@ -62,9 +62,6 @@
           </v-card>
         </v-col>
 
-        <!-- Character Display -->
-        <!-- Character Display -->
-        <!-- Character Display -->
         <v-col
           cols="12"
           lg="5"
@@ -83,7 +80,7 @@
         </v-col>
 
         <!-- Character Stats -->
-        <v-col cols="12" lg="3" md="6">
+        <v-col cols="12" lg="3" md="6" class="details">
           <div>
             <h2 class="text-uppercase text-center">{{ character.name }}</h2>
             <h6 class="text-center text-medium-emphasis font-weight-regular">
@@ -189,7 +186,7 @@
       </v-row>
 
       <v-row>
-        <v-col class="">
+        <v-col class="btns">
           <SecBtn to="/" />
           <PrimeBtn @click="openDialog" class="ml-4" />
         </v-col>
@@ -308,6 +305,7 @@ onBeforeUnmount(() => {
   transform: perspective(1000px) rotateY(18deg); /* Adjust the degree as needed */
   transition: transform 0.3s ease-in-out;
   background-color: #00000025;
+  z-index: 999;
 }
 
 .character-image {
@@ -341,7 +339,37 @@ onBeforeUnmount(() => {
 .game-dialog-actions {
   justify-content: center;
 }
-/* .character-viewer{
-  position: absolute;
-} */
+@media (max-width: 768px) {
+  .character-viewer {
+    position: absolute;
+    bottom: 60px; 
+    background-image: url("../../assets/background/csbg.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  }
+
+  .details {
+    position: relative;
+    z-index: 1;
+    top:18rem;
+    font-size: 0.8rem; 
+    background-color: #151515;
+  }
+  .csbackground {
+    height: 100vh; 
+    overflow-x: hidden;
+    background-image: url("../../assets/background/sr.gif");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  
+  }
+  .btns{
+    position: absolute;
+    bottom: 50px; 
+    left: 2.5rem;
+  }
+}
+
 </style>

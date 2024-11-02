@@ -85,7 +85,7 @@ onMounted(() => {
   left: 0;
   width: 100%;
   height: 100vh;
-  background-color: #FCD20E;
+  background-color: #FDD835;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -138,6 +138,13 @@ onMounted(() => {
   bottom: 20px;
   width: 80%;
 }
+
+@media (max-width: 768px) {
+  .bottom-loader {
+    bottom: 8rem; /* Elevate it slightly on smaller screens */
+  }
+}
+
 
 .third-text {
   text-align: center;
