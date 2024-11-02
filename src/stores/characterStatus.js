@@ -70,9 +70,6 @@ export const useCharacterStatusStore = defineStore("characterStatus", {
         // Decrement turn count for each effect and remove expired ones
         effect.turn_count -= 1;
         if (effect.turn_count <= 0) {
-          console.log(
-            `Effect with ID ${effect.id} has finished and will be removed.`
-          );
           this.removeEffect(effect); // Remove expired effects
         }
       });
@@ -80,11 +77,6 @@ export const useCharacterStatusStore = defineStore("characterStatus", {
       // Apply the cumulative debuffs to character stats
       character.defense -= cumulativeDefDebuff;
       character.agility -= cumulativeAgilDebuff;
-
-      console.log("Final applied debuffs for this turn:", {
-        defenseDebuff: cumulativeDefDebuff,
-        agilityDebuff: cumulativeAgilDebuff,
-      });
 
       // Update character stats in the database
       await this.updateCharacter(characterId, character);

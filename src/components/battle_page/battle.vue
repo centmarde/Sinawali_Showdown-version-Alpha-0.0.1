@@ -183,6 +183,7 @@ export default {
       dialog.value = false;
       // Trigger attack animation only if the selected card is of type "attack"
       if (selectedCard.value && selectedCard.value.type === "attack") {
+
         player1Ref.value?.toggleAttack();
         player_variant1Ref.value?.toggleAttack();
         // Fetch card effects from Supabase
@@ -259,11 +260,24 @@ export default {
         // Trigger Player1's attack animations
        
 
-        // Trigger hurt animation for Player2 after a short delay
-        setTimeout(() => {
-          player_variant2Ref.value?.toggleHurt();
-          player2Ref.value?.toggleHurt();
-        }, 300);
+       
+        if (selectedCard.value.is_burn > 0) {
+    alert("Burn effect triggered");
+    setTimeout(() => {
+        player_variant2Ref.value?.toggleHurtInjured();
+        player2Ref.value?.toggleHurtInjured(); 
+    }, 300);
+} else if (selectedCard.value.is_poison > 0) {
+    alert("Poison effect triggered"); // Changed alert message for clarity
+    setTimeout(() => {
+        player_variant2Ref.value?.toggleHurtSkinDamage();
+        player2Ref.value?.toggleHurtSkinDamage(); 
+    }, 300);
+} else {
+    player_variant2Ref.value?.toggleHurt();
+    player2Ref.value?.toggleHurt();
+}
+
 
         // Close dialog immediately after triggering animations
         closeDialog();
