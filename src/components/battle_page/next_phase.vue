@@ -3,13 +3,14 @@
   <div class="floating-card-container">
     <v-container v-if="showCards">
       <v-row class="d-flex justify-center">
+        <!-- Loop through onHandCards for all cards -->
         <v-col
-         v-for="(card, index) in onHandCards"
-         :key="card.id"
-          cols="12"
-          lg="2"
-          sm="2"
-          md="2"
+          v-for="(card, index) in onHandCards"
+          :key="card.id"
+          cols="8"
+          lg="4"
+          sm="4"
+          md="5"
           class="text-center"
         >
           <v-card class="hoverable-card" @click="openDialog(card)">
@@ -18,6 +19,16 @@
             <v-card-subtitle>Power: {{ card.power }}</v-card-subtitle>
             <v-card-subtitle>Mana Cost: {{ card.mana_cost }}</v-card-subtitle>
           </v-card>
+        </v-col>
+      </v-row>
+
+      <!-- Separate section for the card with id = 91 -->
+      <v-row class="d-flex justify-center" v-if="card91">
+        <v-col cols="8" lg="4" sm="4" md="5" class="text-center skip">
+          <div @click="openDialog(card91)"  style="cursor: pointer;">
+          
+            <v-img src="../../assets/images/charge.png" style="width: 50%;"></v-img>
+          </div>
         </v-col>
       </v-row>
     </v-container>
@@ -120,6 +131,7 @@ export default {
     const messageText = ref("");
     const selectedCard = ref(null);
     const cards = ref([]);
+    const card91 = ref(null);
     const player2Ref = ref(null);
     const player1Ref = ref(null);
     const player_variant2Ref = ref(null);
@@ -128,24 +140,43 @@ export default {
   
 
     const fetchRandomCards = async () => {
-      const { data, error } = await supabase
-        .from("cards")
-        .select("*");
+      const { data, error } = await supabase.from("cards").select("*");
 
       if (error) {
         console.error("Error fetching cards:", error);
       } else {
-        const shuffledCards = data.sort(() => 0.5 - Math.random());
+        // Filter out the card with ID 91
+        const filteredCards = data.filter((card) => card.id !== 91);
+        const shuffledCards = filteredCards.sort(() => 0.5 - Math.random());
         cards.value = shuffledCards.slice(0, 5);
-        
+
         if (onHandCards.length === 0) {
           onHandCards.push(...cards.value.slice(0, 5));
         }
       }
     };
     
+    const fetchCard91 = async () => {
+      const { data, error } = await supabase
+        .from("cards")
+        .select("*")
+        .eq("id", 91)
+        .single(); // Use single to fetch only one card
+
+      if (error) {
+        console.error("Error fetching card 91:", error);
+      } else {
+        card91.value = data; // Set card91 with the fetched card data
+      }
+    };
+
+    const filteredOnHandCards = computed(() => {
+      return onHandCards.filter((card) => card.id !== 91);
+    });
+
     onMounted(async () => {
       await fetchRandomCards();
+      await fetchCard91(); // Fetch card 91 separately
     });
 
 
@@ -266,13 +297,13 @@ export default {
       
   
         if (selectedCard.value.is_burn > 0) {
-    alert("Burn effect triggered");
+   showMessage("Burn effect triggered");
     setTimeout(() => {
         player_variant1Ref.value?.toggleHurtInjured();
         player1Ref.value?.toggleHurtInjured(); 
     }, 300);
 } else if (selectedCard.value.is_poison > 0) {
-    alert("Poison effect triggered"); // Changed alert message for clarity
+    showMessage("Poison effect triggered"); // Changed alert message for clarity
     setTimeout(() => {
         player_variant1Ref.value?.toggleHurtSkinDamage();
         player1Ref.value?.toggleHurtSkinDamage(); 
@@ -425,6 +456,7 @@ export default {
     };
 
     return {
+      card91,
       showCards,
       cards,
       dialog,
@@ -443,6 +475,7 @@ export default {
       closeMessageDialog,
       player_variant1Ref,
       onHandCards,
+      filteredOnHandCards,
     };
   },
 };
@@ -485,12 +518,11 @@ export default {
 .floating-card-container {
   position: fixed;
   z-index: 99;
-  top: 10%;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  transform: none;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   transition: all 0.3s ease;
+  width: auto;
 }
 
 
@@ -519,5 +551,10 @@ export default {
   position: fixed;
   top: 30px;
   z-index: 99;
+}
+.skip {
+  top: 125%;
+  position: fixed;
+  left:125%;
 }
 </style>

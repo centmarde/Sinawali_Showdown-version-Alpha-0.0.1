@@ -80,7 +80,7 @@
   }
   .timer {
   position: fixed;
-  top: 10px; /* Adjust this value to position the timer slightly away from the top */
+  top: 20px; /* Adjust this value to position the timer slightly away from the top */
   left: 50%;
   transform: translateX(-50%);
   z-index: 1000; /* Ensure it stays on top */
