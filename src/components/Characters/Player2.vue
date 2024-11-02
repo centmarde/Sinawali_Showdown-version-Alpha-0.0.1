@@ -183,11 +183,21 @@ export default {
   .moveLeft {
     transform: translateX(-200px);
   }
+  #canvas {
+    margin-top: 23rem;
+    width: 13rem;
+    transition: transform 0.5s ease;
+  }
 }
 
 @media (max-width: 480px) {
   .moveLeft {
     transform: translateX(-100px);
+  }
+  #canvas {
+    margin-top: 23rem;
+    width: 13rem;
+    transition: transform 0.5s ease;
   }
 }
 

@@ -1,18 +1,16 @@
 <template>
   <div class="csbackground">
     <v-container>
-      <v-row class="my-2">
-        <v-col cols="12" lg="12">
-          <h2 class="text-uppercase font-weight-bold text-grey-darken-4">
-            Select Your Character
-          </h2>
-        </v-col>
-      </v-row>
-
       <v-row class="mt-2 align-items-center">
         <!-- Character Selection -->
         <v-col cols="12" lg="4" md="6">
           <v-card class="tilt-card">
+            <h2
+              class="text-uppercase font-weight-bold text-light text-center "
+              
+            >
+              Select Your Character
+            </h2>
             <v-row no-gutters class="flex-grow-1">
               <v-col
                 cols="6"
@@ -22,7 +20,7 @@
                 @click="selectCharacter(1)"
               >
                 <v-img
-                  src="https://via.placeholder.com/150"
+                  src="../../assets/anim/red.jpg"
                   alt="Character 1"
                   class="character-image"
                   contain
@@ -36,7 +34,7 @@
                 @click="selectCharacter(2)"
               >
                 <v-img
-                  src="https://via.placeholder.com/150"
+                  src="../../assets/anim/yellow.jpg"
                   alt="Character 2"
                   class="character-image"
                   contain
@@ -46,7 +44,7 @@
             <v-row no-gutters class="flex-grow-1">
               <v-col cols="6" class="p-2">
                 <v-img
-                  src="https://via.placeholder.com/150"
+                  src="../../assets/anim/lock1.png"
                   alt="Character 3"
                   class="character-image"
                   contain
@@ -54,7 +52,7 @@
               </v-col>
               <v-col cols="6" class="p-2">
                 <v-img
-                  src="https://via.placeholder.com/150"
+                  src="../../assets/anim/lock2.png"
                   alt="Character 4"
                   class="character-image"
                   contain
@@ -65,7 +63,24 @@
         </v-col>
 
         <!-- Character Display -->
-        <v-col cols="12" lg="5" class="d-none d-lg-flex"></v-col>
+        <!-- Character Display -->
+        <!-- Character Display -->
+        <v-col
+          cols="12"
+          lg="5"
+          class="d-none d-lg-flex d-flex justify-content-center character-viewer"
+        >
+          <template v-if="selectedCharacter === 1">
+            <player1/>
+          </template>
+          <template v-else-if="selectedCharacter === 2">
+            <player2mirror />
+          </template>
+          <template v-else>
+            <!-- Show nothing or an empty element -->
+            <div></div>
+          </template>
+        </v-col>
 
         <!-- Character Stats -->
         <v-col cols="12" lg="3" md="6">
@@ -102,7 +117,7 @@
               <v-progress-linear
                 class="mt-2 mb-4"
                 :model-value="character.agility"
-                max="15"
+                max="10"
                 color="#ffd82b"
                 height="10"
                 rounded
@@ -113,7 +128,7 @@
               <v-progress-linear
                 class="mt-2 mb-4"
                 :model-value="character.defense"
-                max="100"
+                max="10"
                 color="#ffd82b"
                 height="10"
                 rounded
@@ -126,7 +141,7 @@
               <v-progress-linear
                 class="mt-2 mb-4"
                 :model-value="parseFloat(character.critical_rate)"
-                max="150"
+                max="10"
                 color="#ffd82b"
                 height="10"
                 rounded
@@ -162,7 +177,6 @@
               >?
             </v-card-text>
             <v-card-actions class="game-dialog-actions">
-              <v-spacer></v-spacer>
               <v-btn color="red darken-2" text @click="dialog = false"
                 >Cancel</v-btn
               >
@@ -212,14 +226,14 @@ const openDialog = () => {
 const confirmChoice = async () => {
   localStorage.setItem("selectedCharacter", selectedCharacter.value);
   console.log(localStorage.getItem("selectedCharacter"));
-  
+
   // Insert a new battle row into the battles table
   const { data: battleData, error: battleError } = await supabase
     .from("battles")
     .insert({
       player1_character_id: selectedCharacter.value,
       player2_character_id: selectedCharacter.value === 1 ? 2 : 1, // Assume player 2 is always the opposite
-      turn_number: 1 // Initialize turn number, can be adjusted later
+      turn_number: 1, // Initialize turn number, can be adjusted later
     })
     .select(); // Use .select() to return the inserted row
 
@@ -235,7 +249,6 @@ const confirmChoice = async () => {
   dialog.value = false;
   router.push({ name: "/battle_area" });
 };
-
 
 // Function to handle keyboard arrow keys
 const handleKeyDown = (event) => {
@@ -279,7 +292,6 @@ onBeforeUnmount(() => {
 <style scoped>
 .csbackground {
   position: relative;
-  overflow: hidden;
   width: 100vw;
   height: 100vh;
   background-image: url("../../assets/background/csbg.png");
@@ -329,4 +341,7 @@ onBeforeUnmount(() => {
 .game-dialog-actions {
   justify-content: center;
 }
+/* .character-viewer{
+  position: absolute;
+} */
 </style>

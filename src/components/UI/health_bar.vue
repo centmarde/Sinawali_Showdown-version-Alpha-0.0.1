@@ -15,9 +15,22 @@
             {{ maxHealth }}
           </span>
         </v-progress-linear>
+        <!-- Player 1 Mana Bar -->
+        <v-progress-linear
+          class="player1-mana"
+          v-model="currentPlayerMana"
+          :buffer-value="maxMana"
+          height="20"
+          rounded
+          color="light-blue"
+        >
+          <span style="color: aliceblue">
+            {{ selectedChar === "1" ? player1.mana : player2.mana }} / {{ maxMana }}
+          </span>
+        </v-progress-linear>
       </v-col>
       <v-col cols="2" lg="2">
-         <!-- <timer/> -->
+        <timer/>
       </v-col>
       <!-- Player 2 Health Bar -->
       <v-col cols="5">
@@ -34,22 +47,36 @@
             {{ maxHealth }}
           </span>
         </v-progress-linear>
+        <!-- Player 2 Mana Bar -->
+        <v-progress-linear
+          class="player2-mana"
+          v-model="currentPlayer2Mana"
+          :buffer-value="maxMana"
+          height="20"
+          rounded
+          reverse
+          color="light-blue"
+        >
+          <span style="color: aliceblue">
+            {{ selectedChar === "2" ? player1.mana : player2.mana }} / {{ maxMana }}
+          </span>
+        </v-progress-linear>
       </v-col>
     </v-row>
   </v-container>
 </template>
 
 <script>
-import { computed, onMounted, watch } from "vue";
-import timer from "./timer.vue";
+import { computed, onMounted } from "vue";
 import { supabase } from "../../lib/supabase";
 import { usePlayerStore } from "../../stores/healtbar";
 
 export default {
   setup() {
     const playerStore = usePlayerStore();
-    const { player1, player2 } = playerStore;
+    const { player1, player2, updatePlayerMana, updatePlayerHealth } = playerStore;
     const maxHealth = 100;
+    const maxMana = 100;
     const selectedChar = localStorage.getItem("selectedCharacter");
 
     // Computed properties for dynamic health values
@@ -61,22 +88,37 @@ export default {
       return selectedChar === "1" ? player2.health : player1.health;
     });
 
+    // Computed properties for dynamic mana values
+    const currentPlayerMana = computed(() => {
+      return selectedChar === "1" ? player1.mana : player2.mana;
+    });
+
+    const currentPlayer2Mana = computed(() => {
+      return selectedChar === "1" ? player2.mana : player1.mana;
+    });
+
     const fetchCharacterData = async () => {
       try {
         const { data: player1Data } = await supabase
           .from("characters")
-          .select("name, health")
+          .select("name, health, mana") // Fetch mana as well
           .eq("id", 1)
           .single();
 
         const { data: player2Data } = await supabase
           .from("characters")
-          .select("name, health")
+          .select("name, health, mana") // Fetch mana as well
           .eq("id", 2)
           .single();
 
-        if (player1Data) player1.value = player1Data;
-        if (player2Data) player2.value = player2Data;
+        if (player1Data) {
+          updatePlayerHealth(1, player1Data.health);
+          updatePlayerMana(1, player1Data.mana);
+        }
+        if (player2Data) {
+          updatePlayerHealth(2, player2Data.health);
+          updatePlayerMana(2, player2Data.mana);
+        }
       } catch (error) {
         console.error("Error fetching character data:", error);
       }
@@ -90,10 +132,12 @@ export default {
           { event: "*", schema: "public", table: "characters" },
           (payload) => {
             if (payload.new.id === 1) {
-              player1.health = payload.new.health;
+              updatePlayerHealth(1, payload.new.health);
+              updatePlayerMana(1, payload.new.mana); // Update mana in real-time
             }
             if (payload.new.id === 2) {
-              player2.health = payload.new.health;
+              updatePlayerHealth(2, payload.new.health);
+              updatePlayerMana(2, payload.new.mana); // Update mana in real-time
             }
           }
         )
@@ -109,9 +153,12 @@ export default {
       player1,
       player2,
       maxHealth,
+      maxMana,
       selectedChar,
       currentPlayerHealth,
       currentPlayer2Health,
+      currentPlayerMana,
+      currentPlayer2Mana,
     };
   },
 };
@@ -122,12 +169,13 @@ export default {
 .v-progress-linear {
   color: #f44336;
   margin-top: 2.1%;
-  transition: width 0.5s ease; /* Smooth transition for health changes */
+  transition: width 0.5s ease; /* Smooth transition for health and mana changes */
 }
-.player2-health {
-  border: 2px solid black; /* Add black border */
-}
-.player1-health {
+
+.player2-health,
+.player2-mana,
+.player1-health,
+.player1-mana {
   border: 2px solid black; /* Add black border */
 }
 

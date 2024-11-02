@@ -3,6 +3,7 @@
   <div class="floating-card-container">
     <v-container v-if="showCards">
       <v-row class="d-flex justify-center">
+        <!-- Loop through onHandCards for all cards -->
         <v-col
           v-for="(card, index) in onHandCards"
           :key="card.id"
@@ -18,6 +19,17 @@
             <v-card-subtitle>Power: {{ card.power }}</v-card-subtitle>
             <v-card-subtitle>Mana Cost: {{ card.mana_cost }}</v-card-subtitle>
           </v-card>
+        </v-col>
+      </v-row>
+
+      <!-- Separate section for the card with id = 91 -->
+      <v-row class="d-flex justify-center" v-if="card91">
+        <v-col cols="8" lg="4" sm="4" md="5" class="text-center skip">
+          <div @click="openDialog(card91)"  style="cursor: pointer;">
+          
+            <v-img src="../../assets/images/charge.png" style="width: 50%;"></v-img>
+            <span class="d-flex">charge mana</span>
+          </div>
         </v-col>
       </v-row>
     </v-container>
@@ -100,7 +112,7 @@ export default {
   },
   setup() {
     const characterStatusStore = useCharacterStatusStore();
-    
+
     const showCards = ref(true);
     const cardStore = useCardStore1();
     const { onHandCards, addCard, removeCardAndAddNew } = cardStore;
@@ -110,27 +122,28 @@ export default {
     );
 
     const revertedCharacter = computed(() => {
-  return selectedCharacter.value === 1 ? 2 : 1;
-});
+      return selectedCharacter.value === 1 ? 2 : 1;
+    });
     const dialog = ref(false);
     const messageDialog = ref(false);
     const messageText = ref("");
     const selectedCard = ref(null);
     const cards = ref([]);
+    const card91 = ref(null);
     const player2Ref = ref(null);
     const player1Ref = ref(null);
     const player_variant2Ref = ref(null);
     const player_variant1Ref = ref(null);
 
     const fetchRandomCards = async () => {
-      const { data, error } = await supabase
-        .from("cards")
-        .select("*");
+      const { data, error } = await supabase.from("cards").select("*");
 
       if (error) {
         console.error("Error fetching cards:", error);
       } else {
-        const shuffledCards = data.sort(() => 0.5 - Math.random());
+        // Filter out the card with ID 91
+        const filteredCards = data.filter((card) => card.id !== 91);
+        const shuffledCards = filteredCards.sort(() => 0.5 - Math.random());
         cards.value = shuffledCards.slice(0, 5);
 
         if (onHandCards.length === 0) {
@@ -141,6 +154,29 @@ export default {
 
     onMounted(async () => {
       await fetchRandomCards();
+    });
+
+    const fetchCard91 = async () => {
+      const { data, error } = await supabase
+        .from("cards")
+        .select("*")
+        .eq("id", 91)
+        .single(); // Use single to fetch only one card
+
+      if (error) {
+        console.error("Error fetching card 91:", error);
+      } else {
+        card91.value = data; // Set card91 with the fetched card data
+      }
+    };
+
+    const filteredOnHandCards = computed(() => {
+      return onHandCards.filter((card) => card.id !== 91);
+    });
+
+    onMounted(async () => {
+      await fetchRandomCards();
+      await fetchCard91(); // Fetch card 91 separately
     });
 
     const openDialog = (card) => {
@@ -183,7 +219,6 @@ export default {
       dialog.value = false;
       // Trigger attack animation only if the selected card is of type "attack"
       if (selectedCard.value && selectedCard.value.type === "attack") {
-
         player1Ref.value?.toggleAttack();
         player_variant1Ref.value?.toggleAttack();
         // Fetch card effects from Supabase
@@ -229,13 +264,8 @@ export default {
             is_crit_amp: cardEffectsArray[8],
           });
 
-        
-
           // Constant character ID
           const characterId = revertedCharacter.value;
-
-
-
 
           // Function to process game turn for the character
           async function gameTurn() {
@@ -246,7 +276,6 @@ export default {
             const updatedCharacter = await characterStatusStore.fetchCharacter(
               characterId
             );
-            
           }
 
           // Call gameTurn
@@ -258,26 +287,23 @@ export default {
         }
 
         // Trigger Player1's attack animations
-       
 
-       
         if (selectedCard.value.is_burn > 0) {
-    alert("Burn effect triggered");
-    setTimeout(() => {
-        player_variant2Ref.value?.toggleHurtInjured();
-        player2Ref.value?.toggleHurtInjured(); 
-    }, 300);
-} else if (selectedCard.value.is_poison > 0) {
-    alert("Poison effect triggered"); // Changed alert message for clarity
-    setTimeout(() => {
-        player_variant2Ref.value?.toggleHurtSkinDamage();
-        player2Ref.value?.toggleHurtSkinDamage(); 
-    }, 300);
-} else {
-    player_variant2Ref.value?.toggleHurt();
-    player2Ref.value?.toggleHurt();
-}
-
+          showMessage("Burn effect triggered");
+          setTimeout(() => {
+            player_variant2Ref.value?.toggleHurtInjured();
+            player2Ref.value?.toggleHurtInjured();
+          }, 300);
+        } else if (selectedCard.value.is_poison > 0) {
+          showMessage("Poison effect triggered"); // Changed alert message for clarity
+          setTimeout(() => {
+            player_variant2Ref.value?.toggleHurtSkinDamage();
+            player2Ref.value?.toggleHurtSkinDamage();
+          }, 300);
+        } else {
+          player_variant2Ref.value?.toggleHurt();
+          player2Ref.value?.toggleHurt();
+        }
 
         // Close dialog immediately after triggering animations
         closeDialog();
@@ -318,8 +344,6 @@ export default {
           0,
           Math.floor(selectedCard.value.power * (1 - defensePercentage))
         ); // Apply percentage reduction and convert to integer
-
- 
 
         // Check if the attack is a critical hit based on critical_rate
         const isCriticalHit = Math.random() * 100 < critical_rate; // Check if critical rate is 100% or more
@@ -400,10 +424,7 @@ export default {
           });
 
           // Constant character ID
-        const characterId = revertedCharacter.value;
-
-
-
+          const characterId = revertedCharacter.value;
 
           // Function to process game turn for the character
           async function gameTurn() {
@@ -414,7 +435,6 @@ export default {
             const updatedCharacter = await characterStatusStore.fetchCharacter(
               characterId
             );
-           
           }
 
           // Call gameTurn
@@ -424,7 +444,6 @@ export default {
           const store = useStore();
           store.setCardEffects(cardEffectsArray);
         }
-
       }
 
       // Always navigate to the next phase
@@ -434,6 +453,7 @@ export default {
     };
 
     return {
+      card91,
       showCards,
       cards,
       dialog,
@@ -452,6 +472,7 @@ export default {
       closeMessageDialog,
       player_variant1Ref,
       onHandCards,
+      filteredOnHandCards,
     };
   },
 };
@@ -467,7 +488,6 @@ export default {
   background-size: cover;
   background-position: bottom;
   background-repeat: no-repeat;
-
 }
 
 .bg1 {
@@ -480,7 +500,6 @@ export default {
   background-position: bottom;
   background-repeat: no-repeat;
   z-index: 9;
- 
 }
 
 .fill-height {
@@ -527,4 +546,20 @@ export default {
   top: 30px;
   z-index: 99;
 }
+.skip {
+  top: 125%;
+  position: fixed;
+  left: 125%;
+}
+
+@media (max-width: 600px) { 
+  .skip {
+    top: auto; 
+    bottom: -12%;
+    left: 95%; 
+    right: auto; 
+  }
+}
+
+
 </style>
