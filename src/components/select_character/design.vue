@@ -1,13 +1,15 @@
 <template>
-  <div class="battleground">
+  <div class="csbackground">
     <v-container>
       <v-row class="my-2">
         <v-col cols="12" lg="12">
-          <h2 class="text-uppercase">Select Your Character</h2>
+          <h2 class="text-uppercase font-weight-bold text-grey-darken-4">
+            Select Your Character
+          </h2>
         </v-col>
       </v-row>
 
-      <v-row class="mt-12 align-items-center">
+      <v-row class="mt-2 align-items-center">
         <!-- Character Selection -->
         <v-col cols="12" lg="4" md="6">
           <v-card class="tilt-card">
@@ -66,64 +68,80 @@
         <v-col cols="12" lg="5" class="d-none d-lg-flex"></v-col>
 
         <!-- Character Stats -->
-        <v-col cols="12" lg="3" md="6" class="tempcolor">
+        <v-col cols="12" lg="3" md="6">
           <div>
-            <h1 class="text-center pb-7">{{ character.name }}</h1>
+            <h2 class="text-uppercase text-center">{{ character.name }}</h2>
+            <h6 class="text-center text-medium-emphasis font-weight-regular">
+              {{ character.role }}
+            </h6>
 
-            <small class="text-uppercase">Health</small>
-            <v-progress-linear
-              class="mt-2 mb-4"
-              :model-value="character.health"
-              max="100"
-              color="#bd0b3b"
-              height="13"
-              rounded
-            >
-            </v-progress-linear>
+            <div>
+              <small class="text-uppercase font-weight-medium">Health</small>
+              <v-progress-linear
+                class="mt-2 mb-4"
+                :model-value="character.health"
+                max="100"
+                color="#ffd82b"
+                height="10"
+                rounded
+              >
+              </v-progress-linear>
 
-            <small class="text-uppercase">Mana</small>
-            <v-progress-linear
-              class="mt-2 mb-4"
-              :model-value="character.mana"
-              max="100"
-              color="#bd0b3b"
-              height="13"
-              rounded
-            >
-            </v-progress-linear>
+              <small class="text-uppercase font-weight-medium">Mana</small>
+              <v-progress-linear
+                class="mt-2 mb-4"
+                :model-value="character.mana"
+                max="100"
+                color="#ffd82b"
+                height="10"
+                rounded
+              >
+              </v-progress-linear>
 
-            <small class="text-uppercase">Agility</small>
-            <v-progress-linear
-              class="mt-2 mb-4"
-              :model-value="character.agility"
-              max="15"
-              color="#bd0b3b"
-              height="13"
-              rounded
-            >
-            </v-progress-linear>
+              <small class="text-uppercase font-weight-medium">Agility</small>
+              <v-progress-linear
+                class="mt-2 mb-4"
+                :model-value="character.agility"
+                max="15"
+                color="#ffd82b"
+                height="10"
+                rounded
+              >
+              </v-progress-linear>
 
-            <small class="text-uppercase">Defense</small>
-            <v-progress-linear
-              class="mt-2 mb-4"
-              :model-value="character.defense"
-              max="100"
-              color="#bd0b3b"
-              height="13"
-              rounded
-            >
-            </v-progress-linear>
+              <small class="text-uppercase font-weight-medium">Defense</small>
+              <v-progress-linear
+                class="mt-2 mb-4"
+                :model-value="character.defense"
+                max="100"
+                color="#ffd82b"
+                height="10"
+                rounded
+              >
+              </v-progress-linear>
 
-            <small class="text-uppercase">Critical Rate</small>
-            <v-progress-linear
-              class="mt-2 mb-4"
-              :model-value="parseFloat(character.critical_rate)"
-              max="150"
-              color="#bd0b3b"
-              height="13"
-              rounded
-            >
-            </v-progress-linear>
+              <small class="text-uppercase font-weight-medium"
+                >Critical Rate</small
+              >
+              <v-progress-linear
+                class="mt-2 mb-4"
+                :model-value="parseFloat(character.critical_rate)"
+                max="150"
+                color="#ffd82b"
+                height="10"
+                rounded
+              >
+              </v-progress-linear>
+            </div>
+
+            <div class="mt-4">
+              <small class="text-caption">
+                In a world where ancient clans wield elemental powers to protect
+                their land, warriors known as the Guardians of Valor must unite
+                to stop a ruthless warlord from plunging everything into eternal
+                darkness.</small
+              >
+            </div>
           </div>
         </v-col>
 
@@ -148,7 +166,7 @@
               <v-btn color="red darken-2" text @click="dialog = false"
                 >Cancel</v-btn
               >
-              <v-btn color="green darken-2" text @click="confirmChoice"
+              <v-btn color="yellow darken-4" text @click="confirmChoice"
                 >Sure</v-btn
               >
             </v-card-actions>
@@ -157,7 +175,7 @@
       </v-row>
 
       <v-row>
-        <v-col class="mt-9">
+        <v-col class="">
           <SecBtn to="/" />
           <PrimeBtn @click="openDialog" class="ml-4" />
         </v-col>
@@ -210,7 +228,7 @@ const handleKeyDown = (event) => {
 const fetchCharacterDetails = async (characterId) => {
   const { data, error } = await supabase
     .from("characters")
-    .select("name, health, mana, agility, defense, critical_rate")
+    .select("name, role, health, mana, agility, defense, critical_rate")
     .eq("id", characterId)
     .single();
 
@@ -237,19 +255,23 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
-.battleground {
+.csbackground {
   position: relative;
   overflow: hidden;
   width: 100vw;
   height: 100vh;
-  background-image: url("https://img.freepik.com/premium-photo/pixel-art-dungeon-background-8-bit-games_334978-2385.jpg?w=826");
+  background-image: url("../../assets/background/csbg.png");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
 }
 
+.text-shadow {
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
 .tilt-card {
-  transform: perspective(1000px) rotateY(15deg); /* Adjust the degree as needed */
+  transform: perspective(1000px) rotateY(18deg); /* Adjust the degree as needed */
   transition: transform 0.3s ease-in-out;
   background-color: #00000025;
 }
