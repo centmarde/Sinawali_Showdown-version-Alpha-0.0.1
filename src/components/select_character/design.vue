@@ -1,141 +1,177 @@
 <template>
-  <v-container>
-    <v-row class="my-16 py-10">
-      <v-col cols="12" lg="4">
-        <v-card class="tilt-card">
-          <v-row no-gutters class="flex-grow-1">
-            <v-col
-              cols="6"
-              class="p-1"
-              :class="{ 'highlight-border': selectedCharacter === 1 }"
-              outlined
-              @click="selectCharacter(1)"
+  <div class="battleground">
+    <v-container>
+      <v-row class="my-2">
+        <v-col cols="12" lg="12">
+          <h2 class="text-uppercase">Select Your Character</h2>
+        </v-col>
+      </v-row>
+
+      <v-row class="mt-12 align-items-center">
+        <!-- Character Selection -->
+        <v-col cols="12" lg="4" md="6">
+          <v-card class="tilt-card">
+            <v-row no-gutters class="flex-grow-1">
+              <v-col
+                cols="6"
+                class="p-2"
+                :class="{ 'zoom-effect': selectedCharacter === 1 }"
+                outlined
+                @click="selectCharacter(1)"
+              >
+                <v-img
+                  src="https://via.placeholder.com/150"
+                  alt="Character 1"
+                  class="character-image"
+                  contain
+                ></v-img>
+              </v-col>
+              <v-col
+                cols="6"
+                class="p-2"
+                :class="{ 'zoom-effect': selectedCharacter === 2 }"
+                outlined
+                @click="selectCharacter(2)"
+              >
+                <v-img
+                  src="https://via.placeholder.com/150"
+                  alt="Character 2"
+                  class="character-image"
+                  contain
+                ></v-img>
+              </v-col>
+            </v-row>
+            <v-row no-gutters class="flex-grow-1">
+              <v-col cols="6" class="p-2">
+                <v-img
+                  src="https://via.placeholder.com/150"
+                  alt="Character 3"
+                  class="character-image"
+                  contain
+                ></v-img>
+              </v-col>
+              <v-col cols="6" class="p-2">
+                <v-img
+                  src="https://via.placeholder.com/150"
+                  alt="Character 4"
+                  class="character-image"
+                  contain
+                ></v-img>
+              </v-col>
+            </v-row>
+          </v-card>
+        </v-col>
+
+        <!-- Character Display -->
+        <v-col cols="12" lg="5" class="d-none d-lg-flex"></v-col>
+
+        <!-- Character Stats -->
+        <v-col cols="12" lg="3" md="6" class="tempcolor">
+          <div>
+            <h1 class="text-center pb-7">{{ character.name }}</h1>
+
+            <small class="text-uppercase">Health</small>
+            <v-progress-linear
+              class="mt-2 mb-4"
+              :model-value="character.health"
+              max="100"
+              color="#bd0b3b"
+              height="13"
+              rounded
             >
-              <v-img
-                src="https://via.placeholder.com/150"
-                alt="Character 1"
-                class="character-image"
-                contain
-              ></v-img>
-            </v-col>
-            <v-col
-              cols="6"
-              class="p-1"
-              :class="{ 'highlight-border': selectedCharacter === 2 }"
-              outlined
-              @click="selectCharacter(2)"
+            </v-progress-linear>
+
+            <small class="text-uppercase">Mana</small>
+            <v-progress-linear
+              class="mt-2 mb-4"
+              :model-value="character.mana"
+              max="100"
+              color="#bd0b3b"
+              height="13"
+              rounded
             >
-              <v-img
-                src="https://via.placeholder.com/150"
-                alt="Character 2"
-                class="character-image"
-                contain
-              ></v-img>
-            </v-col>
-          </v-row>
-          <v-row no-gutters class="flex-grow-1">
-            <v-col cols="6" class="p-1">
-              <v-img
-                src="https://via.placeholder.com/150"
-                alt="Character 3"
-                class="character-image"
-                contain
-              ></v-img>
-            </v-col>
-            <v-col cols="6" class="p-1">
-              <v-img
-                src="https://via.placeholder.com/150"
-                alt="Character 4"
-                class="character-image"
-                contain
-              ></v-img>
-            </v-col>
-          </v-row>
-        </v-card>
-      </v-col>
+            </v-progress-linear>
 
-      <v-col cols="12" lg="5"> </v-col>
+            <small class="text-uppercase">Agility</small>
+            <v-progress-linear
+              class="mt-2 mb-4"
+              :model-value="character.agility"
+              max="15"
+              color="#bd0b3b"
+              height="13"
+              rounded
+            >
+            </v-progress-linear>
 
-      <v-col cols="12" lg="3">
-        <!-- character details fetch from supabase db -->
-        <h1>{{ character.name }}</h1>
-        <v-progress-linear
-          :model-value="character.health"
-          max="100"
-          color="red"
-          height="20"
-        >
-          <strong>{{ character.health }}</strong>
-        </v-progress-linear>
-        <v-progress-linear
-          :model-value="character.mana"
-          max="100"
-          color="blue"
-          height="20"
-        >
-          <strong>{{ character.mana }}</strong>
-        </v-progress-linear>
-        <v-progress-linear
-          :model-value="character.agility"
-          max="15"
-          color="green"
-          height="20"
-        >
-          <strong>{{ character.agility }}</strong>
-        </v-progress-linear>
-        <v-progress-linear
-          :model-value="character.defense"
-          max="100"
-          color="orange"
-          height="20"
-        >
-          <strong>{{ character.defense }}</strong>
-        </v-progress-linear>
-        <v-progress-linear
-          :model-value="parseFloat(character.critical_rate)"
-          max="150"
-          color="purple"
-          height="20"
-        >
-          <strong>{{ character.critical_rate }}</strong>
-        </v-progress-linear>
-      </v-col>
+            <small class="text-uppercase">Defense</small>
+            <v-progress-linear
+              class="mt-2 mb-4"
+              :model-value="character.defense"
+              max="100"
+              color="#bd0b3b"
+              height="13"
+              rounded
+            >
+            </v-progress-linear>
 
-      <!-- Confirmation Dialog -->
-      <v-dialog
-        v-model="dialog"
-        max-width="400"
-        aria-labelledby="dialog-title"
-        aria-describedby="dialog-description"
-      >
-        <v-card>
-          <v-card-title class="headline" id="dialog-title"
-            >Confirm Your Choice</v-card-title
-          >
-          <v-card-text id="dialog-description">
-            Are you sure you want to proceed with Character
-            {{ selectedCharacter }}?
-          </v-card-text>
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn color="grey" text @click="dialog = false">Cancel</v-btn>
-            <v-btn color="primary" text @click="confirmChoice">Sure</v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
-    </v-row>
+            <small class="text-uppercase">Critical Rate</small>
+            <v-progress-linear
+              class="mt-2 mb-4"
+              :model-value="parseFloat(character.critical_rate)"
+              max="150"
+              color="#bd0b3b"
+              height="13"
+              rounded
+            >
+            </v-progress-linear>
+          </div>
+        </v-col>
 
-    <v-row class="d-flex justify-center align-center">
-      <v-btn color="grey" to="/">Back</v-btn>
-      <v-btn color="primary" @click="openDialog" class="ml-4">Play</v-btn>
-    </v-row>
-  </v-container>
+        <!-- Confirmation Dialog -->
+        <v-dialog
+          v-model="dialog"
+          max-width="400"
+          aria-labelledby="dialog-title"
+          aria-describedby="dialog-description"
+        >
+          <v-card class="game-dialog">
+            <!-- <v-card-title class="headline game-dialog-title" id="dialog-title">
+              Confirm Your Choice
+            </v-card-title> -->
+            <v-card-text class="game-dialog-text" id="dialog-description">
+              Are you sure you want to proceed with
+              <strong>{{ character.name }}</strong
+              >?
+            </v-card-text>
+            <v-card-actions class="game-dialog-actions">
+              <v-spacer></v-spacer>
+              <v-btn color="red darken-2" text @click="dialog = false"
+                >Cancel</v-btn
+              >
+              <v-btn color="green darken-2" text @click="confirmChoice"
+                >Sure</v-btn
+              >
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+      </v-row>
+
+      <v-row>
+        <v-col class="mt-9">
+          <SecBtn to="/" />
+          <PrimeBtn @click="openDialog" class="ml-4" />
+        </v-col>
+      </v-row>
+    </v-container>
+  </div>
 </template>
 
 <script setup>
 import { ref, onMounted, onBeforeUnmount, watch } from "vue";
 import { useRouter } from "vue-router";
 import { supabase } from "../../lib/supabase";
+import PrimeBtn from "../button/PrimBtn.vue";
+import SecBtn from "../button/SecBtn.vue";
 
 // Track the selected character
 const selectedCharacter = ref(1);
@@ -201,9 +237,21 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
+.battleground {
+  position: relative;
+  overflow: hidden;
+  width: 100vw;
+  height: 100vh;
+  background-image: url("https://img.freepik.com/premium-photo/pixel-art-dungeon-background-8-bit-games_334978-2385.jpg?w=826");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
 .tilt-card {
-  transform: perspective(1000px) rotateY(10deg); /* Adjust the degree as needed */
+  transform: perspective(1000px) rotateY(15deg); /* Adjust the degree as needed */
   transition: transform 0.3s ease-in-out;
+  background-color: #00000025;
 }
 
 .character-image {
@@ -212,14 +260,29 @@ onBeforeUnmount(() => {
   object-fit: cover; /* Ensure the image covers the available space */
 }
 
-/* Canvas-like border styling for selected card */
-.highlight-border {
-  border: 4px solid #ff9d00;
-  transition: border-color 0.3s;
+/* Zoom effect for selected character */
+.zoom-effect {
+  transform: scale(1.1);
+  transition: transform 0.5s ease-in-out;
 }
 
 /* Dialog styling */
 .v-dialog {
   transition: opacity 0.3s ease-in-out;
+}
+
+.tempcolor {
+  background-color: #00000025 !important;
+}
+
+.game-dialog {
+  /* background-image: url("/path/to/your/background-image.png"); */
+  background-size: cover;
+  border-radius: 10px;
+  color: #fff;
+}
+
+.game-dialog-actions {
+  justify-content: center;
 }
 </style>
