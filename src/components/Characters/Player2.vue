@@ -1,13 +1,12 @@
 <template>
   <div class="canvas-container">
-    <!-- Canvas for Player 1's animations, toggles moveLeft class based on isattack state -->
     <canvas id="canvas" ref="canvas1" :class="{ moveLeft: isattack }"></canvas>
     <v-row>
       <v-col class="d-flex justify-content-center">
-        <!-- Buttons for controlling animations -->
-      
-        <!-- <<button @click="toggleAttack">{{ isattack ? 'Switch to Idle' : 'Attack' }}</button>
-        <button @click="toggleHurt">Hurt</button>
+        <!-- Control buttons can be uncommented for use -->
+       <!--  <button @click="toggleAttack">{{ isattack ? 'Switch to Idle' : 'Attack' }}</button>
+        <button @click="toggleHurtInjured">Hurt (Injured)</button>
+        <button @click="toggleHurtSkinDamage">Hurt (Skin Damage)</button>
         <button @click="toggleBuff">Buff</button>  -->
       </v-col>
     </v-row>
@@ -15,13 +14,15 @@
 </template>
 
 <script>
-import playerImageSrc from '@/assets/anim/man2.png'; // Import Player 1's sprite image
+import playerImageSrc from '@/assets/anim/man2.png';
 
 export default {
   data() {
     return {
-      isattack: false, // State to track if player is attacking
-      animationFrame: null, // Reference for the animation frame ID
+      isattack: false,
+      animationFrame: null,
+      hurtActive: false, // Track if hurt animations are active
+      animationType: null, // Track the current animation type
     };
   },
   mounted() {
@@ -41,20 +42,20 @@ export default {
 
     const drawPlayer = () => {
       ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-      ctx.save(); // Save the current context state
-      ctx.scale(-1, 1); // Flip horizontally
+      ctx.save();
+      ctx.scale(-1, 1);
       ctx.drawImage(
         playerImage,
         frameX * spriteWidth,
         frameY * spriteHeight,
         spriteWidth,
         spriteHeight,
-        -CANVAS_WIDTH / 2 - spriteWidth / 2, // Adjust for flipped image
+        -CANVAS_WIDTH / 2 - spriteWidth / 2,
         CANVAS_HEIGHT / 2 - spriteHeight / 2,
         spriteWidth,
         spriteHeight
       );
-      ctx.restore(); // Restore the context to its original state
+      ctx.restore();
     };
 
     const idle = () => {
@@ -71,35 +72,32 @@ export default {
       drawPlayer();
       if (gameFrame % 30 === 0) {
         frameX = frameX < 4 ? frameX + 1 : 0;
-
-        // End buff animation cycle if it reaches the last frame
         if (frameX === 0) {
           this.buffActive = false; // Deactivate buff
           idle(); // Return to idle animation
           return;
         }
       }
-
       gameFrame++;
       this.animationFrame = requestAnimationFrame(buff);
     };
 
-    const hurt = () => {
-      cancelAnimationFrame(this.animationFrame);
-      frameY = 4;
+    const hurtAnimation = (animationFrameY) => {
+      if (!this.hurtActive) return; // Stop if hurt is no longer active
+
+      ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+      frameY = animationFrameY;
       drawPlayer();
       if (gameFrame % 70 === 0) {
         frameX = frameX < 1 ? frameX + 1 : 0;
-
-        // End hurt animation cycle if it reaches the last frame
         if (frameX === 0) {
           this.hurtActive = false; // Deactivate hurt
           idle(); // Return to idle animation
           return;
-        }}
-        gameFrame++;
-        this.animationFrame = requestAnimationFrame(hurt);
-        
+        }
+      }
+      gameFrame++;
+      this.animationFrame = requestAnimationFrame(() => hurtAnimation(animationFrameY));
     };
 
     const attack = () => {
@@ -124,11 +122,24 @@ export default {
         attack();
       }
     };
-
     this.toggleHurt = () => {
       cancelAnimationFrame(this.animationFrame);
       frameX = 0;
-      hurt();
+      this.hurtActive = true; // Set hurt active flag
+      hurtAnimation(4);
+    };
+    this.toggleHurtInjured = () => {
+      cancelAnimationFrame(this.animationFrame);
+      frameX = 0;
+      this.hurtActive = true; // Set hurt active flag
+      hurtAnimation(6.1); // Call for injured animation
+    };
+
+    this.toggleHurtSkinDamage = () => {
+      cancelAnimationFrame(this.animationFrame);
+      frameX = 0;
+      this.hurtActive = true; // Set hurt active flag
+      hurtAnimation(7.1); // Call for skin damage animation
     };
 
     this.toggleBuff = () => {
@@ -166,32 +177,17 @@ export default {
   .moveLeft {
     transform: translateX(-400px);
   }
-  #canvas {
-  margin-top: 23rem;
-  width: 13rem;
-  transition: transform 0.5s ease;
-  }
 }
 
 @media (max-width: 768px) {
   .moveLeft {
     transform: translateX(-200px);
   }
-  #canvas {
-  margin-top: 23rem;
-  width: 13rem;
-  transition: transform 0.5s ease;
-  }
 }
 
 @media (max-width: 480px) {
   .moveLeft {
     transform: translateX(-100px);
-  }
-  #canvas {
-  margin-top: 23rem;
-  width: 13rem;
-  transition: transform 0.5s ease;
   }
 }
 

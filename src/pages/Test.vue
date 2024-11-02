@@ -10,7 +10,7 @@
         </v-col>
     </v-row> -->
     <div class="overlayBrand"></div>
-    <Player1 class="overlay-content"/>
+    <Player2 class="overlay-content"/>
     <!-- <SplineViewer/> -->
 
 

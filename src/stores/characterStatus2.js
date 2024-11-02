@@ -70,9 +70,6 @@ export const useCharacterStatusStore2 = defineStore("characterStatus2", {
         // Decrement turn count for each effect and remove expired ones
         effect.turn_count -= 1;
         if (effect.turn_count <= 0) {
-          console.log(
-            `Effect with ID ${effect.id} has finished and will be removed.`
-          );
           this.removeEffect(effect); // Remove expired effects
         }
       });
