@@ -150,9 +150,6 @@ export default {
     
     const fetchRandomCards = async () => {
       const targetCharacterId = selectedCharacter.value === 1 ? 2 : 1;
-  console.log(targetCharacterId);
-  console.log(targetCharacterId);
-
 const { data: victory, error: victoryError } = await supabase
   .from("characters")
   .select("health")
@@ -180,28 +177,37 @@ if (health <= 0) {
   return;
 }
 
-      const { data, error } = await supabase.from("cards").select("*");
+const { data, error } = await supabase.from("cards").select("*");
 
+if (error) {
+  console.error("Error fetching cards:", error);
+} else {
+  // Filter out the card with ID 91
+  const filteredCards = data.filter((card) => card.id !== 91);
 
-      if (error) {
-        console.error("Error fetching cards:", error);
-      } else {
+  // Create a pool of cards based on their draw_chance
+  const weightedCards = [];
+  filteredCards.forEach((card) => {
+    const drawCount = Math.floor(card.draw_chance / 10); // Adjust based on scale (e.g., 80 means 8 instances)
+    for (let i = 0; i < drawCount; i++) {
+      weightedCards.push(card);
+    }
+  });
 
-        // Filter out the card with ID 91
-        const filteredCards = data.filter((card) => card.id !== 91);
-        const shuffledCards = filteredCards.sort(() => 0.5 - Math.random());
+  // Shuffle the weighted cards and select 5
+  const shuffledCards = weightedCards.sort(() => 0.5 - Math.random());
+  cards.value = shuffledCards.slice(0, 5);
 
-        cards.value = shuffledCards.slice(0, 5);
+  // Populate onHandCards if empty
+  if (onHandCards.length === 0) {
+    onHandCards.push(...cards.value.slice(0, 5));
+  }
+}
+};
 
-        if (onHandCards.length === 0) {
-          onHandCards.push(...cards.value.slice(0, 5));
-        }
-      }
-    };
-
-    onMounted(async () => {
-      await fetchRandomCards();
-    });
+onMounted(async () => {
+await fetchRandomCards();
+});
 
 
     const fetchCard91 = async () => {
@@ -454,7 +460,7 @@ if (health <= 0) {
 
   // Check if a character has won the battle
   const targetCharacterId = selectedCharacter.value === 1 ? 2 : 1;
-  console.log(targetCharacterId);
+
   const { data, error } = await supabase
     .from("characters")
     .select("health, defense, agility, critical_rate")
