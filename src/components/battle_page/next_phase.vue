@@ -3,31 +3,32 @@
   <div class="floating-card-container">
     <v-container v-if="showCards">
       <v-row class="d-flex justify-center">
-        <!-- Loop through onHandCards for all cards -->
-        <v-col
-          v-for="(card, index) in onHandCards"
-          :key="card.id"
-          cols="8"
-          lg="4"
-          sm="4"
-          md="5"
-          class="text-center"
-        >
-          <v-card class="hoverable-card" @click="openDialog(card)">
-            <v-card-title>{{ card.name }}</v-card-title>
-            <v-card-subtitle>Type: {{ card.type }}</v-card-subtitle>
-            <v-card-subtitle>Power: {{ card.power }}</v-card-subtitle>
-            <v-card-subtitle>Mana Cost: {{ card.mana_cost }}</v-card-subtitle>
-          </v-card>
-        </v-col>
+
+        <div class="container" id="container">
+  <div 
+    v-for="(card, index) in onHandCards" 
+    :key="card.id" 
+    class="card" 
+    tabindex="0" 
+    :style="`--i: ${index - Math.floor(onHandCards.length / 2)};`" 
+    @click="openDialog(card)"
+  >
+    <div>{{ card.name }}</div>
+    <div>Type: {{ card.type }}</div>
+    <div>Power: {{ card.power }}</div>
+    <div>Mana Cost: {{ card.mana_cost }}</div>
+  </div>
+</div>
+
       </v-row>
+
 
       <!-- Separate section for the card with id = 91 -->
       <v-row class="d-flex justify-center" v-if="card91">
-        <v-col cols="8" lg="4" sm="4" md="5" class="text-center skip">
+        <v-col cols="8" lg="4" sm="4" md="5" class="text-center skip ">
           <div @click="openDialog(card91)"  style="cursor: pointer;">
           
-            <v-img src="../../assets/images/charge.png" style="width: 40%;"></v-img>
+            <img src="../../assets/images/charge.png" style="width: 50px;"></img>
             <span class="bar">charge mana</span>
             
           </div>
@@ -35,11 +36,12 @@
         <v-col cols="8" lg="4" sm="4" md="5" class="text-center bag">
           <div @click="openDialog(card91)"  style="cursor: pointer;">
           
-            <v-img src="../../assets/images/bag.png" style="width: 40%;"></v-img>
-            <span class="bar">Inventory</span>
+            <img src="../../assets/images/bag.png" style="width: 50px;"></img>
+            <span class="bar">Iventory</span>
             
           </div>
         </v-col>
+        
       </v-row>
     </v-container>
 
@@ -57,20 +59,6 @@
           <v-btn text @click="closeDialog">Cancel</v-btn>
           <v-btn text color="primary" @click="confirmSelection">Confirm</v-btn>
         </v-card-actions>
-      </v-card>
-    </v-dialog>
-
-    <!-- New dialog for messages -->
-    <v-dialog
-      v-model="messageDialog"
-      max-width="500"
-      persistent
-      style="z-index: 99999"
-    >
-      <v-card>
-        <v-card-text>
-          <p>{{ messageText }}</p>
-        </v-card-text>
       </v-card>
     </v-dialog>
   </div>
@@ -485,9 +473,17 @@ export default {
       closeMessageDialog,
       player_variant1Ref,
       onHandCards,
+      activeCard: null,
       filteredOnHandCards,
     };
-  },
+  },methods: {
+    setActiveCard(index) {
+      this.activeCard = index;
+    },
+    resetCards() {
+      this.activeCard = null;
+    },
+  }
 };
 </script>
 
@@ -563,41 +559,108 @@ export default {
   z-index: 99;
 }
 .skip {
-  top: 132%;
+  top: 18.3rem;
   position: fixed;
-  left: 133%;
-  
+  left: 35rem;
 }
 .bag {
-  top: 132%;
+  top: 18.3rem;
   position: fixed;
-  left: 118%;
+  left: 39rem;
 }
 .bar{
   position: absolute;
-  left:13%;
+  left:1rem;
   font-size: 10px;
  
 }
 
 @media (max-width: 600px) { 
   .skip {
-    top: auto; 
-    bottom: -12%;
-    left: 90%; 
-    right: auto; 
+    top: -15.5rem;
+  position: fixed;
+  left: 7.2rem; 
   }
   .bag {
-    top: auto; 
-    bottom: -12%;
-    left:65%; 
-    right: auto; 
+    top: -19rem;
+  position: fixed;
+  left: 7.2rem; 
   }
   .bar{
-  position: absolute;
-  left: 9%;
-  font-size: 7px;
- 
+display: none;
 }
 }
+
+//for cards CSS
+
+.container {
+    position: fixed;
+    bottom: 0; 
+    width: 100%;
+    height: 35%; 
+    display: flex;
+    justify-content: center;
+}
+
+.container .card {
+    position: absolute;
+    top: 15rem;
+    width: 180px;
+    height: 200px;
+    border-radius: 8px;
+    background: #e6d011;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #151515;
+    border: 10px solid rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    transition: background 0.3s, transform 0.3s;
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.1);
+    transform: rotate(calc(var(--i) * 3deg)) translate(calc(var(--i) * 150px), -50px);
+}
+@media (max-width: 600px) {
+    .container {
+        height: 25%; /* Adjust the height of the container */
+    }
+
+    .container .card {
+        width: 120px; /* Reduce width of cards */
+        height: 150px; /* Reduce height of cards */
+        top: 15rem; /* Adjust position for smaller screens */
+        font-size: 0.8em; /* Optional: reduce font size for smaller cards */
+        transform: rotate(calc(var(--i) * 3deg)) translate(calc(var(--i) * 50px), -50px);
+    }
+    .container .card:hover {
+  transform: rotate(calc(var(--i) * 3deg)) translate(calc(var(--i) * 50px), -100px); /* Elevate the card */
+  z-index: 1;
+}
+}
+
+.card.inactive {
+    background-color: #333;
+}
+
+.card.inactive:hover {
+    background-color: #444;
+}
+
+.card.active {
+    transform: scale(1.5);
+    background: #5e5cfc;
+    z-index: 1;
+}
+
+/* When hovering over the container, make cards appear slightly elevated */
+.container:hover .card {
+    color: #EEEEEE;
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.25);
+}
+
+/* Adjust individual cards to lift up further on hover */
+.container .card:hover {
+    transform: rotate(calc(var(--i) * 3deg)) translate(calc(var(--i) * 150px), -80px);
+}
+
 </style>
+
