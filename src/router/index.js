@@ -5,83 +5,49 @@
  */
 
 // Composables
-import { createRouter, createWebHistory } from 'vue-router/auto'
-import { setupLayouts } from 'virtual:generated-layouts'
-import { routes as autoRoutes } from 'vue-router/auto-routes'
+import { createRouter, createWebHistory } from "vue-router/auto";
+import { setupLayouts } from "virtual:generated-layouts";
+import { routes as autoRoutes } from "vue-router/auto-routes";
 
-
-import Hero from '../pages/index.vue'
-
-
+import Hero from "../pages/index.vue";
+import Notfound from "@/pages/not_found.vue";
+import Test from "@/pages/Test.vue";
+import select_character from "@/pages/select_character.vue";
+import battle_area from "@/pages/battle_area.vue";
+import next_phase from "@/components/battle_page/next_phase.vue";
 
 const routes = setupLayouts([
   ...autoRoutes,
-  { path: '/', component: Hero },
-
-
+  { path: "/", component: Hero },
+  { path: "/Test", component: Test },
+  { path: "/select_character", component: select_character },
+  { path: "/:pathMatch(.*)*", component: Notfound },
+  { path: "/next_phase", component: next_phase, name: "next_phase" },
+  { path: "/battle_area", component: battle_area, name: "battle_area" },
 ]);
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
-  routes
+  routes,
 });
 
 // Workaround for https://github.com/vitejs/vite/issues/11804
 router.onError((err, to) => {
-  if (err?.message?.includes?.('Failed to fetch dynamically imported module')) {
-    if (!localStorage.getItem('vuetify:dynamic-reload')) {
-      console.log('Reloading page to fix dynamic import error')
-      localStorage.setItem('vuetify:dynamic-reload', 'true')
-      location.assign(to.fullPath)
+  if (err?.message?.includes?.("Failed to fetch dynamically imported module")) {
+    if (!localStorage.getItem("vuetify:dynamic-reload")) {
+      console.log("Reloading page to fix dynamic import error");
+      localStorage.setItem("vuetify:dynamic-reload", "true");
+      location.assign(to.fullPath);
     } else {
-      console.error('Dynamic import error, reloading page did not fix it', err)
+      console.error("Dynamic import error, reloading page did not fix it", err);
     }
   } else {
-    console.error(err)
+    console.error(err);
   }
-});
-
-router.beforeEach((to, from, next) => {
-  const isLoggedIn = localStorage.getItem("access_token") !== null;
-  const userRole = JSON.parse(localStorage.getItem("Role")); // Parse the boolean stored as a string
-  const hasVisitedDashboard = JSON.parse(localStorage.getItem("hasVisitedDashboard")) || false; // Track dashboard visit
-
-  console.log('User Role:', userRole); // Debugging role
-
-  // Pages that don't require authentication
-  const publicPages = ['/', '/login','/Register'];
-
-  // Pages that require authentication
-  const protectedPages = [];
-
-  
-  if (protectedPages.includes(to.path) && !isLoggedIn) {
-    return next('/');
-  }
-
-  
-  if (isLoggedIn && userRole === true && !hasVisitedDashboard) {
-    localStorage.setItem("hasVisitedDashboard", true); 
-    return next('/Dashboard');
-  }
-
-  
-  if (publicPages.includes(to.path) && isLoggedIn) {
-    return next('/Home');
-  }
-
-  // Restrict non-admin users from accessing the dashboard
-  if (to.path.startsWith('/Dashboard') && userRole !== true) {
-    alert('You do not have permission to access this page.');
-    return next('/Home');
-  }
-
-  // Default behavior: proceed to the requested route
-  next();
 });
 
 router.isReady().then(() => {
-  localStorage.removeItem('vuetify:dynamic-reload');
+  localStorage.removeItem("vuetify:dynamic-reload");
 });
 
 export default router;

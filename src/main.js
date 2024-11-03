@@ -18,9 +18,6 @@ const app = createApp(App);
 
 const pinia = createPinia(); // Create Pinia instance
 
-app.use(pinia); // Use Pinia
-app.use(router);
-
 registerPlugins(app);
 
 app.mount("#app");

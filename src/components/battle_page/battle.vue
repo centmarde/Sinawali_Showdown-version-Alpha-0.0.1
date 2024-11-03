@@ -3,6 +3,9 @@
   <div class="floating-card-container">
     <v-container v-if="showCards">
       <v-row class="d-flex justify-center">
+
+        <!-- Loop through onHandCards for all cards -->
+
         <v-col
           v-for="(card, index) in onHandCards"
           :key="card.id"
@@ -12,13 +15,36 @@
           md="5"
           class="text-center"
         >
-          <v-card class="hoverable-card, -- i :- 4;" @click="openDialog(card)">
+
+          <v-card class="hoverable-card" @click="openDialog(card)">
             <v-card-title>{{ card.name }}</v-card-title>
             <v-card-subtitle>Type: {{ card.type }}</v-card-subtitle>
             <v-card-subtitle>Power: {{ card.power }}</v-card-subtitle>
             <v-card-subtitle>Mana Cost: {{ card.mana_cost }}</v-card-subtitle>
           </v-card>
         </v-col>
+      </v-row>
+
+
+      <!-- Separate section for the card with id = 91 -->
+      <v-row class="d-flex justify-center" v-if="card91">
+        <v-col cols="8" lg="4" sm="4" md="5" class="text-center skip">
+          <div @click="openDialog(card91)"  style="cursor: pointer;">
+          
+            <v-img src="../../assets/images/charge.png" style="width: 40%;"></v-img>
+            <span class="bar">charge mana</span>
+            
+          </div>
+        </v-col>
+        <v-col cols="8" lg="4" sm="4" md="5" class="text-center bag">
+          <div @click="openDialog(card91)"  style="cursor: pointer;">
+          
+            <v-img src="../../assets/images/bag.png" style="width: 40%;"></v-img>
+            <span class="bar">Iventory</span>
+            
+          </div>
+        </v-col>
+        
       </v-row>
     </v-container>
 
@@ -100,7 +126,7 @@ export default {
   },
   setup() {
     const characterStatusStore = useCharacterStatusStore();
-    
+
     const showCards = ref(true);
     const cardStore = useCardStore1();
     const { onHandCards, addCard, removeCardAndAddNew } = cardStore;
@@ -110,27 +136,36 @@ export default {
     );
 
     const revertedCharacter = computed(() => {
-  return selectedCharacter.value === 1 ? 2 : 1;
-});
+
+      return selectedCharacter.value === 1 ? 2 : 1;
+    });
+
     const dialog = ref(false);
     const messageDialog = ref(false);
     const messageText = ref("");
     const selectedCard = ref(null);
     const cards = ref([]);
+
+    const card91 = ref(null);
+
     const player2Ref = ref(null);
     const player1Ref = ref(null);
     const player_variant2Ref = ref(null);
     const player_variant1Ref = ref(null);
 
     const fetchRandomCards = async () => {
-      const { data, error } = await supabase
-        .from("cards")
-        .select("*");
+
+      const { data, error } = await supabase.from("cards").select("*");
+
 
       if (error) {
         console.error("Error fetching cards:", error);
       } else {
-        const shuffledCards = data.sort(() => 0.5 - Math.random());
+
+        // Filter out the card with ID 91
+        const filteredCards = data.filter((card) => card.id !== 91);
+        const shuffledCards = filteredCards.sort(() => 0.5 - Math.random());
+
         cards.value = shuffledCards.slice(0, 5);
 
         if (onHandCards.length === 0) {
@@ -142,6 +177,31 @@ export default {
     onMounted(async () => {
       await fetchRandomCards();
     });
+
+
+    const fetchCard91 = async () => {
+      const { data, error } = await supabase
+        .from("cards")
+        .select("*")
+        .eq("id", 91)
+        .single(); // Use single to fetch only one card
+
+      if (error) {
+        console.error("Error fetching card 91:", error);
+      } else {
+        card91.value = data; // Set card91 with the fetched card data
+      }
+    };
+
+    const filteredOnHandCards = computed(() => {
+      return onHandCards.filter((card) => card.id !== 91);
+    });
+
+    onMounted(async () => {
+      await fetchRandomCards();
+      await fetchCard91(); // Fetch card 91 separately
+    });
+
 
     const openDialog = (card) => {
       selectedCard.value = card;
@@ -228,12 +288,9 @@ export default {
             is_crit_amp: cardEffectsArray[8],
           });
 
-        
 
           // Constant character ID
           const characterId = revertedCharacter.value;
-
-
 
 
           // Function to process game turn for the character
@@ -245,7 +302,8 @@ export default {
             const updatedCharacter = await characterStatusStore.fetchCharacter(
               characterId
             );
-            
+
+
           }
 
           // Call gameTurn
@@ -257,13 +315,25 @@ export default {
         }
 
         // Trigger Player1's attack animations
-       
 
-        // Trigger hurt animation for Player2 after a short delay
-        setTimeout(() => {
+
+        if (selectedCard.value.is_burn > 0) {
+          showMessage("Burn effect triggered");
+          setTimeout(() => {
+            player_variant2Ref.value?.toggleHurtInjured();
+            player2Ref.value?.toggleHurtInjured();
+          }, 300);
+        } else if (selectedCard.value.is_poison > 0) {
+          showMessage("Poison effect triggered"); // Changed alert message for clarity
+          setTimeout(() => {
+            player_variant2Ref.value?.toggleHurtSkinDamage();
+            player2Ref.value?.toggleHurtSkinDamage();
+          }, 300);
+        } else {
           player_variant2Ref.value?.toggleHurt();
           player2Ref.value?.toggleHurt();
-        }, 300);
+        }
+
 
         // Close dialog immediately after triggering animations
         closeDialog();
@@ -305,7 +375,7 @@ export default {
           Math.floor(selectedCard.value.power * (1 - defensePercentage))
         ); // Apply percentage reduction and convert to integer
 
- 
+
 
         // Check if the attack is a critical hit based on critical_rate
         const isCriticalHit = Math.random() * 100 < critical_rate; // Check if critical rate is 100% or more
@@ -386,9 +456,8 @@ export default {
           });
 
           // Constant character ID
-        const characterId = revertedCharacter.value;
 
-
+          const characterId = revertedCharacter.value;
 
 
           // Function to process game turn for the character
@@ -400,7 +469,7 @@ export default {
             const updatedCharacter = await characterStatusStore.fetchCharacter(
               characterId
             );
-           
+
           }
 
           // Call gameTurn
@@ -420,6 +489,9 @@ export default {
     };
 
     return {
+
+      card91,
+
       showCards,
       cards,
       dialog,
@@ -438,6 +510,9 @@ export default {
       closeMessageDialog,
       player_variant1Ref,
       onHandCards,
+
+      filteredOnHandCards,
+
     };
   },
 };
@@ -454,6 +529,7 @@ export default {
   background-position: bottom;
   background-repeat: no-repeat;
 
+
 }
 
 .bg1 {
@@ -466,7 +542,7 @@ export default {
   background-position: bottom;
   background-repeat: no-repeat;
   z-index: 9;
- 
+
 }
 
 .fill-height {
@@ -493,14 +569,6 @@ export default {
   transition: transform 0.3s ease;
 }
 
-.hoverable-card {
-  width: 200px; /* Adjust width as needed */
-  height: 250px; /* Adjust height as needed */
-  border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-  transition: transform 0.3s ease;
-  transform: rotate(calc(var( -- i)));
-}
 
 .hoverable-card:hover {
   transform: scale(1.05);
@@ -522,5 +590,46 @@ export default {
   top: 30px;
   z-index: 99;
 }
+
+.skip {
+  top: 132%;
+  position: fixed;
+  left: 133%;
+  
+}
+.bag {
+  top: 132%;
+  position: fixed;
+  left: 118%;
+}
+.bar{
+  position: absolute;
+  left:13%;
+  font-size: 10px;
+ 
+}
+
+@media (max-width: 600px) { 
+  .skip {
+    top: auto; 
+    bottom: -12%;
+    left: 90%; 
+    right: auto; 
+  }
+  .bag {
+    top: auto; 
+    bottom: -12%;
+    left:65%; 
+    right: auto; 
+  }
+  .bar{
+  position: absolute;
+  left: 9%;
+  font-size: 7px;
+ 
+}
+}
+
+
 </style>
-<link rel="stylesheet" href="styles.css">
+
