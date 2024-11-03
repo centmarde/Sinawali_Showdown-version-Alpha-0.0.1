@@ -3,7 +3,9 @@
   <div class="floating-card-container">
     <v-container v-if="showCards">
       <v-row class="d-flex justify-center">
+
         <!-- Loop through onHandCards for all cards -->
+
         <v-col
           v-for="(card, index) in onHandCards"
           :key="card.id"
@@ -13,6 +15,7 @@
           md="5"
           class="text-center"
         >
+
           <v-card class="hoverable-card" @click="openDialog(card)">
             <v-card-title>{{ card.name }}</v-card-title>
             <v-card-subtitle>Type: {{ card.type }}</v-card-subtitle>
@@ -21,6 +24,7 @@
           </v-card>
         </v-col>
       </v-row>
+
 
       <!-- Separate section for the card with id = 91 -->
       <v-row class="d-flex justify-center" v-if="card91">
@@ -132,28 +136,36 @@ export default {
     );
 
     const revertedCharacter = computed(() => {
+
       return selectedCharacter.value === 1 ? 2 : 1;
     });
+
     const dialog = ref(false);
     const messageDialog = ref(false);
     const messageText = ref("");
     const selectedCard = ref(null);
     const cards = ref([]);
+
     const card91 = ref(null);
+
     const player2Ref = ref(null);
     const player1Ref = ref(null);
     const player_variant2Ref = ref(null);
     const player_variant1Ref = ref(null);
 
     const fetchRandomCards = async () => {
+
       const { data, error } = await supabase.from("cards").select("*");
+
 
       if (error) {
         console.error("Error fetching cards:", error);
       } else {
+
         // Filter out the card with ID 91
         const filteredCards = data.filter((card) => card.id !== 91);
         const shuffledCards = filteredCards.sort(() => 0.5 - Math.random());
+
         cards.value = shuffledCards.slice(0, 5);
 
         if (onHandCards.length === 0) {
@@ -165,6 +177,7 @@ export default {
     onMounted(async () => {
       await fetchRandomCards();
     });
+
 
     const fetchCard91 = async () => {
       const { data, error } = await supabase
@@ -188,6 +201,7 @@ export default {
       await fetchRandomCards();
       await fetchCard91(); // Fetch card 91 separately
     });
+
 
     const openDialog = (card) => {
       selectedCard.value = card;
@@ -274,8 +288,10 @@ export default {
             is_crit_amp: cardEffectsArray[8],
           });
 
+
           // Constant character ID
           const characterId = revertedCharacter.value;
+
 
           // Function to process game turn for the character
           async function gameTurn() {
@@ -286,6 +302,8 @@ export default {
             const updatedCharacter = await characterStatusStore.fetchCharacter(
               characterId
             );
+
+
           }
 
           // Call gameTurn
@@ -297,6 +315,7 @@ export default {
         }
 
         // Trigger Player1's attack animations
+
 
         if (selectedCard.value.is_burn > 0) {
           showMessage("Burn effect triggered");
@@ -314,6 +333,7 @@ export default {
           player_variant2Ref.value?.toggleHurt();
           player2Ref.value?.toggleHurt();
         }
+
 
         // Close dialog immediately after triggering animations
         closeDialog();
@@ -354,6 +374,8 @@ export default {
           0,
           Math.floor(selectedCard.value.power * (1 - defensePercentage))
         ); // Apply percentage reduction and convert to integer
+
+
 
         // Check if the attack is a critical hit based on critical_rate
         const isCriticalHit = Math.random() * 100 < critical_rate; // Check if critical rate is 100% or more
@@ -434,7 +456,9 @@ export default {
           });
 
           // Constant character ID
+
           const characterId = revertedCharacter.value;
+
 
           // Function to process game turn for the character
           async function gameTurn() {
@@ -445,6 +469,7 @@ export default {
             const updatedCharacter = await characterStatusStore.fetchCharacter(
               characterId
             );
+
           }
 
           // Call gameTurn
@@ -454,6 +479,7 @@ export default {
           const store = useStore();
           store.setCardEffects(cardEffectsArray);
         }
+
       }
 
       // Always navigate to the next phase
@@ -463,7 +489,9 @@ export default {
     };
 
     return {
+
       card91,
+
       showCards,
       cards,
       dialog,
@@ -482,7 +510,9 @@ export default {
       closeMessageDialog,
       player_variant1Ref,
       onHandCards,
+
       filteredOnHandCards,
+
     };
   },
 };
@@ -498,6 +528,8 @@ export default {
   background-size: cover;
   background-position: bottom;
   background-repeat: no-repeat;
+
+
 }
 
 .bg1 {
@@ -510,6 +542,7 @@ export default {
   background-position: bottom;
   background-repeat: no-repeat;
   z-index: 9;
+
 }
 
 .fill-height {
@@ -536,6 +569,7 @@ export default {
   transition: transform 0.3s ease;
 }
 
+
 .hoverable-card:hover {
   transform: scale(1.05);
   cursor: pointer;
@@ -556,6 +590,7 @@ export default {
   top: 30px;
   z-index: 99;
 }
+
 .skip {
   top: 132%;
   position: fixed;
@@ -597,3 +632,4 @@ export default {
 
 
 </style>
+
