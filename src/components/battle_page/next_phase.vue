@@ -138,6 +138,36 @@ export default {
   
 
     const fetchRandomCards = async () => {
+      const targetCharacterId = selectedCharacter.value === 1 ? 2 : 1;
+      console.log(targetCharacterId);
+
+const { data: victory, error: victoryError } = await supabase
+  .from("characters")
+  .select("health")
+  .eq("id", targetCharacterId)
+  .single();
+
+// Check for errors when fetching character stats
+if (victoryError) {
+  console.error("Error fetching character stats:", victoryError);
+  return;
+}
+
+const { health } = victory;
+
+if (health <= 0) {
+  const winnerName = selectedCharacter.value === 2 ? "Player 2" : "Player 1";
+
+  await new Promise((resolve) => setTimeout(resolve, 2000));
+  closeDialog();
+
+  // Save winner in localStorage and navigate to Victory screen
+  localStorage.setItem("winner", winnerName);
+  router.push({ name: "Victory" });
+
+  return;
+}
+
       const { data, error } = await supabase.from("cards").select("*");
 
       if (error) {
@@ -331,6 +361,22 @@ export default {
         }
 
         const { health, defense, agility, critical_rate } = data;
+
+        if (health <= 0) {
+  const winnerName = selectedCharacter.value === 1 ? "Player 2" : "Player 1";
+
+  await new Promise((resolve) => setTimeout(resolve, 2000));
+  closeDialog();
+
+  // Save winner in localStorage
+  localStorage.setItem("winner", winnerName);
+
+  router.push({ name: "Victory" });
+
+  return;
+}
+
+
         const missChance = Math.random() * 100;
         if (missChance < agility) {
           showMessage("Attack missed due to agility!");
@@ -390,6 +436,33 @@ export default {
           console.error("Error fetching card details:", errorChar);
           return;
         }
+        const targetCharacterId = selectedCharacter.value === 2 ? 2 : 1;
+        const { data, error } = await supabase
+          .from("characters")
+          .select("health, defense, agility, critical_rate")
+          .eq("id", targetCharacterId)
+          .single();
+
+        if (error) {
+          console.error("Error fetching character stats:", error);
+          return;
+        }
+
+        const { health, defense, agility, critical_rate } = data;
+
+        if (health <= 0) {
+  const winnerName = selectedCharacter.value === 1 ? "Player 2" : "Player 1";
+
+  await new Promise((resolve) => setTimeout(resolve, 2000));
+  closeDialog();
+
+  // Save winner in localStorage
+  localStorage.setItem("winner", winnerName);
+
+  router.push({ name: "Victory" });
+
+  return;
+}
 
         // Process fetched data if available
         if (dataChar && dataChar.length > 0) {
