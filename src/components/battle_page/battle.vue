@@ -719,7 +719,7 @@ display: none;
     justify-content: center;
     align-items: center;
     color: #EEEEEE;
-    border: 5px solid #151515;
+    border: 5px solid #D9A959;
     cursor: pointer;
     transition: background 0.3s, transform 0.3s;
     box-shadow: 0 15px 50px rgba(0, 0, 0, 0.1);
