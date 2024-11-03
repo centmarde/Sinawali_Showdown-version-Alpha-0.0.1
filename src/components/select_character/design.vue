@@ -5,10 +5,7 @@
         <!-- Character Selection -->
         <v-col cols="12" lg="4" md="6">
           <v-card class="tilt-card">
-            <h2
-              class="text-uppercase font-weight-bold text-light text-center "
-              
-            >
+            <h2 class="text-uppercase font-weight-bold text-light text-center">
               Select Your Character
             </h2>
             <v-row no-gutters class="flex-grow-1">
@@ -68,7 +65,7 @@
           class="d-none d-lg-flex d-flex justify-content-center character-viewer"
         >
           <template v-if="selectedCharacter === 1">
-            <player1/>
+            <player1 />
           </template>
           <template v-else-if="selectedCharacter === 2">
             <player2mirror />
@@ -363,34 +360,32 @@ onBeforeUnmount(() => {
 @media (max-width: 768px) {
   .character-viewer {
     position: absolute;
-    bottom: 60px; 
+    bottom: 60px;
     background-image: url("../../assets/background/csbg.png");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
   }
 
   .details {
     position: relative;
     z-index: 1;
-    top:18rem;
-    font-size: 0.8rem; 
+    top: 18rem;
+    font-size: 0.8rem;
     background-color: #151515;
   }
   .csbackground {
-    height: 100vh; 
+    height: 100vh;
     overflow-x: hidden;
     background-image: url("../../assets/background/sr.gif");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
   }
-  .btns{
+  .btns {
     position: absolute;
-    bottom: 50px; 
+    bottom: 50px;
     left: 2.5rem;
   }
 }
-
 </style>

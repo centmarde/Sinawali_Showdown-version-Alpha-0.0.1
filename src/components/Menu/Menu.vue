@@ -9,16 +9,36 @@
             <v-card-title class="text-h5">Menu</v-card-title>
             <v-divider></v-divider>
             <v-card-actions class="d-flex flex-column">
-              <v-btn @click="handleNavigation('/select_character')" class="my-2" color="primary" block>
+              <v-btn
+                @click="handleNavigation('/select_character')"
+                class="my-2"
+                color="primary"
+                block
+              >
                 Quickstart
               </v-btn>
-              <v-btn @click="handleNavigation('/multiplier')" class="my-2" color="primary" block>
+              <v-btn
+                @click="handleNavigation('/multiplier')"
+                class="my-2"
+                color="primary"
+                block
+              >
                 Multiplayer
               </v-btn>
-              <v-btn @click="handleNavigation('/cards')" class="my-2" color="primary" block>
+              <v-btn
+                @click="handleNavigation('/cards')"
+                class="my-2"
+                color="primary"
+                block
+              >
                 Cards
               </v-btn>
-              <v-btn @click="handleNavigation('/info')" class="my-2" color="primary" block>
+              <v-btn
+                @click="handleNavigation('/info')"
+                class="my-2"
+                color="primary"
+                block
+              >
                 Info
               </v-btn>
             </v-card-actions>
@@ -27,17 +47,21 @@
       </v-row>
     </v-container>
     <!-- Audio Player Component -->
-    <AudioPlayer ref="audioPlayerRef" :audioSrc="audioSrc" audioType="audio/mp3" />
+    <AudioPlayer
+      ref="audioPlayerRef"
+      :audioSrc="audioSrc"
+      audioType="audio/mp3"
+    />
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
-import AudioPlayer from '../buttonSounds/buttonAudio.vue'; // Adjust the path if necessary
+import { ref } from "vue";
+import { useRouter } from "vue-router";
+import AudioPlayer from "../buttonSounds/buttonAudio.vue"; // Adjust the path if necessary
 
 const router = useRouter();
-const audioSrc = new URL('@/assets/audio/click.mp3', import.meta.url).href;
+const audioSrc = new URL("@/assets/audio/click.mp3", import.meta.url).href;
 const audioPlayerRef = ref(null);
 
 // Method to play audio and navigate after a delay
