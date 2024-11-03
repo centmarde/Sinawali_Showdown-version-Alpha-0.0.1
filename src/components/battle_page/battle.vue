@@ -3,24 +3,22 @@
   <div class="floating-card-container">
     <v-container v-if="showCards">
       <v-row class="d-flex justify-center">
-
-        <div class="container" id="container">
-  <div 
-    v-for="(card, index) in onHandCards" 
-    :key="card.id" 
-    class="card" 
-    tabindex="0" 
-    :style="`--i: ${index - Math.floor(onHandCards.length / 2)};`" 
-    @click="openDialog(card)"
-  >
-    <div>{{ card.name }}</div>
-    <div>Type: {{ card.type }}</div>
-    <div>Power: {{ card.power }}</div>
-    <div>Mana Cost: {{ card.mana_cost }}</div>
-  </div>
-</div>
-
-      </v-row>
+      <div class="container" id="container">
+        <div 
+          v-for="(card, index) in onHandCards" 
+          :key="card.id" 
+          class="card" 
+          tabindex="0" 
+          :style="`--i: ${index - Math.floor(onHandCards.length / 2)}; background-image: url(${card.img}); background-size: cover; background-position: center;`"  
+          @click="openDialog(card)"
+        >
+        <div style="position: absolute; top: 9px;">{{ card.name }}</div>
+          
+          <div class="power">{{ card.power }}</div>
+          <div class="mana">{{ card.mana_cost }}</div>
+      </div>
+      </div>
+    </v-row>
 
 
       <!-- Separate section for the card with id = 91 -->
@@ -46,21 +44,21 @@
     </v-container>
 
     <v-dialog v-model="dialog" max-width="500" style="z-index: 99999">
-      <v-card>
-        <v-card-title>{{ selectedCard?.name }}</v-card-title>
-        <v-card-subtitle>Type: {{ selectedCard?.type }}</v-card-subtitle>
-        <v-card-text>
-          <p>Power: {{ selectedCard?.power }}</p>
-          <p>Mana Cost: {{ selectedCard?.mana_cost }}</p>
-          <p>Description: {{ selectedCard?.description }}</p>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn text @click="closeDialog">Cancel</v-btn>
-          <v-btn text color="primary" @click="confirmSelection">Confirm</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+  <v-card :style="{ backgroundImage: `url(${selectedCard?.modal_bg})`, backgroundSize: 'cover', backgroundPosition: 'center', color: '#fff' }">
+    <v-card-title>{{ selectedCard?.name }}</v-card-title>
+    <v-card-subtitle>Type: {{ selectedCard?.type }}</v-card-subtitle>
+    <v-card-text>
+      <p>Power: {{ selectedCard?.power }}</p>
+      <p>Mana Cost: {{ selectedCard?.mana_cost }}</p>
+      <p>Description: {{ selectedCard?.description }}</p>
+    </v-card-text>
+    <v-card-actions>
+      <v-spacer></v-spacer>
+      <v-btn text @click="closeDialog">Cancel</v-btn>
+      <v-btn text color="primary" @click="confirmSelection">Confirm</v-btn>
+    </v-card-actions>
+  </v-card>
+</v-dialog>
   </div>
 
   <v-dialog
@@ -260,7 +258,7 @@ if (health <= 0) {
       if (cardIndex !== -1) {
         const { data, error } = await supabase
           .from("cards")
-          .select("id, name, power, mana_cost, type")
+          .select("*")
           .order("id", { ascending: false })
           .limit(1);
 
@@ -712,7 +710,7 @@ display: none;
 
 .container .card {
     position: absolute;
-    top: 15rem;
+    top: 14.5rem;
     width: 180px;
     height: 200px;
     border-radius: 8px;
@@ -720,8 +718,8 @@ display: none;
     display: flex;
     justify-content: center;
     align-items: center;
-    color: #151515;
-    border: 10px solid rgba(0, 0, 0, 0.2);
+    color: #EEEEEE;
+    border: 5px solid #151515;
     cursor: pointer;
     transition: background 0.3s, transform 0.3s;
     box-shadow: 0 15px 50px rgba(0, 0, 0, 0.1);
@@ -759,16 +757,36 @@ display: none;
     z-index: 1;
 }
 
-/* When hovering over the container, make cards appear slightly elevated */
-.container:hover .card {
-    color: #EEEEEE;
-    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.25);
-}
+
+// .container:hover .card {
+//     color: #EEEEEE;
+//     box-shadow: 0 15px 50px rgba(0, 0, 0, 0.25);
+// }
 
 /* Adjust individual cards to lift up further on hover */
 .container .card:hover {
     transform: rotate(calc(var(--i) * 3deg)) translate(calc(var(--i) * 150px), -80px);
 }
-
+.power{
+  position: absolute;
+   bottom: 30px;
+    left: 16px; 
+}
+.mana{
+  position: absolute;
+   bottom: 30px; 
+   right: 21px;
+}
+@media (max-width: 600px) {
+  .power{
+    bottom: 16px;
+    left: 4px;
+  }
+  .mana{
+    bottom: 16px;
+    right: 8px;
+  }
+     
+    }
 </style>
 
