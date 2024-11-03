@@ -23,7 +23,7 @@
   
   const onCanPlay = () => {
     // Optional: Any logic you want to execute when the audio is ready to play
-    console.log("Audio is ready to play");
+   /*  console.log("Audio is ready to play"); */
   };
   
   // Optionally, you can provide a method to play the audio externally
