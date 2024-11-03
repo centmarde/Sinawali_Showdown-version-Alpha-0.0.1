@@ -185,13 +185,15 @@
         </v-dialog>
       </v-row>
 
-      <v-row>
+     <!-- Buttons with delayed navigation -->
+     <v-row>
         <v-col class="btns">
-          <SecBtn to="/" />
-          <PrimeBtn @click="openDialog" class="ml-4" />
+          <SecBtn @click="navigateWithSound('/')"/>
+          <PrimeBtn  @click="openDialog" class="ml-4"/>
         </v-col>
       </v-row>
     </v-container>
+    <AudioPlayer ref="audioPlayerRef" :audioSrc="audioSrc" audioType="audio/mp3"/>
   </div>
 </template>
 
@@ -201,12 +203,29 @@ import { useRouter } from "vue-router";
 import { supabase } from "../../lib/supabase";
 import PrimeBtn from "../button/PrimBtn.vue";
 import SecBtn from "../button/SecBtn.vue";
+import AudioPlayer from '../buttonSounds/buttonAudio.vue';
+
 
 // Track the selected character
 const selectedCharacter = ref(1);
 const dialog = ref(false);
 const character = ref({});
 const router = useRouter();
+const audioSrc = new URL('@/assets/audio/click.mp3', import.meta.url).href;
+const audioPlayerRef = ref(null);
+
+const playAudio = () => {
+  if (audioPlayerRef.value) {
+    audioPlayerRef.value.playAudio();
+  }
+};
+
+const navigateWithSound = (route) => {
+  playAudio();
+  setTimeout(() => {
+    router.push(route);
+  }, 500); // 500 ms delay before navigation
+};
 
 // Function to change character on mouse click
 const selectCharacter = (characterId) => {
@@ -215,10 +234,12 @@ const selectCharacter = (characterId) => {
 
 // Function to open confirmation dialog
 const openDialog = () => {
+  if (audioPlayerRef.value) {
+    audioPlayerRef.value.playAudio();
+  }
   dialog.value = true;
 };
 
-// Function to confirm choice and redirect to 'battle_loading'
 // Function to confirm choice and redirect to 'battle_loading'
 const confirmChoice = async () => {
   localStorage.setItem("selectedCharacter", selectedCharacter.value);
@@ -244,7 +265,7 @@ const confirmChoice = async () => {
   console.log("Battle ID:", battleId);
 
   dialog.value = false;
-  router.push({ name: "/battle_area" });
+  navigateWithSound("/battle_area");
 };
 
 // Function to handle keyboard arrow keys

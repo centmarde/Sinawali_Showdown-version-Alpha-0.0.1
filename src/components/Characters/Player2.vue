@@ -164,7 +164,7 @@ export default {
 }
 
 #canvas {
-  margin-top: 15rem;
+  margin-top: 12rem;
   width: 13rem;
   transition: transform 0.5s ease;
 }
@@ -195,7 +195,7 @@ export default {
     transform: translateX(-100px);
   }
   #canvas {
-    margin-top: 23rem;
+    margin-top: 18rem;
     width: 13rem;
     transition: transform 0.5s ease;
   }
