@@ -17,7 +17,7 @@
                 @click="selectCharacter(1)"
               >
                 <v-img
-                  src="../../assets/anim/red.jpg"
+                  src="./../assets/anim/red.jpg"
                   alt="Character 1"
                   class="character-image"
                   contain
@@ -31,7 +31,7 @@
                 @click="selectCharacter(2)"
               >
                 <v-img
-                  src="../../assets/anim/yellow.jpg"
+                  src="./../assets/anim/yellow.jpg"
                   alt="Character 2"
                   class="character-image"
                   contain
@@ -41,7 +41,7 @@
             <v-row no-gutters class="flex-grow-1">
               <v-col cols="6" class="p-2">
                 <v-img
-                  src="../../assets/anim/lock1.png"
+                  src="./../assets/anim/lock1.png"
                   alt="Character 3"
                   class="character-image"
                   contain
@@ -49,7 +49,7 @@
               </v-col>
               <v-col cols="6" class="p-2">
                 <v-img
-                  src="../../assets/anim/lock2.png"
+                  src="./../assets/anim/lock2.png"
                   alt="Character 4"
                   class="character-image"
                   contain
@@ -182,33 +182,36 @@
         </v-dialog>
       </v-row>
 
-     <!-- Buttons with delayed navigation -->
-     <v-row>
+      <!-- Buttons with delayed navigation -->
+      <v-row>
         <v-col class="btns">
-          <SecBtn @click="navigateWithSound('/')"/>
-          <PrimeBtn  @click="openDialog" class="ml-4"/>
+          <SecBtn @click="navigateWithSound('/')" />
+          <PrimeBtn @click="openDialog" class="ml-4" />
         </v-col>
       </v-row>
     </v-container>
-    <AudioPlayer ref="audioPlayerRef" :audioSrc="audioSrc" audioType="audio/mp3"/>
+    <AudioPlayer
+      ref="audioPlayerRef"
+      :audioSrc="audioSrc"
+      audioType="audio/mp3"
+    />
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted, onBeforeUnmount, watch } from "vue";
 import { useRouter } from "vue-router";
-import { supabase } from "../../lib/supabase";
-import PrimeBtn from "../button/PrimBtn.vue";
-import SecBtn from "../button/SecBtn.vue";
-import AudioPlayer from '../buttonSounds/buttonAudio.vue';
-
+import { supabase } from "../lib/supabase";
+import PrimeBtn from "./buttons/PrimBtn.vue";
+import SecBtn from "./buttons/SecBtn.vue";
+import AudioPlayer from "./buttonSounds/buttonAudio.vue";
 
 // Track the selected character
 const selectedCharacter = ref(1);
 const dialog = ref(false);
 const character = ref({});
 const router = useRouter();
-const audioSrc = new URL('@/assets/audio/click.mp3', import.meta.url).href;
+const audioSrc = new URL("@/assets/audio/click.mp3", import.meta.url).href;
 const audioPlayerRef = ref(null);
 
 const playAudio = () => {
@@ -309,7 +312,7 @@ onBeforeUnmount(() => {
   position: relative;
   width: 100vw;
   height: 100vh;
-  background-image: url("../../assets/background/csbg.png");
+  background-image: url("./../assets/background/csbg.png");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -361,7 +364,7 @@ onBeforeUnmount(() => {
   .character-viewer {
     position: absolute;
     bottom: 60px;
-    background-image: url("../../assets/background/csbg.png");
+    background-image: url("./../assets/background/csbg.png");
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -377,7 +380,7 @@ onBeforeUnmount(() => {
   .csbackground {
     height: 100vh;
     overflow-x: hidden;
-    background-image: url("../../assets/background/sr.gif");
+    background-image: url("./../assets/background/sr.gif");
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;

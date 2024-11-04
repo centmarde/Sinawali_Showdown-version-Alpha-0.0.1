@@ -10,22 +10,24 @@ import { setupLayouts } from "virtual:generated-layouts";
 import { routes as autoRoutes } from "vue-router/auto-routes";
 
 import Hero from "../pages/index.vue";
-import Notfound from "@/pages/not_found.vue";
+import NotFound from "@/pages/NotFound.vue";
 import Test from "@/pages/Test.vue";
-import select_character from "@/pages/select_character.vue";
+import CharacterSelection from "@/pages/CharacterSelection.vue";
 import battle_area from "@/pages/battle_area.vue";
 import next_phase from "@/components/battle_page/next_phase.vue";
 import Victory from "@/pages/Victory.vue"; // Import Victory component
+import Cards from "@/pages/CardsView.vue";
 
 const routes = setupLayouts([
   ...autoRoutes,
   { path: "/", component: Hero },
   { path: "/Test", component: Test },
-  { path: "/select_character", component: select_character },
-  { path: "/:pathMatch(.*)*", component: Notfound },
+  { path: "/select_character", component: CharacterSelection },
+  { path: "/:pathMatch(.*)*", component: NotFound },
   { path: "/next_phase", component: next_phase, name: "next_phase" },
   { path: "/battle_area", component: battle_area, name: "battle_area" },
   { path: "/victory", component: Victory, name: "Victory", props: true },
+  { path: "/cards", component: Cards },
 ]);
 
 const router = createRouter({
