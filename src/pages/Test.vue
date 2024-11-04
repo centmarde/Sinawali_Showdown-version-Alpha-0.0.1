@@ -10,8 +10,6 @@
         </v-col>
     </v-row> -->
 
-    <HomeMenu />
-
     <!-- <div class="overlayBrand"></div>
     <Player2 class="overlay-content"/> -->
     <!-- <SplineViewer/> -->

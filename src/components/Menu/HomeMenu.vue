@@ -1,6 +1,5 @@
 <template>
   <div>
-   
     <v-container fluid style="z-index: 2; position: absolute; top: 2.5rem">
       <v-row justify="center">
         <v-col cols="12" sm="6" md="8" lg="8"></v-col>
@@ -66,7 +65,6 @@
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import AudioPlayer from "../buttonSounds/buttonAudio.vue"; // Adjust the path if necessary
-import PrimBtn from "../button/PrimBtn.vue";
 
 const router = useRouter();
 const audioSrc = new URL("@/assets/audio/click.mp3", import.meta.url).href;
