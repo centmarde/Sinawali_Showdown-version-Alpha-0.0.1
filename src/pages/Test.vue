@@ -1,18 +1,16 @@
 <template>
   <div>
     <v-btn class="my-2" color="dark" block to="/"> Back </v-btn>
-    <!-- <v-row>
+    <v-row>
         <v-col>
-          
+          <Player1/>
         </v-col>
         <v-col>
            
         </v-col>
-    </v-row> -->
+    </v-row>
 
-    <!-- <div class="overlayBrand"></div>
-    <Player2 class="overlay-content"/> -->
-    <!-- <SplineViewer/> -->
+   
   </div>
 </template>
 
@@ -21,7 +19,6 @@ import Player1 from "@/components/Characters/Player1.vue";
 import Player2 from "@/components/Characters/Player2.vue";
 import player1mirror from "@/components/Characters/player1mirror.vue";
 import player2mirror from "@/components/Characters/player2mirror.vue";
-import SplineViewer from "@/components/spline/splineViewer.vue";
 import HomeMenu from "@/components/Menu/HomeMenu.vue";
 </script>
 

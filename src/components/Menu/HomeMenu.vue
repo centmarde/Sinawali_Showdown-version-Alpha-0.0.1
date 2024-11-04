@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-container fluid style="z-index: 2; position: absolute; top: 2.5rem">
+    <v-container fluid style="z-index: 9; position: absolute; top: 2.5rem">
       <v-row justify="center">
         <v-col cols="12" sm="6" md="8" lg="8"></v-col>
         <v-col cols="12" sm="6" md="4" lg="4">

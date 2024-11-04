@@ -205,8 +205,11 @@ import { supabase } from "../lib/supabase";
 import PrimeBtn from "./buttons/PrimBtn.vue";
 import SecBtn from "./buttons/SecBtn.vue";
 import AudioPlayer from "./buttonSounds/buttonAudio.vue";
+import { useToast } from "vue-toastification";
+
 
 // Track the selected character
+const toast = useToast();
 const selectedCharacter = ref(1);
 const dialog = ref(false);
 const character = ref({});
@@ -261,11 +264,25 @@ const confirmChoice = async () => {
   }
 
   const battleId = battleData[0].id; // Retrieve the generated battle ID
-  localStorage.setItem("battleId", battleId); // Save the battle ID to localStorage
-  console.log("Battle ID:", battleId);
+localStorage.setItem("battleId", battleId); // Save the battle ID to localStorage
+console.log("Battle ID:", battleId);
 
-  dialog.value = false;
-  navigateWithSound("/battle_area");
+// Randomly select which player attacks first
+const firstAttacker = Math.random() < 0.5 ? "Player 1" : "Player 2";
+
+// Show alert for who attacks first
+toast(`${firstAttacker} attacks first!`);
+
+// Close the dialog
+dialog.value = false;
+
+// Navigate based on who attacks first
+if (firstAttacker === "Player 1") {
+    navigateWithSound("/battle_area"); // Navigate to /battle for Player 1
+} else {
+    navigateWithSound("/next_phase"); // Navigate to /nextphase for Player 2
+}
+
 };
 
 // Function to handle keyboard arrow keys

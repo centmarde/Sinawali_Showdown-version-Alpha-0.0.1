@@ -151,33 +151,7 @@ export default {
     const player_variant1Ref = ref(null);
     
     const fetchRandomCards = async () => {
-      const targetCharacterId = selectedCharacter.value === 1 ? 2 : 1;
-const { data: victory, error: victoryError } = await supabase
-  .from("characters")
-  .select("health")
-  .eq("id", targetCharacterId)
-  .single();
-
-// Check for errors when fetching character stats
-if (victoryError) {
-  console.error("Error fetching character stats:", victoryError);
-  return;
-}
-
-const { health } = victory;
-
-if (health <= 0) {
-  const winnerName = selectedCharacter.value === 1 ? "Player 2" : "Player 1";
-
-  await new Promise((resolve) => setTimeout(resolve, 100));
-  closeDialog();
-
-  // Save winner in localStorage and navigate to Victory screen
-  localStorage.setItem("winner", winnerName);
-  router.push({ name: "Victory" });
-
-  return;
-}
+   
 
 const { data, error } = await supabase.from("cards").select("*");
 
@@ -395,19 +369,7 @@ await fetchRandomCards();
 
         // Destructure the fetched stats into individual variables
         const { health, defense, agility, critical_rate } = data;
-        if (health <= 0) {
-  const winnerName = selectedCharacter.value === 2 ? "Player 2" : "Player 1";
 
-  await new Promise((resolve) => setTimeout(resolve, 100));
-  closeDialog();
-
-  // Save winner in localStorage
-  localStorage.setItem("winner", winnerName);
-
-  router.push({ name: "Victory" });
-
-  return;
-}
         // Calculate the chance to miss the attack based on agility
         const missChance = Math.random() * 100; // Random number between 0 and 100
         if (missChance < agility) {
@@ -481,18 +443,6 @@ await fetchRandomCards();
 
   const { health, defense, agility, critical_rate } = data;
 
-  if (health <= 0) {
-    const winnerName = selectedCharacter.value === 2 ? "Player 2" : "Player 1";
-
-    await new Promise((resolve) => setTimeout(resolve, 100));
-    closeDialog();
-
-    // Save winner in localStorage and navigate to Victory screen
-    localStorage.setItem("winner", winnerName);
-    router.push({ name: "Victory" });
-
-    return;
-  }
 
   // Fetch the card effects for the buff card
   const { data: dataChar, error: errorChar } = await supabase
@@ -560,7 +510,7 @@ await fetchRandomCards();
 
       // Always navigate to the next phase
       closeDialog();
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 200));
       router.push({ name: "next_phase" });
     };
 

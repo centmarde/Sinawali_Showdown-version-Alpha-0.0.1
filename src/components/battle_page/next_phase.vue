@@ -145,38 +145,12 @@ export default {
     const player_variant2Ref = ref(null);
     const player_variant1Ref = ref(null);
 
-  
+    onMounted(() => {
+            audioStore.playAudio();
+        });
 
     const fetchRandomCards = async () => {
-      const targetCharacterId = selectedCharacter.value === 1 ? 2 : 1;
-      console.log(targetCharacterId);
-
-const { data: victory, error: victoryError } = await supabase
-  .from("characters")
-  .select("health")
-  .eq("id", targetCharacterId)
-  .single();
-
-// Check for errors when fetching character stats
-if (victoryError) {
-  console.error("Error fetching character stats:", victoryError);
-  return;
-}
-
-const { health } = victory;
-
-if (health <= 0) {
-  const winnerName = selectedCharacter.value === 2 ? "Player 2" : "Player 1";
-
-  await new Promise((resolve) => setTimeout(resolve, 100));
-  closeDialog();
-
-  // Save winner in localStorage and navigate to Victory screen
-  localStorage.setItem("winner", winnerName);
-  router.push({ name: "Victory" });
-
-  return;
-}
+     
 
 const { data, error } = await supabase.from("cards").select("*");
 
@@ -386,20 +360,7 @@ if (error) {
         }
 
         const { health, defense, agility, critical_rate } = data;
-
-        if (health <= 0) {
-  const winnerName = selectedCharacter.value === 1 ? "Player 2" : "Player 1";
-
-  await new Promise((resolve) => setTimeout(resolve, 100));
-  closeDialog();
-
-  // Save winner in localStorage
-  localStorage.setItem("winner", winnerName);
-
-  router.push({ name: "Victory" });
-
-  return;
-}
+      
 
 
         const missChance = Math.random() * 100;
@@ -471,19 +432,7 @@ if (error) {
 
         const { health, defense, agility, critical_rate } = data;
 
-        if (health <= 0) {
-  const winnerName = selectedCharacter.value === 1 ? "Player 2" : "Player 1";
-
-  await new Promise((resolve) => setTimeout(resolve, 100));
-  closeDialog();
-
-  // Save winner in localStorage
-  localStorage.setItem("winner", winnerName);
-
-  router.push({ name: "Victory" });
-
-  return;
-}
+      
 
         // Process fetched data if available
         if (dataChar && dataChar.length > 0) {
@@ -543,7 +492,7 @@ if (error) {
       }
 
       closeDialog();
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 200));
       router.push({ name: "battle_area" });
     };
 

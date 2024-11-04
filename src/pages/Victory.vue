@@ -38,7 +38,8 @@ export default {
 
       await this.resetCharacters();
       localStorage.clear();
-      this.$router.push({ path: "/" });
+      window.location.href = '/';
+
     },
 
     async resetCharacters() {

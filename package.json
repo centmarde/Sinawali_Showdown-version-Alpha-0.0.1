@@ -15,6 +15,7 @@
     "roboto-fontface": "*",
     "swiper": "^11.1.14",
     "vue": "^3.4.31",
+    "vue-toastification": "^2.0.0-rc.5",
     "vuetify": "^3.6.11"
   },
   "devDependencies": {
