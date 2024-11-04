@@ -68,15 +68,15 @@
 
 <script>
 import { computed, onMounted } from "vue";
-import { useRouter } from "vue-router";
+import { useRouter } from "vue-router"; // Import useRouter
 import { supabase } from "../../lib/supabase";
 import { usePlayerStore } from "../../stores/healtbar";
 
 export default {
   setup() {
-    const router = useRouter(); // Use Vue Router instance
     const playerStore = usePlayerStore();
     const { player1, player2, updatePlayerMana, updatePlayerHealth } = playerStore;
+    const router = useRouter(); // Get the router instance
     const maxHealth = 100;
     const maxMana = 100;
     const selectedChar = localStorage.getItem("selectedCharacter");
@@ -117,7 +117,7 @@ export default {
     const setupRealtimeSubscription = () => {
       const channel = supabase
         .channel("public:characters")
-        .on("postgres_changes", { event: "*", schema: "public", table: "characters" }, (payload) => {
+        .on("postgres_changes", { event: "*", schema: "public", table: "characters" }, async (payload) => {
           if (payload.new.id === 1) {
             updatePlayerHealth(1, payload.new.health);
             updatePlayerMana(1, payload.new.mana);
@@ -127,6 +127,16 @@ export default {
             updatePlayerMana(2, payload.new.mana);
           }
 
+          // Check for victory condition
+          if (player1.health <= 0) {
+            localStorage.setItem("winner", player2.name);
+            await new Promise((resolve) => setTimeout(resolve, 1500)); // Delay for 1500 ms
+            router.push("/Victory");
+          } else if (player2.health <= 0) {
+            localStorage.setItem("winner", player1.name);
+            await new Promise((resolve) => setTimeout(resolve, 1500)); // Delay for 1500 ms
+            router.push("/Victory");
+          }
         })
         .subscribe();
     };
@@ -149,9 +159,7 @@ export default {
     };
   },
 };
-
 </script>
-
 
 <style scoped>
 /* Common styles for both health bars */
