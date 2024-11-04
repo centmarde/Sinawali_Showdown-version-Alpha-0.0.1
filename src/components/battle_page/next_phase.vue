@@ -110,6 +110,7 @@ import router from "@/router";
 import { useCardStore2 } from "../../stores/cardsPlayer2Onhand";
 import { useStore2 } from "../../stores/cardEffects2";
 import { useCharacterStatusStore2 } from "../../stores/characterStatus2";
+import { useAudioStore } from '@/stores/audioStore';
 
 
 
@@ -126,7 +127,7 @@ export default {
     const showCards = ref(true);
     const cardStore = useCardStore2();
     const { onHandCards, addCard, removeCardAndAddNew } = cardStore;
-    
+    const audioStore = useAudioStore();
     const selectedCharacter = ref(
       Number(localStorage.getItem("selectedCharacter"))
     );
@@ -270,6 +271,9 @@ if (error) {
       if (selectedCard.value && selectedCard.value.type === "attack") {
         player2Ref.value?.toggleAttack();
         player_variant2Ref.value?.toggleAttack();
+        setTimeout(() => {
+                    audioStore.playPunch();
+                }, 1000); 
 
         const { data: dataChar, error: errorChar } = await supabase
           .from("cards")
@@ -565,6 +569,7 @@ if (error) {
       onHandCards,
       activeCard: null,
       filteredOnHandCards,
+      audioStore,
     };
   },methods: {
     setActiveCard(index) {

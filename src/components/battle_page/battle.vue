@@ -111,6 +111,8 @@ import router from "@/router";
 import { useCardStore1 } from "../../stores/cardsPlayer1Onhand";
 import { useStore } from "../../stores/cardEffects";
 import { useCharacterStatusStore } from "../../stores/characterStatus";
+import { useAudioStore } from '@/stores/audioStore';
+
 
 export default {
   components: {
@@ -121,7 +123,7 @@ export default {
   },
   setup() {
     const characterStatusStore = useCharacterStatusStore();
-
+    const audioStore = useAudioStore();
     const showCards = ref(true);
     const cardStore = useCardStore1();
     const { onHandCards, addCard, removeCardAndAddNew } = cardStore;
@@ -278,6 +280,9 @@ await fetchRandomCards();
       if (selectedCard.value && selectedCard.value.type === "attack") {
         player1Ref.value?.toggleAttack();
         player_variant1Ref.value?.toggleAttack();
+        setTimeout(() => {
+                    audioStore.playPunch();
+                }, 1000); 
         // Fetch card effects from Supabase
         const { data: dataChar, error: errorChar } = await supabase
           .from("cards")
@@ -583,6 +588,7 @@ await fetchRandomCards();
       onHandCards,
       activeCard: null,
       filteredOnHandCards,
+      audioStore,
 
     };
     
