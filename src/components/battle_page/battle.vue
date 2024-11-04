@@ -111,6 +111,8 @@ import router from "@/router";
 import { useCardStore1 } from "../../stores/cardsPlayer1Onhand";
 import { useStore } from "../../stores/cardEffects";
 import { useCharacterStatusStore } from "../../stores/characterStatus";
+import { useAudioStore } from '@/stores/audioStore';
+
 
 export default {
   components: {
@@ -121,7 +123,7 @@ export default {
   },
   setup() {
     const characterStatusStore = useCharacterStatusStore();
-
+    const audioStore = useAudioStore();
     const showCards = ref(true);
     const cardStore = useCardStore1();
     const { onHandCards, addCard, removeCardAndAddNew } = cardStore;
@@ -167,7 +169,7 @@ const { health } = victory;
 if (health <= 0) {
   const winnerName = selectedCharacter.value === 1 ? "Player 2" : "Player 1";
 
-  await new Promise((resolve) => setTimeout(resolve, 2000));
+  await new Promise((resolve) => setTimeout(resolve, 100));
   closeDialog();
 
   // Save winner in localStorage and navigate to Victory screen
@@ -278,6 +280,9 @@ await fetchRandomCards();
       if (selectedCard.value && selectedCard.value.type === "attack") {
         player1Ref.value?.toggleAttack();
         player_variant1Ref.value?.toggleAttack();
+        setTimeout(() => {
+                    audioStore.playPunch();
+                }, 1000); 
         // Fetch card effects from Supabase
         const { data: dataChar, error: errorChar } = await supabase
           .from("cards")
@@ -393,7 +398,7 @@ await fetchRandomCards();
         if (health <= 0) {
   const winnerName = selectedCharacter.value === 2 ? "Player 2" : "Player 1";
 
-  await new Promise((resolve) => setTimeout(resolve, 2000));
+  await new Promise((resolve) => setTimeout(resolve, 100));
   closeDialog();
 
   // Save winner in localStorage
@@ -407,7 +412,7 @@ await fetchRandomCards();
         const missChance = Math.random() * 100; // Random number between 0 and 100
         if (missChance < agility) {
           showMessage("Attack missed due to agility!");
-          await new Promise((resolve) => setTimeout(resolve, 1500));
+          await new Promise((resolve) => setTimeout(resolve, 1000));
           closeDialog();
           router.push({ name: "next_phase" });
           return; // Exit if the attack misses
@@ -432,11 +437,13 @@ await fetchRandomCards();
         if (isCriticalHit) {
           showMessage(`Critical Hit! You dealt ${finalDamage} damage!`);
         } else {
+          
           showMessage(`You dealt ${finalDamage} damage.`);
+          await new Promise((resolve) => setTimeout(resolve, 1000));
         }
 
         closeDialog();
-        await new Promise((resolve) => setTimeout(resolve, 2000)); // Wait before moving to the next phase
+         // Wait before moving to the next phase
         router.push({ name: "next_phase" });
 
         // Subtract final damage from target's health
@@ -477,7 +484,7 @@ await fetchRandomCards();
   if (health <= 0) {
     const winnerName = selectedCharacter.value === 2 ? "Player 2" : "Player 1";
 
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    await new Promise((resolve) => setTimeout(resolve, 100));
     closeDialog();
 
     // Save winner in localStorage and navigate to Victory screen
@@ -553,7 +560,7 @@ await fetchRandomCards();
 
       // Always navigate to the next phase
       closeDialog();
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 100));
       router.push({ name: "next_phase" });
     };
 
@@ -581,6 +588,7 @@ await fetchRandomCards();
       onHandCards,
       activeCard: null,
       filteredOnHandCards,
+      audioStore,
 
     };
     
