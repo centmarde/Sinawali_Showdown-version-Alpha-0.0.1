@@ -16,6 +16,7 @@ import select_character from "@/pages/select_character.vue";
 import battle_area from "@/pages/battle_area.vue";
 import next_phase from "@/components/battle_page/next_phase.vue";
 import Victory from "@/pages/Victory.vue"; // Import Victory component
+import Cards from "@/pages/cards.vue";
 
 const routes = setupLayouts([
   ...autoRoutes,
@@ -26,6 +27,7 @@ const routes = setupLayouts([
   { path: "/next_phase", component: next_phase, name: "next_phase" },
   { path: "/battle_area", component: battle_area, name: "battle_area" },
   { path: "/victory", component: Victory, name: "Victory", props: true },
+  { path: "/cards", component: Cards },
 ]);
 
 const router = createRouter({
