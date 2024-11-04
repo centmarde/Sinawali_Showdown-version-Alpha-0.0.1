@@ -67,12 +67,14 @@
 </template>
 
 <script>
-import { computed, onMounted, watch } from "vue";
+import { computed, onMounted } from "vue";
+import { useRouter } from "vue-router";
 import { supabase } from "../../lib/supabase";
 import { usePlayerStore } from "../../stores/healtbar";
 
 export default {
-  setup(_, { router }) {
+  setup() {
+    const router = useRouter(); // Use Vue Router instance
     const playerStore = usePlayerStore();
     const { player1, player2, updatePlayerMana, updatePlayerHealth } = playerStore;
     const maxHealth = 100;
@@ -125,14 +127,6 @@ export default {
             updatePlayerMana(2, payload.new.mana);
           }
 
-          // Check for victory condition
-          if (player1.health <= 0) {
-            localStorage.setItem("winner", player2.name);
-            router.push("/Victory");
-          } else if (player2.health <= 0) {
-            localStorage.setItem("winner", player1.name);
-            router.push("/Victory");
-          }
         })
         .subscribe();
     };
@@ -155,6 +149,7 @@ export default {
     };
   },
 };
+
 </script>
 
 

@@ -42,7 +42,18 @@
         
       </v-row>
     </v-container>
-
+    <v-dialog
+    v-model="messageDialog"
+    max-width="500"
+    persistent
+    style="z-index: 99999"
+  >
+    <v-card>
+      <v-card-text>
+        <p>{{ messageText }}</p>
+      </v-card-text>
+    </v-card>
+  </v-dialog>
     <v-dialog v-model="dialog" max-width="500" style="z-index: 99999">
   <v-card :style="{ backgroundImage: `url(${selectedCard?.modal_bg})`, backgroundSize: 'cover', backgroundPosition: 'center', color: '#fff' }">
     <v-card-title>{{ selectedCard?.name }}</v-card-title>
@@ -156,7 +167,7 @@ const { health } = victory;
 if (health <= 0) {
   const winnerName = selectedCharacter.value === 2 ? "Player 2" : "Player 1";
 
-  await new Promise((resolve) => setTimeout(resolve, 2000));
+  await new Promise((resolve) => setTimeout(resolve, 100));
   closeDialog();
 
   // Save winner in localStorage and navigate to Victory screen
@@ -375,7 +386,7 @@ if (error) {
         if (health <= 0) {
   const winnerName = selectedCharacter.value === 1 ? "Player 2" : "Player 1";
 
-  await new Promise((resolve) => setTimeout(resolve, 2000));
+  await new Promise((resolve) => setTimeout(resolve, 100));
   closeDialog();
 
   // Save winner in localStorage
@@ -407,16 +418,12 @@ if (error) {
           ? damageAfterDefense * 2
           : damageAfterDefense;
 
-        if (isCriticalHit) {
+          if (isCriticalHit) {
           showMessage(`Critical Hit! You dealt ${finalDamage} damage!`);
-          closeDialog();
-          await new Promise((resolve) => setTimeout(resolve, 2000));
-          router.push({ name: "battle_area" });
         } else {
+          
           showMessage(`You dealt ${finalDamage} damage.`);
-          closeDialog();
-          await new Promise((resolve) => setTimeout(resolve, 2000));
-          router.push({ name: "battle_area" });
+          await new Promise((resolve) => setTimeout(resolve, 1000));
         }
 
         const newHealth = Math.max(0, health - finalDamage);
@@ -463,7 +470,7 @@ if (error) {
         if (health <= 0) {
   const winnerName = selectedCharacter.value === 1 ? "Player 2" : "Player 1";
 
-  await new Promise((resolve) => setTimeout(resolve, 2000));
+  await new Promise((resolve) => setTimeout(resolve, 100));
   closeDialog();
 
   // Save winner in localStorage
@@ -532,7 +539,7 @@ if (error) {
       }
 
       closeDialog();
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 100));
       router.push({ name: "battle_area" });
     };
 

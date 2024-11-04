@@ -7,7 +7,9 @@
 </template>
 
 <script>
-import { supabase } from "@/lib/supabase"; // Adjust path if needed
+import { useAudioStore } from '@/stores/audioStore'; // Adjust path if needed
+import { onMounted } from 'vue';
+import { supabase } from "@/lib/supabase";
 
 export default {
   name: "Victory",
@@ -18,11 +20,9 @@ export default {
   },
   methods: {
     async goToBattleArea() {
-      // Retrieve the battleId from localStorage
       const battleId = localStorage.getItem("battleId");
 
       if (battleId) {
-        // Delete the battle record with the specified battleId
         const { error } = await supabase
           .from("battles")
           .delete()
@@ -33,22 +33,15 @@ export default {
           return;
         }
 
-        // Clear `battleId` from localStorage
         localStorage.removeItem("battleId");
       }
 
-      // Reset character stats
       await this.resetCharacters();
-
-      // Clear all other data in localStorage
       localStorage.clear();
-
-      // Navigate to the home route
       this.$router.push({ path: "/" });
     },
 
     async resetCharacters() {
-      // Reset stats for character with ID 1
       const { error: error1 } = await supabase
         .from("characters")
         .update({
@@ -65,7 +58,6 @@ export default {
         return;
       }
 
-      // Reset stats for character with ID 2
       const { error: error2 } = await supabase
         .from("characters")
         .update({
@@ -83,13 +75,19 @@ export default {
       }
     },
   },
+  setup() {
+    const audioStore = useAudioStore();
+
+    onMounted(() => {
+      audioStore.pauseAudio(); // Pause the audio when this component loads
+    });
+
+    return {
+      audioStore,
+    };
+  },
 };
 </script>
-
-<style scoped>
-/* Your existing styles */
-</style>
-
 
 <style scoped>
 .victory-screen {
