@@ -23,6 +23,7 @@
                   :image="avatarImage"
                   size="90"
                   class="bg-white"
+                  variant="elevated"
                 ></v-avatar>
               </v-col>
 
@@ -124,6 +125,11 @@ onMounted(() => {
   justify-content: center;
   align-items: center;
   height: 100vh;
+  /* Temporary BG */
+  background-image: url("../../assets/background/csbg.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 .swiper {
