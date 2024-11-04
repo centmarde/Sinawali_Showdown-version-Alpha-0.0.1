@@ -1,18 +1,16 @@
 <template>
   <div>
     <v-btn class="my-2" color="dark" block to="/"> Back </v-btn>
-    <!-- <v-row>
+    <v-row>
         <v-col>
-          
+          <Player1/>
         </v-col>
         <v-col>
            
         </v-col>
-    </v-row> -->
+    </v-row>
 
-    <!-- <div class="overlayBrand"></div>
-    <Player2 class="overlay-content"/> -->
-    <!-- <SplineViewer/> -->
+   
   </div>
 </template>
 

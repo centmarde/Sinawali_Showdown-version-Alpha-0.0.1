@@ -492,7 +492,7 @@ if (error) {
       }
 
       closeDialog();
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 200));
       router.push({ name: "battle_area" });
     };
 
