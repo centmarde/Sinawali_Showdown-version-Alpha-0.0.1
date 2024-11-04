@@ -55,7 +55,7 @@ import { Swiper, SwiperSlide } from "swiper/vue";
 import "swiper/css";
 import "swiper/css/effect-cards";
 import { EffectCards } from "swiper/modules";
-import { supabase } from "../../lib/supabase";
+import { supabase } from "../lib/supabase";
 
 // Swiper modules
 const modules = [EffectCards];
@@ -103,11 +103,11 @@ const avatarImage = computed(() => {
   if (!activeCard.value) return "";
   switch (activeCard.value.type) {
     case "attack":
-      return new URL("../../assets/icon/attack.png", import.meta.url).href;
+      return new URL("./../assets/icon/attack.png", import.meta.url).href;
     case "defense":
-      return new URL("../../assets/icon/defense.png", import.meta.url).href;
+      return new URL("./../assets/icon/defense.png", import.meta.url).href;
     case "buff":
-      return new URL("../../assets/icon/buff.png", import.meta.url).href;
+      return new URL("./../assets/icon/buff.png", import.meta.url).href;
     default:
       return "";
   }
@@ -126,7 +126,7 @@ onMounted(() => {
   align-items: center;
   height: 100vh;
   /* Temporary BG */
-  background-image: url("../../assets/background/csbg.png");
+  background-image: url("./../assets/background/csbg.png");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
