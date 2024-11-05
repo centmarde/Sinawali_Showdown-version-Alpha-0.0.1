@@ -469,29 +469,9 @@ export default {
           .eq("id", selectedCharacter.value)
           .single();
 
-          console.log(selectedCharacter.value);
-          console.log(revertedCharacter.value);
         if (errorEnergy) {
           console.error("Error fetching character mana details:", errorEnergy);
           return;
-        }
-
-        if (card91.value && card91.value.is_mana) {
-
-          // Calculate the new mana value
-          const newMana = EnergyChar.mana + card91.value.is_mana;
-
-          // Update the character's mana in the database
-          const { data: updateData, error: updateError } = await supabase
-            .from("characters")
-            .update({ mana: newMana })
-            .eq("id", revertedCharacter.value);
-
-          if (updateError) {
-            console.error("Error updating character mana:", updateError);
-            return;
-          }
-
         }
 
         // Check if character's mana is sufficient
@@ -534,28 +514,22 @@ export default {
           });
 
           setTimeout(() => {
-            router.push({ name: "next_phase" });
+            router.push({ name: "battle_area" });
           }, 1000); // 1000 milliseconds = 1 second
           return;
         }
         player_variant2Ref.value?.toggleBuff();
         player2Ref.value?.toggleBuff();
+        const { data: EnergyMinus, error: errorEnergyMinus } = await supabase
+          .from("characters")
+          .update({ mana: currentMana - selectedCard.value.mana_cost })
+          .eq("id", revertedCharacter.value);
 
-
-        // Check if the mana cost is greater than 0 before proceeding
-        if (selectedCard.value.mana_cost > 0) {
-          const { data: EnergyMinus, error: errorEnergyMinus } = await supabase
-            .from("characters")
-            .update({ mana: currentMana - selectedCard.value.mana_cost })
-            .eq("id", revertedCharacter.value);
-
-          if (errorEnergyMinus) {
-            console.error("Error updating character mana:", errorEnergyMinus);
-          }
+        if (errorEnergyMinus) {
+          console.error("Error updating character mana:", errorEnergyMinus);
+        } else {
+          console.log("Mana deducted");
         }
-
-
-
         const { data: dataChar, error: errorChar } = await supabase
           .from("cards")
           .select(

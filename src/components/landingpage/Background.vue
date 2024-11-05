@@ -1,5 +1,5 @@
 <template>
-  <HomeMenu />
+ 
   <p class="beta mt-2 ms-2">Beta Version 0.0.1</p>
   <main>  
       
@@ -28,12 +28,9 @@
 </template>
 
 <script>
-import HomeMenu from "@/components/Menu/HomeMenu.vue";
 
 export default {
-  components: {
-    HomeMenu,
-  },
+  
   mounted() {
     const parallaxElements = document.querySelectorAll(".parallax");
 

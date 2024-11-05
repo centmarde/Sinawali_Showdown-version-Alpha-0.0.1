@@ -315,6 +315,8 @@ export default {
 
           if (errorEnergyMinus) {
             console.error("Error updating character mana:", errorEnergyMinus);
+          } else {
+            console.log("Mana deducted");
           }
         } catch (error) {
           console.error("Unexpected error:", error);
@@ -492,33 +494,11 @@ export default {
           .select("mana")
           .eq("id", selectedCharacter.value)
           .single();
-          console.log(selectedCharacter.value);
-          console.log(revertedCharacter.value);
+
         if (errorEnergy) {
           console.error("Error fetching character mana details:", errorEnergy);
           return;
         }
-
-        // Assuming card91 is the card being used and has an is_mana property
-        if (card91.value && card91.value.is_mana) {
-         
-          // Calculate the new mana value
-          const newMana = EnergyChar.mana + card91.value.is_mana;
-         
-          // Update the character's mana in the database
-          const { data: updateData, error: updateError } = await supabase
-            .from("characters")
-            .update({ mana: newMana })
-            .eq("id", selectedCharacter.value);
-            
-          if (updateError) {
-            console.error("Error updating character mana:", updateError);
-            return;
-          }
-
-        }
-
-
 
         // Check if character's mana is sufficient
         const currentMana = EnergyChar.mana;
@@ -568,22 +548,19 @@ export default {
         player_variant1Ref.value?.toggleBuff();
 
 
+        const { data: EnergyMinus, error: errorEnergyMinus } = await supabase
+          .from("characters")
+          .update({ mana: currentMana - selectedCard.value.mana_cost })
+          .eq("id", selectedCharacter.value);
 
-        // Check if the mana cost is greater than 0 before proceeding
-        if (selectedCard.value.mana_cost > 0) {
-          const { data: EnergyMinus, error: errorEnergyMinus } = await supabase
-            .from("characters")
-            .update({ mana: currentMana - selectedCard.value.mana_cost })
-            .eq("id", selectedCharacter.value);
-
-          if (errorEnergyMinus) {
-            console.error("Error updating character mana:", errorEnergyMinus);
-          }
-        } 
-
+        if (errorEnergyMinus) {
+          console.error("Error updating character mana:", errorEnergyMinus);
+        } else {
+          console.log("Mana deducted");
+        }
 
         // Check if a character has won the battle
-
+      
 
         const { data, error } = await supabase
           .from("characters")
