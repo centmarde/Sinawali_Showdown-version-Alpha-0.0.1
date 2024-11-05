@@ -207,17 +207,15 @@ import SecBtn from "./buttons/SecBtn.vue";
 import AudioPlayer from "./buttonSounds/buttonAudio.vue";
 import { useToast } from "vue-toastification";
 
+
 // Track the selected character
 const toast = useToast();
-const selectedCharacter = ref(Number(localStorage.getItem("selectedCharacter")) || 1); // Ensure it's a number
+const selectedCharacter = ref(1);
 const dialog = ref(false);
 const character = ref({});
 const router = useRouter();
 const audioSrc = new URL("@/assets/audio/click.mp3", import.meta.url).href;
 const audioPlayerRef = ref(null);
-const userId = localStorage.getItem("user_id");
-
-console.log(userId);
 
 const playAudio = () => {
   if (audioPlayerRef.value) {
@@ -252,10 +250,11 @@ const confirmChoice = async () => {
 
   // Insert a new battle row into the battles table
   const { data: battleData, error: battleError } = await supabase
-    .from("sessions")
+    .from("battles")
     .insert({
-      user_id: userId,
-      character_id: selectedCharacter.value,
+      player1_character_id: selectedCharacter.value,
+      player2_character_id: selectedCharacter.value === 1 ? 2 : 1, // Assume player 2 is always the opposite
+      turn_number: 1, // Initialize turn number, can be adjusted later
     })
     .select(); // Use .select() to return the inserted row
 
@@ -265,24 +264,25 @@ const confirmChoice = async () => {
   }
 
   const battleId = battleData[0].id; // Retrieve the generated battle ID
-  localStorage.setItem("battleId", battleId); // Save the battle ID to localStorage
-  console.log("Battle ID:", battleId);
+localStorage.setItem("battleId", battleId); // Save the battle ID to localStorage
+console.log("Battle ID:", battleId);
 
-  // Randomly select which player attacks first
-  const firstAttacker = Math.random() < 0.5 ? "Player 1" : "Player 2";
+// Randomly select which player attacks first
+const firstAttacker = Math.random() < 0.5 ? "Player 1" : "Player 2";
 
-  // Show alert for who attacks first
-  toast(`${firstAttacker} attacks first!`);
+// Show alert for who attacks first
+toast(`${firstAttacker} attacks first!`);
 
-  // Close the dialog
-  dialog.value = false;
+// Close the dialog
+dialog.value = false;
 
-  // Navigate based on who attacks first
-  if (firstAttacker === "Player 1") {
+// Navigate based on who attacks first
+if (firstAttacker === "Player 1") {
     navigateWithSound("/battle_area"); // Navigate to /battle for Player 1
-  } else {
+} else {
     navigateWithSound("/next_phase"); // Navigate to /nextphase for Player 2
-  }
+}
+
 };
 
 // Function to handle keyboard arrow keys
@@ -323,7 +323,6 @@ onBeforeUnmount(() => {
   window.removeEventListener("keydown", handleKeyDown);
 });
 </script>
-
 
 <style scoped>
 .csbackground {

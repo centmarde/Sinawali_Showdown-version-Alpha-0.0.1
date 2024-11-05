@@ -85,7 +85,7 @@ export const useUserStore = defineStore('user', {
           throw new Error("Profile fetch error.");
         }
   
-        localStorage.setItem("user_id", profiles[0].id); // Assuming user_id is the correct column
+        localStorage.setItem("user_id", profiles[0].user_id); // Assuming user_id is the correct column
         localStorage.setItem("Role", profiles[0].is_admin ? "true" : "false");
         
         // Store user ID and username in the Pinia store

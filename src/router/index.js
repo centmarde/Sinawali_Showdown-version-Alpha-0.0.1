@@ -45,7 +45,7 @@ router.beforeEach((to, from, next) => {
 
   // Define public and protected pages
   const publicPages = ["/", "/Test"];
-  const protectedPages = ["/select_character", "/next_phase", "/battle_area", "/Victory", "/cards", "/landing"];
+  const protectedPages = ["/select_character", "/next_phase", "/battle_area", "/victory", "/cards", "/landing"];
 
   // Redirect to login if accessing protected pages without authentication
   if (protectedPages.includes(to.path) && !isLoggedIn) {
