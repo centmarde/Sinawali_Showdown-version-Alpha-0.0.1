@@ -1,9 +1,8 @@
 <template>
   <div @click="handleUserInteraction" @touchstart="handleUserInteraction">
-    <!-- Background should always be visible -->
     <Background />
-
-    <!-- Loader overlay with conditional display -->
+    <!-- Hide HomeMenu if login or signup dialog is shown -->
+    <HomeMenu v-if="!showLoginDialog && !showSignUpDialog" />
     <div
       v-if="isLoading"
       class="loader-overlay"
@@ -12,40 +11,118 @@
       <IntroLoader />
       <PrimBtn class="skip-btn" @click="skipLoader"></PrimBtn>
 
-      <!-- Correctly defined audio for the skip button -->
       <audio ref="skipAudio">
         <source src="../assets/audio/click.mp3" type="audio/mp3" />
         Your browser does not support the audio element.
       </audio>
     </div>
 
-    <!-- Hidden audio player -->
     <audio ref="audioPlayer" hidden loop>
       <source src="../assets/audio/adal.mp3" type="audio/mpeg" />
       Your browser does not support the audio element.
     </audio>
+
+    <!-- Login Dialog -->
+    <v-dialog v-if="!isLoggedIn" style="z-index: 10" persistent v-model="showLoginDialog" max-width="400">
+      <template v-slot:default>
+        <v-card>
+          <v-card-title>Login</v-card-title>
+          <v-card-text>
+            <v-form ref="loginForm" v-model="valid">
+              <v-text-field
+                v-model="loginEmail"
+                label="Email"
+                required
+              ></v-text-field>
+              <v-text-field
+                v-model="loginPassword"
+                label="Password"
+                type="password"
+                required
+              ></v-text-field>
+            </v-form>
+          </v-card-text>
+          <v-card-actions>
+            <v-btn @click="login">Login</v-btn>
+            <v-btn @click="showSignUpDialog = true">Sign Up</v-btn>
+          </v-card-actions>
+        </v-card>
+      </template>
+    </v-dialog>
+
+    <!-- Sign Up Dialog -->
+    <v-dialog v-if="!isLoggedIn" v-model="showSignUpDialog" max-width="400">
+      <template v-slot:default>
+        <v-card>
+          <v-card-title>Sign Up</v-card-title>
+          <v-card-text>
+            <v-form ref="signupForm" v-model="valid">
+              <v-text-field
+                v-model="signupEmail"
+                label="Email"
+                required
+              ></v-text-field>
+              <v-text-field
+                v-model="signupUsername"
+                label="Username"
+                required
+              ></v-text-field>
+              <v-text-field
+                v-model="signupPassword"
+                label="Password"
+                type="password"
+                required
+              ></v-text-field>
+            </v-form>
+          </v-card-text>
+          <v-card-actions>
+            <v-btn @click="signup">Create Account</v-btn>
+            <v-btn @click="showSignUpDialog = false">Cancel</v-btn>
+          </v-card-actions>
+        </v-card>
+      </template>
+    </v-dialog>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import Background from "@/components/landingpage/Background.vue";
 import IntroLoader from "@/pages/loader.vue";
 import PrimBtn from "@/components/buttons/PrimBtn.vue";
+import { useUserStore } from "@/stores/useUserStore";
+import { useRouter } from "vue-router";
 
 const isLoading = ref(true);
 const audioPlayer = ref(null);
-const skipAudio = ref(null); // Reference for the skip audio
+const skipAudio = ref(null);
 const hasPlayedAudio = ref(false);
+const userStore = useUserStore();
+const valid = ref(false);
 
+const router = useRouter();
+const signupEmail = ref('');
+const signupUsername = ref('');
+const signupPassword = ref('');
+const loginEmail = ref('');
+const loginPassword = ref('');
+
+const showSignUpDialog = ref(false);
+const showLoginDialog = ref(true);
+
+// Computed property to check if the user is already logged in
+const isLoggedIn = computed(() => userStore.isAuthenticated);
+
+// Function to skip the loader and show the login dialog if not logged in
 const skipLoader = () => {
   if (skipAudio.value) {
     skipAudio.value
       .play()
       .then(() => {
         setTimeout(() => {
-          isLoading.value = false; // Hide loader after the delay
-        }, 500); // Delay for 500 milliseconds (adjust as needed)
+          isLoading.value = false;
+          if (!isLoggedIn.value) showLoginDialog.value = true;
+        }, 500);
       })
       .catch((error) => {
         console.error("Error playing skip audio:", error);
@@ -54,12 +131,11 @@ const skipLoader = () => {
 };
 
 const handleUserInteraction = () => {
-  // Play background audio only once upon the first interaction
   if (audioPlayer.value && !hasPlayedAudio.value) {
     audioPlayer.value
       .play()
       .then(() => {
-        hasPlayedAudio.value = true; // Prevents replay on future interactions
+        hasPlayedAudio.value = true;
       })
       .catch((error) => {
         console.error("Error playing audio:", error);
@@ -68,12 +144,33 @@ const handleUserInteraction = () => {
 };
 
 onMounted(() => {
-  // Keep IntroLoader visible for 10 seconds before hiding
   setTimeout(() => {
-    isLoading.value = false; // Hide loader after 10 seconds
-  }, 10000); // 10 seconds loader duration
+    isLoading.value = false;
+    if (!isLoggedIn.value) showLoginDialog.value = true;
+  }, 10000);
 });
+
+const signup = async () => {
+  const { error } = await userStore.signup(signupEmail.value, signupPassword.value, signupUsername.value);
+  if (!error) {
+    console.log("Signup successful!");
+    showSignUpDialog.value = false;
+  }
+};
+
+const login = async () => {
+  console.log("Attempting login with email:", loginEmail.value);
+  const { error } = await userStore.login(loginEmail.value, loginPassword.value);
+  if (!error) {
+    console.log("Login successful!");
+    showLoginDialog.value = false;
+    router.push({ name: "landing" });
+  } else {
+    console.error("Login error:", error);
+  }
+};
 </script>
+
 
 <style scoped>
 #ygar {

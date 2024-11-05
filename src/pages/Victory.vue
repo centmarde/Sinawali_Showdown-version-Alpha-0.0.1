@@ -38,7 +38,7 @@ export default {
 
       await this.resetCharacters();
       localStorage.clear();
-      window.location.href = '/';
+      window.location.href = '/landing';
 
     },
 
