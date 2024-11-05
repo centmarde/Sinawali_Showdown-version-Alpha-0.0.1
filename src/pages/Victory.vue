@@ -24,7 +24,7 @@ export default {
 
       if (battleId) {
         const { error } = await supabase
-          .from("battles")
+          .from("sessions")
           .delete()
           .eq("id", battleId);
 
@@ -37,7 +37,6 @@ export default {
       }
 
       await this.resetCharacters();
-      localStorage.clear();
       window.location.href = '/landing';
 
     },

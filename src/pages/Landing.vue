@@ -44,19 +44,7 @@ onMounted(() => {
 })
 
 
-const handleUserInteraction = () => {
-  // Play background audio only once upon the first interaction
-  if (audioPlayer.value && !hasPlayedAudio.value) {
-    audioPlayer.value
-      .play()
-      .then(() => {
-        hasPlayedAudio.value = true; // Prevents replay on future interactions
-      })
-      .catch((error) => {
-        console.error("Error playing audio:", error);
-      });
-  }
-};
+
 
 
 </script>
