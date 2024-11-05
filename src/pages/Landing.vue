@@ -17,11 +17,8 @@
       Your browser does not support the audio element.
     </audio>
 
-    <!-- Hidden audio player -->
-    <audio ref="audioPlayer" hidden loop>
-      <source src="../assets/audio/adal.mp3" type="audio/mpeg" />
-      Your browser does not support the audio element.
-    </audio>
+   
+    
   </div>
 </template>
 
