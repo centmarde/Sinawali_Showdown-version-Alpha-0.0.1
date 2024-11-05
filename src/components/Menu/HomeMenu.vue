@@ -8,18 +8,14 @@
             <v-img
               class="align-center"
               height="450"
-              src="../../assets/background/menu.gif"
+              src="@/assets/background/menu.gif"
               cover
             >
               <div class="pa-16 me-3">
-                <v-card-title class="text-h5 text-black-50 rock-salt-regular"
-                  >Kali Unleashed
+                <v-card-title class="text-h5 text-black-50 rock-salt-regular">
+                  Kali Unleashed
                 </v-card-title>
-                <v-divider
-                  :thickness="3"
-                  color="black-50"
-                  class="mt-0 mb-1"
-                ></v-divider>
+                <v-divider :thickness="3" color="black-50" class="mt-0 mb-1" />
                 <v-card-actions class="d-flex flex-column">
                   <v-btn
                     @click="handleNavigation('/select_character')"
@@ -30,7 +26,7 @@
                     Quickstart
                   </v-btn>
                   <v-btn
-                    @click="handleNavigation('/multiplier')"
+                    @click="handleNavigation('/multiplayer')"
                     class="my-2 font-weight-bold"
                     color="black-50"
                     block
@@ -44,6 +40,14 @@
                     block
                   >
                     Cards
+                  </v-btn>
+                  <v-btn
+                    @click="doLogout()"
+                    class="my-2 font-weight-bold"
+                    color="black-50"
+                    block
+                  >
+                    Logout
                   </v-btn>
                 </v-card-actions>
               </div>
@@ -62,18 +66,27 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import AudioPlayer from "../buttonSounds/buttonAudio.vue"; // Adjust the path if necessary
+import { doLogout } from "@/lib/supabase";
+import { useAudioStore } from "@/stores/audioStore";
 
+const audioStore = useAudioStore();
 const router = useRouter();
 const audioSrc = new URL("@/assets/audio/click.mp3", import.meta.url).href;
 const audioPlayerRef = ref(null);
+
+// Play background audio when the component mounts
+onMounted(() => {
+  audioStore.playAdal();
+});
 
 // Method to play audio and navigate after a delay
 const handleNavigation = (route) => {
   if (audioPlayerRef.value) {
     audioPlayerRef.value.playAudio();
+    audioStore.allPause();
   }
   setTimeout(() => {
     router.push(route);
@@ -95,7 +108,7 @@ const handleNavigation = (route) => {
   object-fit: cover;
 }
 
-router-link {
+.router-link {
   text-decoration: none;
 }
 </style>
