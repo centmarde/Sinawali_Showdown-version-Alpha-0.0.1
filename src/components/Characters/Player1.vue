@@ -2,9 +2,10 @@
   <div class="canvas-container">
     <!-- Canvas for Player 1's animations, toggles moveLeft class based on isattack state -->
     <canvas id="canvas" ref="canvas1" :class="{ moveLeft: isattack }"></canvas>
-   <!--  <button @click="toggleHurtInjured">Hurt (Injured)</button>
+    <!-- <button @click="toggleHurtInjured">Hurt (Injured)</button>
         <button @click="toggleHurtSkinDamage">Hurt (Skin Damage)</button>
-        <button @click="toggleBuff">Buff</button>   -->
+        <button @click="toggleBuff">Buff</button>
+        <button @click="toggleAttack">attack</button>     -->
   </div>
 </template>
 
@@ -97,29 +98,72 @@ export default {
     };
 
     const attack = () => {
-      if (!this.isattack) return; // Stop if not attacking
+  if (!this.isattack) return;
 
-      frameY = 2;
-      drawPlayer();
-      if (gameFrame % staggerFrames === 0) frameX = frameX < 7 ? frameX + 1 : 0;
-      gameFrame++;
-      if (frameX < 7) {
-        this.animationFrame = requestAnimationFrame(attack);
-      } else {
-        frameX = 0;
-        this.isattack = false;
-        idle();
-      }
-    };
+  frameY = 2;
+  drawPlayer();
+  if (gameFrame % staggerFrames === 0) frameX = frameX < 7 ? frameX + 1 : 0;
+  gameFrame++;
+  if (frameX < 7) {
+    this.animationFrame = requestAnimationFrame(attack);
+  } else {
+    frameX = 0;
+    this.isattack = false;
+    idle();
+  }
+};
 
-    this.toggleAttack = () => {
-      cancelAnimationFrame(this.animationFrame);
-      if (!this.isattack) {
-        this.isattack = true;
-        frameX = 0;
-        attack();
-      }
-    };
+const attack2 = () => {
+  if (!this.isattack) return;
+
+  frameY = 3;
+  drawPlayer();
+  if (gameFrame % staggerFrames === 0) frameX = frameX < 6 ? frameX + 1 : 0;
+  gameFrame++;
+  if (frameX < 6) {
+    this.animationFrame = requestAnimationFrame(attack2);
+  } else {
+    frameX = 0;
+    this.isattack = false;
+    idle();
+  }
+};
+
+const attack3 = () => {
+  if (!this.isattack) return;
+
+  frameY = 1; // Assume frameY 4 is the new attack3 animation row
+  drawPlayer();
+  if (gameFrame % staggerFrames === 0) frameX = frameX < 7 ? frameX + 1 : 0; // Example frame count for attack3
+  gameFrame++;
+  if (frameX < 7) {
+    this.animationFrame = requestAnimationFrame(attack3);
+  } else {
+    frameX = 0;
+    this.isattack = false;
+    idle();
+  }
+};
+
+this.toggleAttack = () => {
+  cancelAnimationFrame(this.animationFrame);
+  if (!this.isattack) {
+    this.isattack = true;
+    frameX = 0;
+
+    // Randomly select between attack, attack2, and attack3
+    const randomAttack = Math.floor(Math.random() * 3);
+    if (randomAttack === 0) {
+      attack();
+    } else if (randomAttack === 1) {
+      attack2();
+    } else {
+      attack3();
+    }
+  }
+};
+
+
 
     this.toggleHurt = () => {
       cancelAnimationFrame(this.animationFrame);
@@ -165,7 +209,7 @@ export default {
 }
 
 #canvas {
-  margin-top: 15rem;
+  margin-top: 12rem;
   width: 13rem;
   transition: transform 0.5s ease;
 }
@@ -201,7 +245,7 @@ export default {
     transform: translateX(100px);
   }
   #canvas {
-    margin-top: 23rem;
+    margin-top: 18rem;
     width: 13rem;
     transition: transform 0.5s ease;
   }

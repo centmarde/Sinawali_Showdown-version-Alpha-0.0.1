@@ -68,6 +68,7 @@
 
 <script>
 import { computed, onMounted } from "vue";
+import { useRouter } from "vue-router"; // Import useRouter
 import { supabase } from "../../lib/supabase";
 import { usePlayerStore } from "../../stores/healtbar";
 
@@ -75,39 +76,28 @@ export default {
   setup() {
     const playerStore = usePlayerStore();
     const { player1, player2, updatePlayerMana, updatePlayerHealth } = playerStore;
+    const router = useRouter(); // Get the router instance
     const maxHealth = 100;
     const maxMana = 100;
     const selectedChar = localStorage.getItem("selectedCharacter");
 
-    // Computed properties for dynamic health values
-    const currentPlayerHealth = computed(() => {
-      return selectedChar === "1" ? player1.health : player2.health;
-    });
-
-    const currentPlayer2Health = computed(() => {
-      return selectedChar === "1" ? player2.health : player1.health;
-    });
-
-    // Computed properties for dynamic mana values
-    const currentPlayerMana = computed(() => {
-      return selectedChar === "1" ? player1.mana : player2.mana;
-    });
-
-    const currentPlayer2Mana = computed(() => {
-      return selectedChar === "1" ? player2.mana : player1.mana;
-    });
+    // Computed properties for dynamic health and mana values
+    const currentPlayerHealth = computed(() => selectedChar === "1" ? player1.health : player2.health);
+    const currentPlayer2Health = computed(() => selectedChar === "1" ? player2.health : player1.health);
+    const currentPlayerMana = computed(() => selectedChar === "1" ? player1.mana : player2.mana);
+    const currentPlayer2Mana = computed(() => selectedChar === "1" ? player2.mana : player1.mana);
 
     const fetchCharacterData = async () => {
       try {
         const { data: player1Data } = await supabase
           .from("characters")
-          .select("name, health, mana") // Fetch mana as well
+          .select("name, health, mana")
           .eq("id", 1)
           .single();
 
         const { data: player2Data } = await supabase
           .from("characters")
-          .select("name, health, mana") // Fetch mana as well
+          .select("name, health, mana")
           .eq("id", 2)
           .single();
 
@@ -127,20 +117,27 @@ export default {
     const setupRealtimeSubscription = () => {
       const channel = supabase
         .channel("public:characters")
-        .on(
-          "postgres_changes",
-          { event: "*", schema: "public", table: "characters" },
-          (payload) => {
-            if (payload.new.id === 1) {
-              updatePlayerHealth(1, payload.new.health);
-              updatePlayerMana(1, payload.new.mana); // Update mana in real-time
-            }
-            if (payload.new.id === 2) {
-              updatePlayerHealth(2, payload.new.health);
-              updatePlayerMana(2, payload.new.mana); // Update mana in real-time
-            }
+        .on("postgres_changes", { event: "*", schema: "public", table: "characters" }, async (payload) => {
+          if (payload.new.id === 1) {
+            updatePlayerHealth(1, payload.new.health);
+            updatePlayerMana(1, payload.new.mana);
           }
-        )
+          if (payload.new.id === 2) {
+            updatePlayerHealth(2, payload.new.health);
+            updatePlayerMana(2, payload.new.mana);
+          }
+
+          // Check for victory condition
+          if (player1.health <= 0) {
+            localStorage.setItem("winner", player2.name);
+            await new Promise((resolve) => setTimeout(resolve, 1500)); // Delay for 1500 ms
+            router.push("/Victory");
+          } else if (player2.health <= 0) {
+            localStorage.setItem("winner", player1.name);
+            await new Promise((resolve) => setTimeout(resolve, 1500)); // Delay for 1500 ms
+            router.push("/Victory");
+          }
+        })
         .subscribe();
     };
 
