@@ -17,10 +17,6 @@
       </audio>
     </div>
 
-    <audio ref="audioPlayer" hidden loop>
-      <source src="../assets/audio/adal.mp3" type="audio/mpeg" />
-      Your browser does not support the audio element.
-    </audio>
 
     <!-- Login Dialog -->
     <v-dialog v-if="!isLoggedIn" style="z-index: 10" persistent v-model="showLoginDialog" max-width="400">
@@ -60,6 +56,7 @@
               <v-text-field
                 v-model="signupEmail"
                 label="Email"
+                type="email"
                 required
               ></v-text-field>
               <v-text-field
@@ -92,7 +89,9 @@ import IntroLoader from "@/pages/loader.vue";
 import PrimBtn from "@/components/buttons/PrimBtn.vue";
 import { useUserStore } from "@/stores/useUserStore";
 import { useRouter } from "vue-router";
+import { useAudioStore } from "@/stores/audioStore";
 
+const audioStore = useAudioStore();
 const isLoading = ref(true);
 const audioPlayer = ref(null);
 const skipAudio = ref(null);
@@ -131,16 +130,11 @@ const skipLoader = () => {
 };
 
 const handleUserInteraction = () => {
-  if (audioPlayer.value && !hasPlayedAudio.value) {
-    audioPlayer.value
-      .play()
-      .then(() => {
+    // Play click sound when user interacts with the component
+    if (!hasPlayedAudio.value) {
+        audioStore.playAdal(); // Ensure adal sound plays once on mount
         hasPlayedAudio.value = true;
-      })
-      .catch((error) => {
-        console.error("Error playing audio:", error);
-      });
-  }
+    }
 };
 
 onMounted(() => {

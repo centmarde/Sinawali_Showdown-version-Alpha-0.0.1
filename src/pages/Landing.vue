@@ -30,12 +30,18 @@
 import { ref, onMounted } from "vue";
 import Background from "@/components/landingpage/Background.vue";
 import HomeMenu from "@/components/Menu/HomeMenu.vue";
+import { useAudioStore } from "@/stores/audioStore";
 
+
+const audioStore = useAudioStore();
 const isLoading = ref(true);
 const audioPlayer = ref(null);
 const skipAudio = ref(null); // Reference for the skip audio
 const hasPlayedAudio = ref(false);
 
+onMounted(() => {
+  audioStore.playAdal();
+})
 
 
 const handleUserInteraction = () => {
