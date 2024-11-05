@@ -45,6 +45,15 @@
                   >
                     Cards
                   </v-btn>
+                 
+                  <v-btn
+                    @click="doLogout()"
+                    class="my-2 font-weight-bold"
+                    color="black-50"
+                    block
+                  >
+                    logout
+                  </v-btn>
                 </v-card-actions>
               </div>
             </v-img>
@@ -65,6 +74,7 @@
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import AudioPlayer from "../buttonSounds/buttonAudio.vue"; // Adjust the path if necessary
+import { doLogout } from "@/lib/supabase";
 
 const router = useRouter();
 const audioSrc = new URL("@/assets/audio/click.mp3", import.meta.url).href;

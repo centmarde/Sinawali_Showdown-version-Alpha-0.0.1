@@ -13,21 +13,25 @@ import Hero from "../pages/index.vue";
 import NotFound from "@/pages/NotFound.vue";
 import Test from "@/pages/Test.vue";
 import CharacterSelection from "@/pages/CharacterSelection.vue";
-import battle_area from "@/pages/battle_area.vue";
-import next_phase from "@/components/battle_page/next_phase.vue";
-import Victory from "@/pages/Victory.vue"; // Import Victory component
+import BattleArea from "@/pages/battle_area.vue";
+import NextPhase from "@/components/battle_page/next_phase.vue";
+import Victory from "@/pages/Victory.vue";
 import Cards from "@/pages/CardsView.vue";
+import Landing from "@/pages/Landing.vue";
 
+// Setup routes
 const routes = setupLayouts([
   ...autoRoutes,
-  { path: "/", component: Hero },
+  { path: "/", component: Hero,name: "Hero" },
   { path: "/Test", component: Test },
-  { path: "/select_character", component: CharacterSelection },
   { path: "/:pathMatch(.*)*", component: NotFound },
-  { path: "/next_phase", component: next_phase, name: "next_phase" },
-  { path: "/battle_area", component: battle_area, name: "battle_area" },
-  { path: "/victory", component: Victory, name: "Victory", props: true },
-  { path: "/cards", component: Cards },
+
+  { path: "/landing", component: Landing, name: "landing", meta: { requiresAuth: true } },
+  { path: "/select_character", component: CharacterSelection, meta: { requiresAuth: true } },
+  { path: "/next_phase", component: NextPhase, meta: { requiresAuth: true }, name: "next_phase" },
+  { path: "/battle_area", component: BattleArea, meta: { requiresAuth: true }, name: "battle_area" },
+  { path: "/victory", component: Victory, meta: { requiresAuth: true }, name: "Victory", props: true },
+  { path: "/cards", component: Cards, meta: { requiresAuth: true } },
 ]);
 
 const router = createRouter({
@@ -35,7 +39,29 @@ const router = createRouter({
   routes,
 });
 
-// Workaround for https://github.com/vitejs/vite/issues/11804
+// Navigation guards
+router.beforeEach((to, from, next) => {
+  const isLoggedIn = localStorage.getItem("access_token") !== null;
+
+  // Define public and protected pages
+  const publicPages = ["/", "/Test"];
+  const protectedPages = ["/select_character", "/next_phase", "/battle_area", "/Victory", "/cards", "/landing"];
+
+  // Redirect to login if accessing protected pages without authentication
+  if (protectedPages.includes(to.path) && !isLoggedIn) {
+    return next("/");
+  }
+
+  // Redirect to /cards if already logged in and accessing public pages
+  if (publicPages.includes(to.path) && isLoggedIn) {
+    return next("/landing");
+  }
+
+  // Default: proceed to the requested route
+  next();
+});
+
+// Handle dynamic import errors (workaround for https://github.com/vitejs/vite/issues/11804)
 router.onError((err, to) => {
   if (err?.message?.includes?.("Failed to fetch dynamically imported module")) {
     if (!localStorage.getItem("vuetify:dynamic-reload")) {
