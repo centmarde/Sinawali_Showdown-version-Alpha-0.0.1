@@ -298,7 +298,7 @@ const handleKeyDown = (event) => {
 const fetchCharacterDetails = async (characterId) => {
   const { data, error } = await supabase
     .from("characters")
-    .select("name, role, health, mana, agility, defense, critical_rate")
+    .select("*")
     .eq("id", characterId)
     .single();
 

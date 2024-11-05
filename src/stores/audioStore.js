@@ -45,16 +45,11 @@ export const useAudioStore = defineStore('audio', () => {
         }
     };
 
-    const playAdal = () => {
-        // Ensure adal sound is playing and looping
-        if (adalPlayer.value && !adalPlayer.value.paused) {
-            adalPlayer.value.currentTime = 0; // Reset to the beginning if already playing
-        } else {
-            adalPlayer.value.play().catch(error => {
-                console.error("Error playing adal audio:", error);
-            });
-        }
+   const playAdal = () => {
+    if (adalPlayer.value) {
+        adalPlayer.value.play();
     }
+   };
 
     const playPunch = () => {
         // Randomly select one of the punch sounds

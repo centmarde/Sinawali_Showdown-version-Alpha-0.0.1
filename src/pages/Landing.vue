@@ -39,9 +39,7 @@ const audioPlayer = ref(null);
 const skipAudio = ref(null); // Reference for the skip audio
 const hasPlayedAudio = ref(false);
 
-onMounted(() => {
-  audioStore.playAdal();
-})
+
 
 
 
