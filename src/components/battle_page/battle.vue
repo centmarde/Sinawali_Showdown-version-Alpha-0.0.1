@@ -560,12 +560,12 @@ export default {
         }
 
         // Check if a character has won the battle
-        const targetCharacterId = selectedCharacter.value === 1 ? 2 : 1;
+      
 
         const { data, error } = await supabase
           .from("characters")
-          .select("health, defense, agility, critical_rate")
-          .eq("id", targetCharacterId)
+          .select("*")
+          .eq("id", selectedCharacter.value)
           .single();
 
         if (error) {
@@ -580,7 +580,7 @@ export default {
         const { data: dataChar, error: errorChar } = await supabase
           .from("cards")
           .select(
-            "is_poison, is_burn, is_def_amp, is_crit_amp, is_agil_amp, is_def_debuff, is_agil_debuff, turn_count, is_stunned"
+            "*"
           )
           .eq("id", selectedCard.value.id);
 

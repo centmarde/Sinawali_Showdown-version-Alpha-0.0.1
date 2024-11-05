@@ -120,8 +120,11 @@ export default {
       Number(localStorage.getItem("selectedCharacter"))
     );
     const revertedCharacter = computed(() => {
-      return selectedCharacter.value === 1 ? 1 : 2;
+      return selectedCharacter.value === 2 ? 1 : 2;
     });
+
+    /* console.log(selectedCharacter.value);
+    console.log(revertedCharacter.value); */
     const dialog = ref(false);
     const messageDialog = ref(false);
     const messageText = ref("");
@@ -297,7 +300,7 @@ export default {
           const { data: EnergyMinus, error: errorEnergyMinus } = await supabase
             .from("characters")
             .update({ mana: currentMana - selectedCard.value.mana_cost })
-            .eq("id", selectedCharacter.value);
+            .eq("id", revertedCharacter.value);
 
           if (errorEnergyMinus) {
             console.error("Error updating character mana:", errorEnergyMinus);
@@ -520,7 +523,7 @@ export default {
         const { data: EnergyMinus, error: errorEnergyMinus } = await supabase
           .from("characters")
           .update({ mana: currentMana - selectedCard.value.mana_cost })
-          .eq("id", selectedCharacter.value);
+          .eq("id", revertedCharacter.value);
 
         if (errorEnergyMinus) {
           console.error("Error updating character mana:", errorEnergyMinus);
@@ -530,7 +533,7 @@ export default {
         const { data: dataChar, error: errorChar } = await supabase
           .from("cards")
           .select(
-            "is_poison, is_burn, is_def_amp, is_crit_amp, is_agil_amp, is_def_debuff, is_agil_debuff,  turn_count, is_stunned"
+            "*"
           )
           .eq("id", selectedCard.value.id); // Assuming selectedCard has an id
 
