@@ -11,12 +11,11 @@ export const supabase = createClient(
 async function doLogout() {
   // Confirm logout
   const confirmed = window.confirm("Are you sure you want to logout?");
-  
+
   // If not confirmed, exit the function early
   if (!confirmed) {
     return;
   }
-
   // Supabase Logout
   const { error } = await supabase.auth.signOut();
 
@@ -28,5 +27,5 @@ async function doLogout() {
     window.location.href = "/"; // Redirect to login page
   }
 }
-// doLogout();
+// localStorage.clear();
 export { doLogout };
