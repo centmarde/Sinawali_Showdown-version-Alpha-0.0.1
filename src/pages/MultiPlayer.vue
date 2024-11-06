@@ -2,18 +2,38 @@
   <div>
 <Rooms/>
   </div>
+  <audio ref="audioPlayer" hidden loop autoplay>
+        <source src="@/assets/audio/adal2.mp3" type="audio/mpeg" />
+        Your browser does not support the audio element.
+      </audio>
 </template>
 
 <script>
-import Rooms from '@/components/MultiPlayer/Rooms.vue';
+import OnlineCharacterSelect from "@/components/MultiPlayer/OnlineCharacterSelect.vue";
+import { ref, onMounted } from "vue";
 
 export default {
-  setup () {
-    
+  setup() {
+    const audioPlayer = ref(null);
 
-    return {}
-  }
-}
+    onMounted(() => {
+      // Try playing the audio on mount
+      if (audioPlayer.value) {
+        const playAudio = audioPlayer.value.play();
+        // Handle the promise to ensure it's played
+        if (playAudio) {
+          playAudio.catch(() => {
+            console.error("Audio play failed, might be blocked by browser settings.");
+          });
+        }
+      }
+    });
+
+    return {
+      audioPlayer,
+    };
+  },
+};
 </script>
 
 <style lang="scss" scoped>
