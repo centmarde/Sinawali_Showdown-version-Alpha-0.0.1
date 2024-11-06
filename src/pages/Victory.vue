@@ -26,6 +26,22 @@ export default {
   },
   methods: {
     async goToBattleArea() {
+      const battleId = localStorage.getItem("battleId");
+
+      if (battleId) {
+        const { error } = await supabase
+          .from("battles")
+          .delete()
+          .eq("id", battleId);
+
+        if (error) {
+          console.error("Failed to delete battle record:", error);
+          return;
+        }
+
+        localStorage.removeItem("battleId");
+      }
+
       await this.resetCharacters();
       localStorage.clear();
       window.location.href = "/";
