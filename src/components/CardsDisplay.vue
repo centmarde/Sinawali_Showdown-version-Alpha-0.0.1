@@ -11,13 +11,13 @@
             @slideChange="onSlideChange"
           >
             <swiper-slide v-for="(card, index) in cards" :key="card.id">
-              {{ card.name }}
+              <img :src="card.img" alt="Card Image" class="card-image" />
             </swiper-slide>
           </swiper>
         </v-col>
         <v-col cols="12" lg="6">
           <div v-if="activeCard" class="p-5">
-            <v-row class="pb-5">
+            <v-row>
               <v-col cols="2">
                 <v-avatar
                   :image="avatarImage"
@@ -38,6 +38,21 @@
                     </v-card-text>
                   </v-card>
                 </div>
+              </v-col>
+            </v-row>
+
+            <v-row class="d-flex flex-row mb-6">
+              <v-col cols="6">
+                <span>Power: {{ activeCard.power }}</span>
+              </v-col>
+              <v-col cols="6">
+                <span>Mana Cost: {{ activeCard.mana_cost }}</span>
+              </v-col>
+              <v-col cols="6">
+                <span>Draw Chance: {{ activeCard.draw_chance }}</span>
+              </v-col>
+              <v-col cols="6">
+                <span>Poison: {{ activeCard.is_poison }}</span>
               </v-col>
             </v-row>
 
@@ -132,9 +147,9 @@ onMounted(() => {
   background-repeat: no-repeat;
 }
 
-.swiper {
+.mySwiper {
   width: 400px;
-  height: 530px;
+  height: 446px;
 }
 
 .swiper-slide {
@@ -146,6 +161,12 @@ onMounted(() => {
   font-weight: bold;
   color: #fff;
   background: #fcd20e; /* temporary */
+}
+
+.card-image {
+  width: 100%;
+  height: auto;
+  border-radius: 18px;
 }
 
 .attack_bg {

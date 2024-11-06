@@ -8,26 +8,69 @@
 import { createRouter, createWebHistory } from "vue-router/auto";
 import { setupLayouts } from "virtual:generated-layouts";
 import { routes as autoRoutes } from "vue-router/auto-routes";
+import { useToast } from "vue-toastification";
 
 import Hero from "../pages/index.vue";
 import NotFound from "@/pages/NotFound.vue";
 import Test from "@/pages/Test.vue";
 import CharacterSelection from "@/pages/CharacterSelection.vue";
-import battle_area from "@/pages/battle_area.vue";
-import next_phase from "@/components/battle_page/next_phase.vue";
-import Victory from "@/pages/Victory.vue"; // Import Victory component
+import BattleArea from "@/pages/battle_area.vue";
+import NextPhase from "@/components/battle_page/next_phase.vue";
+import Victory from "@/pages/Victory.vue";
 import Cards from "@/pages/CardsView.vue";
+import Landing from "@/pages/Landing.vue";
+import MultiPlayer from "@/pages/MultiPlayer.vue";
+import OnlineBase from "@/pages/OnlineBase.vue";
 
+const toast = useToast();
+
+// Setup routes
 const routes = setupLayouts([
   ...autoRoutes,
-  { path: "/", component: Hero },
+  { path: "/", component: Hero, name: "Hero" },
   { path: "/Test", component: Test },
-  { path: "/select_character", component: CharacterSelection },
   { path: "/:pathMatch(.*)*", component: NotFound },
-  { path: "/next_phase", component: next_phase, name: "next_phase" },
-  { path: "/battle_area", component: battle_area, name: "battle_area" },
-  { path: "/victory", component: Victory, name: "Victory", props: true },
-  { path: "/cards", component: Cards },
+  {
+    path: "/landing",
+    component: Landing,
+    name: "landing",
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/select_character",
+    component: CharacterSelection,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/next_phase",
+    component: NextPhase,
+    meta: { requiresAuth: true },
+    name: "next_phase",
+  },
+  {
+    path: "/battle_area",
+    component: BattleArea,
+    meta: { requiresAuth: true },
+    name: "battle_area",
+  },
+  {
+    path: "/victory",
+    component: Victory,
+    meta: { requiresAuth: true },
+    name: "Victory",
+    props: true,
+  },
+  { path: "/cards", component: Cards, meta: { requiresAuth: true } },
+  {
+    path: "/multiplayer",
+    component: MultiPlayer,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/OnlineBase",
+    component: OnlineBase,
+    meta: { requiresAuth: true },
+  },
 ]);
 
 const router = createRouter({
@@ -35,7 +78,53 @@ const router = createRouter({
   routes,
 });
 
-// Workaround for https://github.com/vitejs/vite/issues/11804
+// Navigation guards
+router.beforeEach((to, from, next) => {
+  const isLoggedIn = localStorage.getItem("access_token") !== null;
+
+  // Define public and protected pages
+  const publicPages = ["/", "/Test"];
+  const protectedPages = [
+    "/select_character",
+    "/next_phase",
+    "/battle_area",
+    "/victory",
+    "/cards",
+    "/landing",
+    "/multiplayer",
+    "/OnlineBase",
+  ];
+  /* const nestedProtectedGroup = ["/online_character_select"]; */
+
+  // Redirect to login if accessing protected pages without authentication
+  if (protectedPages.includes(to.path) && !isLoggedIn) {
+    return next("/");
+  }
+
+  // Prevent navigation away from the nested protected group with a toast message
+  // if (
+  //   nestedProtectedGroup.includes(from.path) &&
+  //   !nestedProtectedGroup.includes(to.path)
+  // ) {
+  //   toast.error(
+  //     "Bravery isn't about never feeling fear; it's about facing it and pushing through. You’ve got more courage inside you than you realize—finish this battle first, cutie",
+  //     {
+  //       timeout: 10000, // 10 seconds
+  //     }
+  //   );
+  //   return next(false); // Cancel the navigation
+  // }
+
+  // Redirect to /landing if already logged in and accessing public pages
+  if (publicPages.includes(to.path) && isLoggedIn) {
+    return next("/landing");
+  }
+
+  // Default: proceed to the requested route
+  next();
+});
+
+// Handle dynamic import errors (workaround for https://github.com/vitejs/vite/issues/11804)
 router.onError((err, to) => {
   if (err?.message?.includes?.("Failed to fetch dynamically imported module")) {
     if (!localStorage.getItem("vuetify:dynamic-reload")) {
