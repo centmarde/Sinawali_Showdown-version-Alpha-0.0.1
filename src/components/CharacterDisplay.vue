@@ -1,6 +1,6 @@
 <template>
-  <div class="csbackground">
-    <v-container>
+  <div class="display">
+    <v-container class="mb-6">
       <v-row class="mt-2 align-items-center">
         <!-- Character Selection -->
         <v-col cols="12" lg="4" md="6">
@@ -65,10 +65,10 @@
           class="d-none d-lg-flex d-flex justify-content-center character-viewer"
         >
           <template v-if="selectedCharacter === 1">
-            <player1 />
+            <player1 class="custom-canvas" />
           </template>
           <template v-else-if="selectedCharacter === 2">
-            <player2mirror />
+            <player2mirror class="custom-canvas" />
           </template>
           <template v-else>
             <!-- Show nothing or an empty element -->
@@ -81,51 +81,49 @@
           <div>
             <h2 class="text-uppercase text-center">{{ character.name }}</h2>
             <h6 class="text-center text-medium-emphasis font-weight-regular">
-              {{ character.role }}
+              {{ character.tagline }}
             </h6>
 
             <div>
-              <small class="text-uppercase font-weight-medium">Health</small>
+              <small class="text-uppercase font-weight-medium">Energy</small>
               <v-progress-linear
-                class="mt-2 mb-4"
-                :model-value="character.health"
-                max="100"
-                color="#ffd82b"
-                height="10"
-                rounded
-              >
-              </v-progress-linear>
-
-              <small class="text-uppercase font-weight-medium">Mana</small>
-              <v-progress-linear
-                class="mt-2 mb-4"
+                class="mt-2 mb-4 text-overline font-weight-bold animated-progress"
                 :model-value="character.mana"
                 max="100"
                 color="#ffd82b"
-                height="10"
+                height="14"
                 rounded
+                :style="`--progress-shadow-color: rgba(255, 216, 43, ${
+                  character.mana / 100
+                });`"
               >
               </v-progress-linear>
 
               <small class="text-uppercase font-weight-medium">Agility</small>
               <v-progress-linear
-                class="mt-2 mb-4"
+                class="mt-2 mb-4 text-overline font-weight-bold animated-progress"
                 :model-value="character.agility"
                 max="10"
                 color="#ffd82b"
-                height="10"
+                height="14"
                 rounded
+                :style="`--progress-shadow-color: rgba(255, 216, 43, ${
+                  character.agility / 10
+                });`"
               >
               </v-progress-linear>
 
               <small class="text-uppercase font-weight-medium">Defense</small>
               <v-progress-linear
-                class="mt-2 mb-4"
+                class="mt-2 mb-4 text-overline font-weight-bold animated-progress"
                 :model-value="character.defense"
                 max="10"
                 color="#ffd82b"
-                height="10"
+                height="14"
                 rounded
+                :style="`--progress-shadow-color: rgba(255, 216, 43, ${
+                  character.defense / 10
+                });`"
               >
               </v-progress-linear>
 
@@ -133,23 +131,21 @@
                 >Critical Rate</small
               >
               <v-progress-linear
-                class="mt-2 mb-4"
+                class="mt-2 mb-4 text-overline font-weight-bold animated-progress"
                 :model-value="parseFloat(character.critical_rate)"
                 max="10"
                 color="#ffd82b"
-                height="10"
+                height="14"
                 rounded
+                :style="`--progress-shadow-color: rgba(255, 216, 43, ${
+                  character.critical_rate / 10
+                });`"
               >
               </v-progress-linear>
             </div>
 
-            <div class="mt-4">
-              <small class="text-caption">
-                In a world where ancient clans wield elemental powers to protect
-                their land, warriors known as the Guardians of Valor must unite
-                to stop a ruthless warlord from plunging everything into eternal
-                darkness.</small
-              >
+            <div class="mt-5">
+              <small class="text-caption">{{ character.lore }}</small>
             </div>
           </div>
         </v-col>
@@ -182,14 +178,13 @@
         </v-dialog>
       </v-row>
 
-      <!-- Buttons with delayed navigation -->
-      <v-row>
-        <v-col class="btns">
-          <SecBtn @click="navigateWithSound('/')" />
-          <PrimeBtn @click="openDialog" class="ml-4" />
-        </v-col>
-      </v-row>
+      <!-- Navigation button for play and back -->
+      <div class="btn-wrapper text-center">
+        <SecBtn @click="navigateWithSound('/')" />
+        <PrimeBtn @click="openDialog" class="ml-4" />
+      </div>
     </v-container>
+
     <AudioPlayer
       ref="audioPlayerRef"
       :audioSrc="audioSrc"
@@ -206,7 +201,6 @@ import PrimeBtn from "./buttons/PrimBtn.vue";
 import SecBtn from "./buttons/SecBtn.vue";
 import AudioPlayer from "./buttonSounds/buttonAudio.vue";
 import { useToast } from "vue-toastification";
-
 
 // Track the selected character
 const toast = useToast();
@@ -264,25 +258,24 @@ const confirmChoice = async () => {
   }
 
   const battleId = battleData[0].id; // Retrieve the generated battle ID
-localStorage.setItem("battleId", battleId); // Save the battle ID to localStorage
-console.log("Battle ID:", battleId);
+  localStorage.setItem("battleId", battleId); // Save the battle ID to localStorage
+  console.log("Battle ID:", battleId);
 
-// Randomly select which player attacks first
-const firstAttacker = Math.random() < 0.5 ? "Player 1" : "Player 2";
+  // Randomly select which player attacks first
+  const firstAttacker = Math.random() < 0.5 ? "Player 1" : "Player 2";
 
-// Show alert for who attacks first
-toast(`${firstAttacker} attacks first!`);
+  // Show alert for who attacks first
+  toast(`${firstAttacker} attacks first!`);
 
-// Close the dialog
-dialog.value = false;
+  // Close the dialog
+  dialog.value = false;
 
-// Navigate based on who attacks first
-if (firstAttacker === "Player 1") {
+  // Navigate based on who attacks first
+  if (firstAttacker === "Player 1") {
     navigateWithSound("/battle_area"); // Navigate to /battle for Player 1
-} else {
+  } else {
     navigateWithSound("/next_phase"); // Navigate to /nextphase for Player 2
-}
-
+  }
 };
 
 // Function to handle keyboard arrow keys
@@ -298,7 +291,9 @@ const handleKeyDown = (event) => {
 const fetchCharacterDetails = async (characterId) => {
   const { data, error } = await supabase
     .from("characters")
-    .select("name, role, health, mana, agility, defense, critical_rate")
+    .select(
+      "name, tagline, health, mana, agility, defense, critical_rate, lore"
+    )
     .eq("id", characterId)
     .single();
 
@@ -325,10 +320,14 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
-.csbackground {
-  position: relative;
-  width: 100vw;
+.display {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   height: 100vh;
+  position: relative; /* Ensure the display container is relative */
+
+  /* Temporary BG */
   background-image: url("./../assets/background/csbg.png");
   background-size: cover;
   background-position: center;
@@ -377,6 +376,37 @@ onBeforeUnmount(() => {
 .game-dialog-actions {
   justify-content: center;
 }
+
+.custom-canvas :deep(#canvas) {
+  width: 27rem; /* Adjust the width as needed */
+  height: auto; /* Maintain aspect ratio */
+}
+
+/* Animation for progress bars */
+@keyframes brighten {
+  0%,
+  100% {
+    filter: brightness(1);
+  }
+  50% {
+    filter: brightness(1.5);
+  }
+}
+
+.animated-progress {
+  animation: brighten 2s infinite;
+  box-shadow: 0 0 10px var(--progress-shadow-color);
+}
+
+.btn-wrapper {
+  position: absolute; /* Change from relative to absolute */
+  bottom: 20px; /* Adjust as needed */
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  z-index: 1000; /* Ensure it stays on top */
+}
+
 @media (max-width: 768px) {
   .character-viewer {
     position: absolute;
@@ -394,18 +424,14 @@ onBeforeUnmount(() => {
     font-size: 0.8rem;
     background-color: #151515;
   }
-  .csbackground {
-    height: 100vh;
-    overflow-x: hidden;
-    background-image: url("./../assets/background/sr.gif");
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-  }
-  .btns {
-    position: absolute;
-    bottom: 50px;
-    left: 2.5rem;
+
+  .btn-wrapper {
+    position: absolute; /* Change from relative to absolute */
+    bottom: 20px; /* Adjust as needed */
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    z-index: 1000; /* Ensure it stays on top */
   }
 }
 </style>
