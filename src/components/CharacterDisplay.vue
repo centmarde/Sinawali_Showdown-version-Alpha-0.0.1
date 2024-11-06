@@ -246,30 +246,41 @@ const openDialog = () => {
 };
 
 // Function to confirm choice and redirect to 'battle_loading'
+// const confirmChoice = async () => {
+//   localStorage.setItem("selectedCharacter", selectedCharacter.value);
+//   console.log(localStorage.getItem("selectedCharacter"));
+
+//   // Insert a new battle row into the battles table
+ 
+
+//   // Randomly select which player attacks first
+//   const firstAttacker = Math.random() < 0.5 ? "Player 1" : "Player 2";
+
+//   // Show alert for who attacks first
+//   toast(`${firstAttacker} attacks first!`);
+
+//   // Close the dialog
+//   dialog.value = false;
+
+//   // Navigate based on who attacks first
+//   if (firstAttacker === "Player 1") {
+//     navigateWithSound("/battle_area"); // Navigate to /battle for Player 1
+//   } else {
+//     navigateWithSound("/next_phase"); // Navigate to /nextphase for Player 2
+//   }
+// };
+
+
+
 const confirmChoice = async () => {
   localStorage.setItem("selectedCharacter", selectedCharacter.value);
   console.log(localStorage.getItem("selectedCharacter"));
 
-  // Insert a new battle row into the battles table
-  const { data: battleData, error: battleError } = await supabase
-    .from("sessions")
-    .insert({
-      user_id: userId,
-      character_id: selectedCharacter.value,
-    })
-    .select(); // Use .select() to return the inserted row
+  // Insert a new battle row into the battles table (if needed)
+ 
 
-  if (battleError) {
-    console.error("Error inserting battle:", battleError);
-    return;
-  }
-
-  const battleId = battleData[0].id; // Retrieve the generated battle ID
-  localStorage.setItem("battleId", battleId); // Save the battle ID to localStorage
-  console.log("Battle ID:", battleId);
-
-  // Randomly select which player attacks first
-  const firstAttacker = Math.random() < 0.5 ? "Player 1" : "Player 2";
+  // Set Player 1 as the first attacker
+  const firstAttacker = "Player 1";
 
   // Show alert for who attacks first
   toast(`${firstAttacker} attacks first!`);
@@ -277,12 +288,8 @@ const confirmChoice = async () => {
   // Close the dialog
   dialog.value = false;
 
-  // Navigate based on who attacks first
-  if (firstAttacker === "Player 1") {
-    navigateWithSound("/battle_area"); // Navigate to /battle for Player 1
-  } else {
-    navigateWithSound("/next_phase"); // Navigate to /nextphase for Player 2
-  }
+  // Navigate to the appropriate route for Player 1
+  navigateWithSound("/battle_area"); // Navigate to /battle_area for Player 1
 };
 
 // Function to handle keyboard arrow keys
