@@ -18,6 +18,7 @@ import NextPhase from "@/components/battle_page/next_phase.vue";
 import Victory from "@/pages/Victory.vue";
 import Cards from "@/pages/CardsView.vue";
 import Landing from "@/pages/Landing.vue";
+import MultiPlayer from "@/pages/MultiPlayer.vue";
 
 // Setup routes
 const routes = setupLayouts([
@@ -32,6 +33,7 @@ const routes = setupLayouts([
   { path: "/battle_area", component: BattleArea, meta: { requiresAuth: true }, name: "battle_area" },
   { path: "/victory", component: Victory, meta: { requiresAuth: true }, name: "Victory", props: true },
   { path: "/cards", component: Cards, meta: { requiresAuth: true } },
+  { path: "/multiplayer", component: MultiPlayer, meta: { requiresAuth: true } },
 ]);
 
 const router = createRouter({
@@ -45,7 +47,9 @@ router.beforeEach((to, from, next) => {
 
   // Define public and protected pages
   const publicPages = ["/", "/Test"];
-  const protectedPages = ["/select_character", "/next_phase", "/battle_area", "/Victory", "/cards", "/landing"];
+  const protectedPages = ["/select_character", "/next_phase", "/battle_area", "/Victory", "/cards", "/landing",
+    "/multiplayer"
+  ];
 
   // Redirect to login if accessing protected pages without authentication
   if (protectedPages.includes(to.path) && !isLoggedIn) {
