@@ -117,11 +117,13 @@ const skipLoader = () => {
   if (skipAudio.value) {
     skipAudio.value
       .play()
+      
       .then(() => {
         setTimeout(() => {
           isLoading.value = false;
           if (!isLoggedIn.value) showLoginDialog.value = true;
         }, 500);
+        audioStore.playAdal()
       })
       .catch((error) => {
         console.error("Error playing skip audio:", error);
