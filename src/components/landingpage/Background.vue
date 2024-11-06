@@ -1,5 +1,5 @@
 <template>
-  <HomeMenu />
+ 
   <p class="beta mt-2 ms-2">Beta Version 0.0.1</p>
   <main>  
       
@@ -18,7 +18,7 @@
         <!-- Houses -->
         <img src="../../assets/parallax/house with flag.gif" class="parallax layer-house1"  data-speedx="0.1" data-speedy="0.318" alt="House with Flag">
         <img src="../../assets/parallax/second house with stairs_.png" class="parallax layer-house2" data-speedx="0.1"data-speedy="0.38" alt="Second House with Stairs">
-        <img src="../../assets/parallax/small house.png" class="parallax layer-house3"  data-speedx="0.1" data-speedy="0.38"alt="Small House">
+        
         <!-- People and Animals -->
 
         <!-- wind -->
@@ -28,12 +28,9 @@
 </template>
 
 <script>
-import HomeMenu from "@/components/Menu/HomeMenu.vue";
 
 export default {
-  components: {
-    HomeMenu,
-  },
+  
   mounted() {
     const parallaxElements = document.querySelectorAll(".parallax");
 
@@ -152,12 +149,12 @@ main {
     top: calc(89% - 110px);
     left: calc(50% + 20px);
     transform: translate(-50%, -50%);
+    
 }
 
 /* House Layers */
 .layer-house1,
 .layer-house2,
-.layer-house3,
 .wind {
     z-index: 2;
 }

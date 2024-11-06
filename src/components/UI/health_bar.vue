@@ -131,11 +131,11 @@ export default {
           if (player1.health <= 0) {
             localStorage.setItem("winner", player2.name);
             await new Promise((resolve) => setTimeout(resolve, 1500)); // Delay for 1500 ms
-            router.push("/Victory");
+            window.location.href = "/Victory";
           } else if (player2.health <= 0) {
             localStorage.setItem("winner", player1.name);
             await new Promise((resolve) => setTimeout(resolve, 1500)); // Delay for 1500 ms
-            router.push("/Victory");
+           window.location.href = "/Victory";
           }
         })
         .subscribe();
