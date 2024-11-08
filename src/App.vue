@@ -15,12 +15,10 @@ import { ref, onMounted } from 'vue';
 
 const isLoading = ref(true);
 
-// Simulate a loading process
 onMounted(() => {
-  // Simulating an asynchronous operation
   setTimeout(() => {
-    isLoading.value = false; // Set loading to false after loading is complete
-  }, 2000); // Adjust the duration as needed
+    isLoading.value = false;
+  }, 2000); 
 });
 </script>
 
