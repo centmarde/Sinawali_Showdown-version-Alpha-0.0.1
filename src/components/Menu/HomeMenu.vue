@@ -6,7 +6,7 @@
         <v-col
           cols="12"
           lg="4"
-          md="6"
+          md="4"
           sm="6"
           class="d-flex justify-center align-center"
         >
@@ -19,7 +19,7 @@
         <v-col
           cols="12"
           lg="4"
-          md="6"
+          md="4"
           sm="6"
           class="d-flex justify-center align-center"
         >
