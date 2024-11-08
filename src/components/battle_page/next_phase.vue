@@ -808,18 +808,17 @@ export default {
   width: 180px;
   height: 200px;
   border-radius: 8px;
-  background: #e6d011;
+  background: none;
   display: flex;
   justify-content: center;
   align-items: center;
   color: #EEEEEE;
-  border: 5px solid #D9A959;
+  border: none;
   cursor: pointer;
   transition: background 0.3s, transform 0.3s;
-  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.1);
+
   transform: rotate(calc(var(--i) * 3deg)) translate(calc(var(--i) * 150px), -50px);
 }
-
 @media (max-width: 600px) {
   .container {
     height: 25%;
