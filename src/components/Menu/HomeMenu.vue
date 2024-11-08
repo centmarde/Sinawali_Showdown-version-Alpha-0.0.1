@@ -6,8 +6,8 @@
         <v-col
           cols="12"
           lg="4"
-          md="4"
-          sm="4"
+          md="6"
+          sm="6"
           class="d-flex justify-center align-center"
         >
           <v-img cover src="@/assets/logo.png"></v-img>
@@ -19,12 +19,16 @@
         <v-col
           cols="12"
           lg="4"
-          md="4"
-          sm="4"
+          md="6"
+          sm="6"
           class="d-flex justify-center align-center"
         >
           <!-- MENU  -->
-          <v-card class="custom-card mt-5" elevation="8" style="width: 100%">
+          <v-card
+            class="custom-card mt-3 mx-3"
+            elevation="8"
+            style="width: 100%"
+          >
             <v-card-actions class="d-flex flex-column">
               <v-btn
                 :class="{ 'selected-menu': selectedMenu === 0 }"

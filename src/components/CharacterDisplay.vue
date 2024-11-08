@@ -81,7 +81,13 @@
         </v-col>
 
         <!-- Character Stats -->
-        <v-col cols="12" lg="3" md="3" sm="5" class="details">
+        <v-col
+          cols="12"
+          lg="3"
+          md="3"
+          sm="6"
+          class="details p-lg-0 p-md-0 p-sm-5"
+        >
           <div>
             <h2 class="text-uppercase text-center">{{ character.name }}</h2>
             <h6 class="text-center text-medium-emphasis font-weight-regular">
@@ -450,9 +456,7 @@ onBeforeUnmount(() => {
   .details {
     position: relative;
     z-index: 1;
-    top: 18rem;
     font-size: 0.8rem;
-    background-color: #151515;
   }
 
   .btn-wrapper {
@@ -462,6 +466,13 @@ onBeforeUnmount(() => {
     transform: translateX(-50%);
     text-align: center;
     z-index: 1000; /* Ensure it stays on top */
+  }
+
+  .tilt-card {
+    transform: none;
+    transition: transform 0.3s ease-in-out;
+    background-color: #00000048;
+    z-index: 999;
   }
 }
 </style>
