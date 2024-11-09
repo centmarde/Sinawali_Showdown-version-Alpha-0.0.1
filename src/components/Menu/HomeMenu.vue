@@ -1,5 +1,5 @@
 <template>
-  <div @keydown="handleKeydown" tabindex="0">
+  <div id="ygar" @keydown="handleKeydown" tabindex="0">
     <v-container fluid class="centered-container">
       <v-row justify="center">
         <v-col cols="auto"></v-col>

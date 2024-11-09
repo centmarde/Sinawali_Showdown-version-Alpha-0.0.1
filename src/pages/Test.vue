@@ -6,7 +6,8 @@
           <Player1/>
         </v-col>
         <v-col>
-           
+          
+           <ConnectionState/>
         </v-col>
     </v-row>
 
@@ -19,7 +20,10 @@ import Player1 from "@/components/Characters/Player1.vue";
 import Player2 from "@/components/Characters/Player2.vue";
 import player1mirror from "@/components/Characters/player1mirror.vue";
 import player2mirror from "@/components/Characters/player2mirror.vue";
+
+import ConnectionState from "@/components/ConnectionState.vue";
 import HomeMenu from "@/components/Menu/HomeMenu.vue";
+
 </script>
 
 <style lang="scss" scoped>
