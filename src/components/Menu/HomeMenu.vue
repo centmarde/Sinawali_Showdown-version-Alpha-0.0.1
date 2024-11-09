@@ -28,22 +28,30 @@
             <v-card-actions class="d-flex flex-column">
               <v-btn
                 :class="{ 'selected-menu': selectedMenu === 0 }"
+                @click="handleNavigation('/select_character_ai')"
+                class="my-1 font-weight-bold"
+                block
+              >
+                Player vs. Computer
+              </v-btn>
+              <v-btn
+                :class="{ 'selected-menu': selectedMenu === 1 }"
                 @click="handleNavigation('/select_character')"
                 class="my-1 font-weight-bold"
                 block
               >
-                Quickstart
+                Local Competitive
               </v-btn>
               <v-btn
-                :class="{ 'selected-menu': selectedMenu === 1 }"
+                :class="{ 'selected-menu': selectedMenu === 2 }"
                 @click="handleNavigation('/multiplayer')"
                 class="my-1 font-weight-bold"
                 block
               >
-                Multiplayer
+                Online
               </v-btn>
               <v-btn
-                :class="{ 'selected-menu': selectedMenu === 2 }"
+                :class="{ 'selected-menu': selectedMenu === 3 }"
                 @click="handleNavigation('/cards')"
                 class="my-1 font-weight-bold"
                 block
@@ -51,7 +59,7 @@
                 Cards
               </v-btn>
               <v-btn
-                :class="{ 'selected-menu': selectedMenu === 3 }"
+                :class="{ 'selected-menu': selectedMenu === 4 }"
                 @click="doLogout()"
                 class="my-1 font-weight-bold"
                 block
@@ -106,14 +114,15 @@ const handleNavigation = (route) => {
 // Method to handle keyboard navigation
 const handleKeydown = (event) => {
   if (event.key === "ArrowDown") {
-    selectedMenu.value = (selectedMenu.value + 1) % 4;
+    selectedMenu.value = (selectedMenu.value + 1) % 5;
   } else if (event.key === "ArrowUp") {
-    selectedMenu.value = (selectedMenu.value - 1 + 4) % 4;
+    selectedMenu.value = (selectedMenu.value - 1 + 5) % 5;
   } else if (event.key === "Enter") {
-    if (selectedMenu.value === 0) handleNavigation("/select_character");
-    else if (selectedMenu.value === 1) handleNavigation("/multiplayer");
-    else if (selectedMenu.value === 2) handleNavigation("/cards");
-    else if (selectedMenu.value === 3) doLogout();
+    if (selectedMenu.value === 0) handleNavigation("/select_character_ai");
+    else if (selectedMenu.value === 1) handleNavigation("/select_character");
+    else if (selectedMenu.value === 2) handleNavigation("/multiplayer");
+    else if (selectedMenu.value === 3) handleNavigation("/cards");
+    else if (selectedMenu.value === 4) doLogout();
   }
 };
 </script>

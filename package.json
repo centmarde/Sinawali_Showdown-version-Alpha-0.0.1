@@ -15,6 +15,7 @@
     "core-js": "^3.37.1",
     "dotenv": "^16.4.5",
     "express": "^4.21.1",
+    "groq-sdk": "^0.7.0",
     "roboto-fontface": "*",
     "socket.io": "^4.8.1",
     "socket.io-client": "^4.8.1",
@@ -22,6 +23,7 @@
     "vee-validate": "^4.14.6",
     "vue": "^3.4.31",
     "vue-toastification": "^2.0.0-rc.5",
+    "vuedraggable": "^4.1.0",
     "vuetify": "^3.6.11"
   },
   "devDependencies": {
