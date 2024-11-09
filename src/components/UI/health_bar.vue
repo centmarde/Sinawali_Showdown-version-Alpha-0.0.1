@@ -30,7 +30,7 @@
         </v-progress-linear>
       </v-col>
       <v-col cols="2" lg="2">
-        <timer/>
+      <!--   <timer/> -->
       </v-col>
       <!-- Player 2 Health Bar -->
       <v-col cols="5">
