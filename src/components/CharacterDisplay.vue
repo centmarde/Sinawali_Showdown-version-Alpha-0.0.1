@@ -3,9 +3,11 @@
     <v-container class="mb-6">
       <v-row class="mt-2 align-items-center">
         <!-- Character Selection -->
-        <v-col cols="12" lg="4" md="6">
+        <v-col cols="12" lg="4" md="4" sm="6">
           <v-card class="tilt-card">
-            <h2 class="text-uppercase font-weight-bold text-light text-center">
+            <h2
+              class="pt-1 text-uppercase font-weight-bold text-light text-center"
+            >
               Select Your Character
             </h2>
             <v-row no-gutters class="flex-grow-1">
@@ -59,10 +61,12 @@
           </v-card>
         </v-col>
 
+        <!-- Character Viewer -->
         <v-col
           cols="12"
           lg="5"
-          class="d-none d-lg-flex d-flex justify-content-center character-viewer"
+          md="5"
+          class="d-sm-none d-md-flex d-flex justify-content-center character-viewer"
         >
           <template v-if="selectedCharacter === 1">
             <player1 class="custom-canvas" />
@@ -77,7 +81,13 @@
         </v-col>
 
         <!-- Character Stats -->
-        <v-col cols="12" lg="3" md="6" class="details">
+        <v-col
+          cols="12"
+          lg="3"
+          md="3"
+          sm="6"
+          class="details p-lg-0 p-md-0 p-sm-5"
+        >
           <div>
             <h2 class="text-uppercase text-center">{{ character.name }}</h2>
             <h6 class="text-center text-medium-emphasis font-weight-regular">
@@ -204,7 +214,9 @@ import { useToast } from "vue-toastification";
 
 // Track the selected character
 const toast = useToast();
-const selectedCharacter = ref(Number(localStorage.getItem("selectedCharacter")) || 1); // Ensure it's a number
+const selectedCharacter = ref(
+  Number(localStorage.getItem("selectedCharacter")) || 1
+); // Ensure it's a number
 const dialog = ref(false);
 const character = ref({});
 const router = useRouter();
@@ -246,7 +258,6 @@ const openDialog = () => {
 //   console.log(localStorage.getItem("selectedCharacter"));
 
 //   // Insert a new battle row into the battles table
- 
 
 //   // Randomly select which player attacks first
 //   const firstAttacker = Math.random() < 0.5 ? "Player 1" : "Player 2";
@@ -264,7 +275,6 @@ const openDialog = () => {
 //     navigateWithSound("/next_phase"); // Navigate to /nextphase for Player 2
 //   }
 // };
-
 
 const confirmChoice = async () => {
   localStorage.setItem("selectedCharacter", selectedCharacter.value);
@@ -286,7 +296,6 @@ const confirmChoice = async () => {
     navigateWithSound("/next_phase"); // Navigate to /nextphase for Player 2
   }
 };
-
 
 // Function to handle keyboard arrow keys
 const handleKeyDown = (event) => {
@@ -329,7 +338,6 @@ onBeforeUnmount(() => {
 });
 </script>
 
-
 <style scoped>
 .display {
   display: flex;
@@ -339,7 +347,7 @@ onBeforeUnmount(() => {
   position: relative; /* Ensure the display container is relative */
 
   /* Temporary BG */
-  background-image: url("./../assets/background/csbg.png");
+  background-image: url("./../assets/background/bg2.png");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -352,7 +360,7 @@ onBeforeUnmount(() => {
 .tilt-card {
   transform: perspective(1000px) rotateY(18deg); /* Adjust the degree as needed */
   transition: transform 0.3s ease-in-out;
-  background-color: #00000025;
+  background-color: #00000048;
   z-index: 999;
 }
 
@@ -373,10 +381,6 @@ onBeforeUnmount(() => {
   transition: opacity 0.3s ease-in-out;
 }
 
-.tempcolor {
-  background-color: #00000025 !important;
-}
-
 .game-dialog {
   /* background-image: url("/path/to/your/background-image.png"); */
   background-size: cover;
@@ -391,6 +395,21 @@ onBeforeUnmount(() => {
 .custom-canvas :deep(#canvas) {
   width: 27rem; /* Adjust the width as needed */
   height: auto; /* Maintain aspect ratio */
+  margin-top: 8rem;
+}
+
+.animated-progress {
+  animation: brighten 2s infinite;
+  box-shadow: 0 0 15px var(--progress-shadow-color);
+}
+
+.btn-wrapper {
+  position: absolute; /* Change from relative to absolute */
+  bottom: 20px; /* Adjust as needed */
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  z-index: 1000; /* Ensure it stays on top */
 }
 
 /* Animation for progress bars */
@@ -404,25 +423,31 @@ onBeforeUnmount(() => {
   }
 }
 
-.animated-progress {
-  animation: brighten 2s infinite;
-  box-shadow: 0 0 10px var(--progress-shadow-color);
-}
+@media (min-width: 768px) and (max-width: 992px) {
+  .details h2 {
+    font-size: 22px; /* Adjust font size for medium screens */
+  }
 
-.btn-wrapper {
-  position: absolute; /* Change from relative to absolute */
-  bottom: 20px; /* Adjust as needed */
-  left: 50%;
-  transform: translateX(-50%);
-  text-align: center;
-  z-index: 1000; /* Ensure it stays on top */
+  .details h6 {
+    font-size: 16px; /* Adjust font size for medium screens */
+  }
+
+  .btn-wrapper {
+    bottom: 30px; /* Adjust button position for medium screens */
+  }
+
+  .custom-canvas :deep(#canvas) {
+    width: 20rem; /* Adjust the width as needed */
+    height: auto; /* Maintain aspect ratio */
+    margin-top: 6rem;
+  }
 }
 
 @media (max-width: 768px) {
   .character-viewer {
     position: absolute;
     bottom: 60px;
-    background-image: url("./../assets/background/csbg.png");
+    background-image: url("./../assets/background/bg2.png");
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -431,9 +456,7 @@ onBeforeUnmount(() => {
   .details {
     position: relative;
     z-index: 1;
-    top: 18rem;
     font-size: 0.8rem;
-    background-color: #151515;
   }
 
   .btn-wrapper {
@@ -443,6 +466,13 @@ onBeforeUnmount(() => {
     transform: translateX(-50%);
     text-align: center;
     z-index: 1000; /* Ensure it stays on top */
+  }
+
+  .tilt-card {
+    transform: none;
+    transition: transform 0.3s ease-in-out;
+    background-color: #00000048;
+    z-index: 999;
   }
 }
 </style>
