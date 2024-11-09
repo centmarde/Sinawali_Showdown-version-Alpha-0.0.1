@@ -7,10 +7,11 @@
           <div v-for="(card, index) in onHandCards" :key="card.id" class="card" tabindex="0"
             :style="`--i: ${index - Math.floor(onHandCards.length / 2)}; background-image: url(${card.img}); background-size: cover; background-position: center;`"
             @click="openDialog(card)">
-            <div style="position: absolute; top: 9px;">{{ card.name }}</div>
-
-            <div class="power">{{ card.power }}</div>
-            <div class="mana">{{ card.mana_cost }}</div>
+            <div id="card_title" >{{ card.name }}</div>
+            <div class="type">Type: {{ card.type }}</div>
+            <div class="power">Power: {{ card.power }}</div>
+            <div class="mana">Mana Cost: {{ card.mana_cost }}</div>
+            
           </div>
         </div>
       </v-row>
@@ -83,6 +84,10 @@
       </v-row>
     </div>
   </div>
+
+  <div v-if="videoStore.isPlaying" class="video-overlay">
+  <video :src="videoStore.videoUrl" autoplay loop class="overlay-video"></video>
+</div>
 </template>
 
 <script>
@@ -98,6 +103,7 @@ import { useStore } from "../../stores/cardEffects";
 import { useCharacterStatusStore } from "../../stores/characterStatus";
 import { useAudioStore } from '@/stores/audioStore';
 import { useToast } from "vue-toastification";
+import { useVideoStore } from '@/stores/videoStore';
 
 
 
@@ -112,6 +118,7 @@ export default {
     const toast = useToast();
     const characterStatusStore = useCharacterStatusStore();
     const audioStore = useAudioStore();
+    const videoStore = useVideoStore();
     const showCards = ref(true);
     const cardStore = useCardStore1();
     const { onHandCards, addCard, removeCardAndAddNew } = cardStore;
@@ -240,6 +247,31 @@ export default {
       dialog.value = false;
       // Trigger attack animation only if the selected card is of type "attack"
       if (selectedCard.value && selectedCard.value.type === "attack") {
+        const { data: dataVideo, error: errorVideo } = await supabase
+    .from('cards')
+    .select('video_src') // Get the video_src column
+    .eq('id', selectedCard.value.id) // Match the selected card's ID
+    .single();
+
+    if (errorVideo) {
+    console.error('Error fetching video:', errorVideo); // Corrected error variable name
+    return;
+  }
+
+  if (dataVideo && dataVideo.video_src) {
+    const videoUrl = dataVideo.video_src;
+
+    // Play the video preview before the attack animation
+    videoStore.playVideo(videoUrl);
+
+    // Wait for the video to finish (e.g., 5 seconds), then proceed
+    await new Promise(resolve => setTimeout(resolve, 5000));
+
+    // Stop the video after the delay
+    videoStore.stopVideo();
+  } else {
+    console.error('No video URL found for the selected card');
+  }
         try {
           // Fetch the character's mana
           const { data: EnergyChar, error: errorEnergy } = await supabase
@@ -694,6 +726,7 @@ export default {
       activeCard: null,
       filteredOnHandCards,
       audioStore,
+      videoStore,
 
     };
 
@@ -837,17 +870,17 @@ export default {
   position: absolute;
   top: 14.5rem;
   width: 180px;
-  height: 200px;
+  height: 225px;
   border-radius: 8px;
-  background: #e6d011;
+  background: none;
   display: flex;
   justify-content: center;
   align-items: center;
-  color: #EEEEEE;
-  border: 5px solid #D9A959;
+  color: #151515;
+  font-size: 10px;
+  border: none;
   cursor: pointer;
   transition: background 0.3s, transform 0.3s;
-  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.1);
   transform: rotate(calc(var(--i) * 3deg)) translate(calc(var(--i) * 150px), -50px);
 }
 
@@ -900,29 +933,88 @@ export default {
 .container .card:hover {
   transform: rotate(calc(var(--i) * 3deg)) translate(calc(var(--i) * 150px), -80px);
 }
+#card_title{
+  position: absolute;
+  top: 13px;
+  }
+.type {
+  position: absolute;
+ top: 70%;
+ left: 15%;
+}
 
 .power {
   position: absolute;
-  bottom: 30px;
-  left: 16px;
+ top: 75%;
+ left: 15%;
 }
-
-.mana {
+.mana{
   position: absolute;
-  bottom: 30px;
-  right: 21px;
+ top: 80%;
+ left: 15%;
 }
 
 @media (max-width: 600px) {
   .power {
-    bottom: 16px;
-    left: 4px;
+    display:none;
   }
 
   .mana {
-    bottom: 16px;
     right: 8px;
   }
-
+  #card_title{
+    top: 7px;
+    font-size: 10px;
+  }
+  .type{
+    right: 8px;
+  }
 }
+
+.video-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.7); /* Semi-transparent overlay background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  overflow: hidden; /* Ensures content doesn’t overflow */
+}
+
+.overlay-video {
+  width: 100%;
+  height: auto;
+  max-width: 90vw; /* Adjust max size to fit on smaller screens */
+  max-height: 90vh;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  z-index: 9998; /* Places video behind the GIF overlay */
+}
+
+.video-overlay::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url("@/assets/video/video-overlay.gif"); /* Path to your GIF */
+  background-size: cover; /* Ensures it covers the entire viewport */
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: 99999; /* Ensures GIF is above the video */
+}
+
+/* Media query for smaller screens */
+@media (max-width: 768px) {
+  .overlay-video {
+    max-width: 95vw;
+    max-height: 95vh;
+  }
+}
+
 </style>

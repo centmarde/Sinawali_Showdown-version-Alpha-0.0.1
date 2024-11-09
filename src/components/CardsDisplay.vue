@@ -1,5 +1,6 @@
 <template>
   <div class="display">
+    <SecBtn class="top-right-button" @click="navigateWithSound('/')" />
     <v-container>
       <v-row>
         <v-col cols="12" lg="6">
@@ -61,6 +62,11 @@
         </v-col>
       </v-row>
     </v-container>
+    <AudioPlayer
+      ref="audioPlayerRef"
+      :audioSrc="audioSrc"
+      audioType="audio/mp3"
+    />
   </div>
 </template>
 
@@ -71,6 +77,12 @@ import "swiper/css";
 import "swiper/css/effect-cards";
 import { EffectCards } from "swiper/modules";
 import { supabase } from "../lib/supabase";
+import SecBtn from "./buttons/SecBtn.vue";
+import AudioPlayer from "./buttonSounds/buttonAudio.vue";
+const router = useRouter();
+
+const audioSrc = new URL("@/assets/audio/click.mp3", import.meta.url).href;
+const audioPlayerRef = ref(null);
 
 // Swiper modules
 const modules = [EffectCards];
@@ -128,6 +140,19 @@ const avatarImage = computed(() => {
   }
 });
 
+const playAudio = () => {
+  if (audioPlayerRef.value) {
+    audioPlayerRef.value.playAudio();
+  }
+};
+
+const navigateWithSound = (route) => {
+  playAudio();
+  setTimeout(() => {
+    router.push(route);
+  }, 500); // 500 ms delay before navigation
+};
+
 // Fetch cards data when the component is mounted
 onMounted(() => {
   fetchCards();
@@ -141,7 +166,7 @@ onMounted(() => {
   align-items: center;
   height: 100vh;
   /* Temporary BG */
-  background-image: url("./../assets/background/csbg.png");
+  background-image: url("./../assets/background/bg2.png");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -149,7 +174,7 @@ onMounted(() => {
 
 .mySwiper {
   width: 400px;
-  height: 446px;
+  height: 500px;
 }
 
 .swiper-slide {
@@ -179,5 +204,11 @@ onMounted(() => {
 
 .buff_bg {
   background-color: #fcd20e;
+}
+
+.top-right-button {
+  position: absolute;
+  top: 40px;
+  right: 50px;
 }
 </style>

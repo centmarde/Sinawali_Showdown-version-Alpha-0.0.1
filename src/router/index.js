@@ -14,13 +14,17 @@ import Hero from "../pages/index.vue";
 import NotFound from "@/pages/NotFound.vue";
 import Test from "@/pages/Test.vue";
 import CharacterSelection from "@/pages/CharacterSelection.vue";
+import CharacterSelectionAi from "@/pages/CharacterSelectionAi.vue";
 import BattleArea from "@/pages/battle_area.vue";
+import BattleAreaAi from "@/pages/BattleAreaAi.vue";
 import NextPhase from "@/components/battle_page/next_phase.vue";
+import NextPhaseAi from "@/components/player-vs-ai/NextPhaseAi.vue";
 import Victory from "@/pages/Victory.vue";
 import Cards from "@/pages/CardsView.vue";
 import Landing from "@/pages/Landing.vue";
 import MultiPlayer from "@/pages/MultiPlayer.vue";
 import OnlineBase from "@/pages/OnlineBase.vue";
+import DeckBuild from "@/components/DeckBuild.vue";
 
 const toast = useToast();
 
@@ -42,16 +46,33 @@ const routes = setupLayouts([
     meta: { requiresAuth: true },
   },
   {
+    path: "/select_character_ai",
+    component: CharacterSelectionAi,
+    meta: { requiresAuth: true },
+  },
+  {
     path: "/next_phase",
     component: NextPhase,
     meta: { requiresAuth: true },
     name: "next_phase",
   },
   {
+    path: "/next_phase_ai",
+    component: NextPhaseAi,
+    meta: { requiresAuth: true },
+    name: "next_phase_ai",
+  },
+  {
     path: "/battle_area",
     component: BattleArea,
     meta: { requiresAuth: true },
     name: "battle_area",
+  },
+  {
+    path: "/battle_area_ai",
+    component: BattleAreaAi,
+    meta: { requiresAuth: true },
+    name: "battle_area_ai",
   },
   {
     path: "/victory",
@@ -71,6 +92,11 @@ const routes = setupLayouts([
     component: OnlineBase,
     meta: { requiresAuth: true },
   },
+  {
+    path: "/deck_build",
+    component: DeckBuild,
+    meta: { requiresAuth: true },
+  },
 ]);
 
 const router = createRouter({
@@ -83,7 +109,7 @@ router.beforeEach((to, from, next) => {
   const isLoggedIn = localStorage.getItem("access_token") !== null;
 
   // Define public and protected pages
-  const publicPages = ["/", "/Test"];
+  const publicPages = ["/"];
   const protectedPages = [
     "/select_character",
     "/next_phase",
@@ -93,6 +119,10 @@ router.beforeEach((to, from, next) => {
     "/landing",
     "/multiplayer",
     "/OnlineBase",
+    "/select_character_ai",
+    "/next_phase_ai",
+    "/battle_area_ai",
+    "/deck_build",
   ];
   /* const nestedProtectedGroup = ["/online_character_select"]; */
 
