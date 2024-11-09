@@ -16,7 +16,7 @@ import Test from "@/pages/Test.vue";
 import CharacterSelection from "@/pages/CharacterSelection.vue";
 import CharacterSelectionAi from "@/pages/CharacterSelectionAi.vue";
 import BattleArea from "@/pages/battle_area.vue";
-import BattleAreaAi from "@/pages/battleAreaAi.vue";
+import BattleAreaAi from "@/pages/BattleAreaAi.vue";
 import NextPhase from "@/components/battle_page/next_phase.vue";
 import NextPhaseAi from "@/components/player-vs-ai/NextPhaseAi.vue";
 import Victory from "@/pages/Victory.vue";
