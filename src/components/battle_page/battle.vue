@@ -7,10 +7,11 @@
           <div v-for="(card, index) in onHandCards" :key="card.id" class="card" tabindex="0"
             :style="`--i: ${index - Math.floor(onHandCards.length / 2)}; background-image: url(${card.img}); background-size: cover; background-position: center;`"
             @click="openDialog(card)">
-            <div style="position: absolute; top: 9px;">{{ card.name }}</div>
-
-            <div class="power">{{ card.power }}</div>
-            <div class="mana">{{ card.mana_cost }}</div>
+            <div id="card_title" >{{ card.name }}</div>
+            <div class="type">Type: {{ card.type }}</div>
+            <div class="power">Power: {{ card.power }}</div>
+            <div class="mana">Mana Cost: {{ card.mana_cost }}</div>
+            
           </div>
         </div>
       </v-row>
@@ -869,17 +870,17 @@ export default {
   position: absolute;
   top: 14.5rem;
   width: 180px;
-  height: 200px;
+  height: 225px;
   border-radius: 8px;
   background: none;
   display: flex;
   justify-content: center;
   align-items: center;
-  color: #EEEEEE;
+  color: #151515;
+  font-size: 10px;
   border: none;
   cursor: pointer;
   transition: background 0.3s, transform 0.3s;
-
   transform: rotate(calc(var(--i) * 3deg)) translate(calc(var(--i) * 150px), -50px);
 }
 
@@ -932,30 +933,42 @@ export default {
 .container .card:hover {
   transform: rotate(calc(var(--i) * 3deg)) translate(calc(var(--i) * 150px), -80px);
 }
+#card_title{
+  position: absolute;
+  top: 13px;
+  }
+.type {
+  position: absolute;
+ top: 70%;
+ left: 15%;
+}
 
 .power {
   position: absolute;
-  bottom: 30px;
-  left: 16px;
+ top: 75%;
+ left: 15%;
 }
-
-.mana {
+.mana{
   position: absolute;
-  bottom: 30px;
-  right: 21px;
+ top: 80%;
+ left: 15%;
 }
 
 @media (max-width: 600px) {
   .power {
-    bottom: 16px;
-    left: 4px;
+    display:none;
   }
 
   .mana {
-    bottom: 16px;
     right: 8px;
   }
-
+  #card_title{
+    top: 7px;
+    font-size: 10px;
+  }
+  .type{
+    right: 8px;
+  }
 }
 
 .video-overlay {
@@ -973,6 +986,6 @@ export default {
 
 video {
   width: 80%;
-  height: auto;
+  height: 100vh;
 }
 </style>

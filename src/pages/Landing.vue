@@ -1,5 +1,5 @@
 <template>
-  <div @click="handleUserInteraction" @touchstart="handleUserInteraction">
+  <div id="ygar" @click="handleUserInteraction" @touchstart="handleUserInteraction">
     <!-- Background should always be visible -->
     <Background />
 
@@ -45,10 +45,6 @@ const hasPlayedAudio = ref(false);
 </script>
 
 <style scoped>
-#ygar {
-  background-color: #151515;
-  position: relative;
-}
 
 /* Styles for loading indicator */
 .loading-indicator {

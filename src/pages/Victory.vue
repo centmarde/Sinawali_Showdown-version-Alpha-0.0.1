@@ -7,7 +7,7 @@
     <div class="victory-overlay">
       <h3>{{ winnerName }}</h3>
       <span>has won the battle!</span>
-      <!-- <v-btn @click="goToBattleArea" color="primary">Back to main Menu</v-btn> -->
+      <v-btn @click="goToBattleArea" color="primary">Back to main Menu</v-btn>
     </div>
   </div>
 </template>
