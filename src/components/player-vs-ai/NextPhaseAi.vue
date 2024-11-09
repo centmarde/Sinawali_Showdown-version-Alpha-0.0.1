@@ -73,12 +73,41 @@
           </div>
         </v-col>
         <v-col cols="6">
-          <div class="char2">
+  <p style="
+    position: fixed; 
+    z-index: 9999; 
+    top: 35%; 
+    left: 76%; 
+    transform: translate(-50%, -50%);
+    background-color: #f0f0f0; 
+    padding: 10px 15px; 
+    border-radius: 15px; 
+    max-width: 200px; 
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    font-size: 14px; 
+    color: #333; 
+    font-family: Arial, sans-serif; 
+    word-wrap: break-word;
+  ">
+    {{ tauntMessage }}
+    <span style="
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 10px solid transparent;
+      border-right: 10px solid transparent;
+      border-top: 10px solid #f0f0f0;
+    "></span>
+  </p>
+  <div class="char2">
+    <Player2 v-if="selectedCharacter === 1" ref="player2Ref" />
+    <player1mirror v-if="selectedCharacter === 2" ref="player_variant2Ref" />
+  </div>
+</v-col>
 
-            <Player2 v-if="selectedCharacter === 1" ref="player2Ref" />
-            <player1mirror v-if="selectedCharacter === 2" ref="player_variant2Ref" />
-          </div>
-        </v-col>
       </v-row>
     </div>
   </div>
@@ -92,12 +121,13 @@
 <script>
 import Player1 from "../Characters/Player1.vue";
 import Player2 from "../Characters/Player2.vue";
+import { useTauntStore } from '@/stores/tauntStore';
 import player2mirror from "../Characters/player2mirror.vue";
 import player1mirror from "../Characters/player1mirror.vue";
 import { ref, onMounted } from "vue";
 import { supabase } from "../../lib/supabase";
 import router from "@/router";
-import { useCardStore2 } from "../../stores/cardsPlayer2Onhand";
+import { useCardStore2 } from "../../stores/cardsAiOnhand";
 import { useStore2 } from "../../stores/cardEffects2";
 import { useCharacterStatusStore2 } from "../../stores/characterStatus2";
 import { useAudioStore } from '@/stores/audioStore';
@@ -111,6 +141,8 @@ export default {
     player2mirror,
     player1mirror,
   },
+ 
+ 
   setup() {
     const characterStatusStore2 = useCharacterStatusStore2();
     const toast = useToast();
@@ -138,41 +170,68 @@ export default {
     const player1Ref = ref(null);
     const player_variant2Ref = ref(null);
     const player_variant1Ref = ref(null);
+    const tauntStore = useTauntStore();
+    const tauntMessage = computed(() => tauntStore.tauntMessage);
 
+
+onMounted(() => {
+  tauntStore.getTauntMessage();
+});
     onMounted(() => {
       audioStore.playAudio();
     });
 
     const fetchRandomCards = async () => {
+     
+  const { data, error } = await supabase.from("cards").select("*");
 
+  if (error) {
+    console.error("Error fetching cards:", error);
+  } else {
+    // Filter out the card with ID 91
+    const filteredCards = data.filter((card) => card.id !== 91);
 
-      const { data, error } = await supabase.from("cards").select("*");
-
-      if (error) {
-        console.error("Error fetching cards:", error);
-      } else {
-        // Filter out the card with ID 91
-        const filteredCards = data.filter((card) => card.id !== 91);
-
-        // Create a pool of cards based on their draw_chance
-        const weightedCards = [];
-        filteredCards.forEach((card) => {
-          const drawCount = Math.floor(card.draw_chance / 10); // Adjust based on scale (e.g., 80 means 8 instances)
-          for (let i = 0; i < drawCount; i++) {
-            weightedCards.push(card);
-          }
-        });
-
-        // Shuffle the weighted cards and select 5
-        const shuffledCards = weightedCards.sort(() => 0.5 - Math.random());
-        cards.value = shuffledCards.slice(0, 5);
-
-        // Populate onHandCards if empty
-        if (onHandCards.length === 0) {
-          onHandCards.push(...cards.value.slice(0, 5));
-        }
+    // Create a pool of cards based on their draw_chance
+    const weightedCards = [];
+    filteredCards.forEach((card) => {
+      const drawCount = Math.floor(card.draw_chance / 10); // Adjust based on scale (e.g., 80 means 8 instances)
+      for (let i = 0; i < drawCount; i++) {
+        weightedCards.push(card);
       }
-    };
+    });
+
+    // Shuffle the weighted cards and select 5
+    const shuffledCards = weightedCards.sort(() => 0.5 - Math.random());
+    const selectedCards = shuffledCards.slice(0, 5);
+
+   
+    // Store the selected cards in an array and log it
+ // Assuming fetchedCardsArray is already populated
+const fetchedCardsArray = [...selectedCards];
+console.log("Fetched Cards Array:", fetchedCardsArray);
+
+// Select a random card from fetchedCardsArray
+const randomCard = fetchedCardsArray[Math.floor(Math.random() * fetchedCardsArray.length)];
+
+// Set selectedCard to the random card before calling confirmSelection
+selectedCard.value = randomCard;
+
+// Display an alert with the card name
+toast.error(`Computer Used: ${randomCard.name}`);
+
+// Add a 5-second delay before calling confirmSelection
+setTimeout(() => {
+  confirmSelection();
+}, 6000);
+
+
+    // Populate onHandCards if empty
+    if (onHandCards.length === 0) {
+      onHandCards.push(...cards.value.slice(0, 5));
+    }
+  }
+};
+
 
     const fetchCard91 = async () => {
       const { data, error } = await supabase
@@ -293,7 +352,7 @@ export default {
             });
 
             setTimeout(() => {
-              router.push({ name: "battle_area" });
+              router.push({ name: "battle_area_ai" });
             }, 1000); // 1000 milliseconds = 1 second
             return;
           }
@@ -315,7 +374,7 @@ export default {
             });
 
             setTimeout(() => {
-              router.push({ name: "battle_area" });
+              router.push({ name: "battle_area_ai" });
             }, 1000); // 1000 milliseconds = 1 second
             return;
           }
@@ -456,7 +515,7 @@ export default {
           showMessage("Attack missed due to agility!");
           closeDialog();
           await new Promise((resolve) => setTimeout(resolve, 1500));
-          router.push({ name: "battle_area" });
+          router.push({ name: "battle_area_ai" });
           return;
         }
 
@@ -540,7 +599,7 @@ export default {
           });
 
           setTimeout(() => {
-            router.push({ name: "battle_area" });
+            router.push({ name: "battle_area_ai" });
           }, 1000); // 1000 milliseconds = 1 second
           return;
         }
@@ -672,7 +731,7 @@ export default {
 
       closeDialog();
       await new Promise((resolve) => setTimeout(resolve, 200));
-      router.push({ name: "battle_area" });
+      router.push({ name: "battle_area_ai" });
     };
 
     return {
@@ -699,6 +758,7 @@ export default {
       filteredOnHandCards,
       audioStore,
       videoStore,
+      tauntMessage,
 
     };
   }, methods: {

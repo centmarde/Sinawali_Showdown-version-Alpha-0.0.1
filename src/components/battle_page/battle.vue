@@ -86,8 +86,8 @@
   </div>
 
   <div v-if="videoStore.isPlaying" class="video-overlay">
-    <video :src="videoStore.videoUrl" autoplay loop></video>
-  </div>
+  <video :src="videoStore.videoUrl" autoplay loop class="overlay-video"></video>
+</div>
 </template>
 
 <script>
@@ -975,17 +975,46 @@ export default {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.7);
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.7); /* Semi-transparent overlay background */
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 9999;
+  overflow: hidden; /* Ensures content doesn’t overflow */
 }
 
-video {
-  width: 80%;
-  height: 100vh;
+.overlay-video {
+  width: 100%;
+  height: auto;
+  max-width: 90vw; /* Adjust max size to fit on smaller screens */
+  max-height: 90vh;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  z-index: 9998; /* Places video behind the GIF overlay */
 }
+
+.video-overlay::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url("@/assets/video/video-overlay.gif"); /* Path to your GIF */
+  background-size: cover; /* Ensures it covers the entire viewport */
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: 99999; /* Ensures GIF is above the video */
+}
+
+/* Media query for smaller screens */
+@media (max-width: 768px) {
+  .overlay-video {
+    max-width: 95vw;
+    max-height: 95vh;
+  }
+}
+
 </style>

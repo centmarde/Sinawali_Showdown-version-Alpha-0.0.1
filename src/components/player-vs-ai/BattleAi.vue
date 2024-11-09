@@ -16,6 +16,7 @@
         </div>
       </v-row>
 
+
       <!-- Separate section for the card with id = 91 -->
       <v-row class="d-flex justify-center" v-if="card91">
         <v-col cols="8" lg="4" sm="4" md="5" class="text-center skip ">
@@ -37,13 +38,7 @@
 
       </v-row>
     </v-container>
-    <v-dialog v-model="messageDialog" max-width="500" persistent style="z-index: 99999">
-      <v-card>
-        <v-card-text>
-          <p>{{ messageText }}</p>
-        </v-card-text>
-      </v-card>
-    </v-dialog>
+
     <v-dialog v-model="dialog" max-width="500" style="z-index: 99999">
       <v-card
         :style="{ backgroundImage: `url(${selectedCard?.modal_bg})`, backgroundSize: 'cover', backgroundPosition: 'center', color: '#fff' }">
@@ -51,6 +46,7 @@
         <v-card-subtitle>Type: {{ selectedCard?.type }}</v-card-subtitle>
         <v-card-text>
           <p>Power: {{ selectedCard?.power }}</p>
+          <p>Mana Cost: {{ selectedCard?.mana_cost }}</p>
           <p>Description: {{ selectedCard?.description }}</p>
         </v-card-text>
         <v-card-actions>
@@ -60,8 +56,15 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-
   </div>
+
+  <v-dialog v-model="messageDialog" max-width="500" persistent style="z-index: 99999">
+    <v-card>
+      <v-card-text>
+        <p>{{ messageText }}</p>
+      </v-card-text>
+    </v-card>
+  </v-dialog>
 
   <div class="battleground">
     <div class="bg1">
@@ -74,7 +77,6 @@
         </v-col>
         <v-col cols="6">
           <div class="char2">
-
             <Player2 v-if="selectedCharacter === 1" ref="player2Ref" />
             <player1mirror v-if="selectedCharacter === 2" ref="player_variant2Ref" />
           </div>
@@ -86,7 +88,6 @@
   <div v-if="videoStore.isPlaying" class="video-overlay">
   <video :src="videoStore.videoUrl" autoplay loop class="overlay-video"></video>
 </div>
-
 </template>
 
 <script>
@@ -97,12 +98,14 @@ import player1mirror from "../Characters/player1mirror.vue";
 import { ref, onMounted } from "vue";
 import { supabase } from "../../lib/supabase";
 import router from "@/router";
-import { useCardStore2 } from "../../stores/cardsPlayer2Onhand";
-import { useStore2 } from "../../stores/cardEffects2";
-import { useCharacterStatusStore2 } from "../../stores/characterStatus2";
+import { useCardStore1 } from "../../stores/cardsPlayerVsAi";
+import { useStore } from "../../stores/cardEffects";
+import { useCharacterStatusStore } from "../../stores/characterStatus";
 import { useAudioStore } from '@/stores/audioStore';
 import { useToast } from "vue-toastification";
 import { useVideoStore } from '@/stores/videoStore';
+
+
 
 export default {
   components: {
@@ -112,67 +115,102 @@ export default {
     player1mirror,
   },
   setup() {
-    const characterStatusStore2 = useCharacterStatusStore2();
     const toast = useToast();
+    const characterStatusStore = useCharacterStatusStore();
+    const audioStore = useAudioStore();
     const videoStore = useVideoStore();
     const showCards = ref(true);
-    const cardStore = useCardStore2();
+    const cardStore = useCardStore1();
     const { onHandCards, addCard, removeCardAndAddNew } = cardStore;
-    const audioStore = useAudioStore();
+
     const selectedCharacter = ref(
       Number(localStorage.getItem("selectedCharacter"))
     );
+
     const revertedCharacter = computed(() => {
-      return selectedCharacter.value === 2 ? 1 : 2;
+
+      return selectedCharacter.value === 1 ? 2 : 1;
     });
 
-    /* console.log(selectedCharacter.value);
-    console.log(revertedCharacter.value); */
     const dialog = ref(false);
     const messageDialog = ref(false);
     const messageText = ref("");
     const selectedCard = ref(null);
     const cards = ref([]);
+
     const card91 = ref(null);
+
     const player2Ref = ref(null);
     const player1Ref = ref(null);
     const player_variant2Ref = ref(null);
     const player_variant1Ref = ref(null);
 
-    onMounted(() => {
-      audioStore.playAudio();
-    });
-
     const fetchRandomCards = async () => {
 
 
-      const { data, error } = await supabase.from("cards").select("*");
+      try {
+        const userId = localStorage.getItem("user_id");
 
-      if (error) {
-        console.error("Error fetching cards:", error);
-      } else {
-        // Filter out the card with ID 91
-        const filteredCards = data.filter((card) => card.id !== 91);
+        // Step 1: Fetch card_id values from the deck_builds table
+        const { data: deckBuilds, error: deckError } = await supabase
+          .from("deck_builds")
+          .select("card_id")
+          .eq("user_id", userId);
 
-        // Create a pool of cards based on their draw_chance
-        const weightedCards = [];
-        filteredCards.forEach((card) => {
-          const drawCount = Math.floor(card.draw_chance / 10); // Adjust based on scale (e.g., 80 means 8 instances)
-          for (let i = 0; i < drawCount; i++) {
-            weightedCards.push(card);
-          }
-        });
-
-        // Shuffle the weighted cards and select 5
-        const shuffledCards = weightedCards.sort(() => 0.5 - Math.random());
-        cards.value = shuffledCards.slice(0, 5);
-
-        // Populate onHandCards if empty
-        if (onHandCards.length === 0) {
-          onHandCards.push(...cards.value.slice(0, 5));
+        if (deckError) {
+          console.error("Error fetching deck builds:", deckError);
+          return;
         }
+
+        // Step 2: Extract card_ids from the deckBuilds data
+        const cardIds = deckBuilds.map((deck) => deck.card_id);
+
+        if (cardIds.length === 0) {
+          console.log("No cards in deck builds.");
+          return;
+        }
+
+        // Step 3: Fetch the cards that match the card_ids from the deck builds
+        const { data, error } = await supabase
+          .from("cards")
+          .select("*")
+          .in("id", cardIds); // Filter cards by the card_ids from deck_builds
+
+        if (error) {
+          console.error("Error fetching cards:", error);
+        } else {
+          // Step 4: Filter out the card with ID 91
+          const filteredCards = data.filter((card) => card.id !== 91);
+
+          // Step 5: Create a pool of cards based on their draw_chance
+          const weightedCards = [];
+          filteredCards.forEach((card) => {
+            const drawCount = Math.floor(card.draw_chance / 10); // Adjust based on scale (e.g., 80 means 8 instances)
+            for (let i = 0; i < drawCount; i++) {
+              weightedCards.push(card);
+            }
+          });
+
+          // Step 6: Shuffle the weighted cards and select 5
+          const shuffledCards = weightedCards.sort(() => 0.5 - Math.random());
+          cards.value = shuffledCards.slice(0, 5);
+
+          // Step 7: Populate onHandCards if empty
+          if (onHandCards.length === 0) {
+            onHandCards.push(...cards.value.slice(0, 5));
+          }
+        }
+      } catch (error) {
+        console.error("An unexpected error occurred:", error);
       }
+
+
     };
+
+    onMounted(async () => {
+      await fetchRandomCards();
+    });
+
 
     const fetchCard91 = async () => {
       const { data, error } = await supabase
@@ -190,6 +228,7 @@ export default {
 
     const filteredOnHandCards = computed(() => {
       return onHandCards.filter((card) => card.id !== 91);
+
     });
 
     onMounted(async () => {
@@ -205,6 +244,7 @@ export default {
 
     const closeDialog = () => {
       dialog.value = false;
+      // selectedCard.value = null;
     };
 
     const closeMessageDialog = () => {
@@ -217,6 +257,7 @@ export default {
     };
 
     const confirmSelection = async () => {
+
       showCards.value = false;
       const cardIndex = onHandCards.findIndex(
         (card) => card.id === selectedCard.value.id
@@ -225,7 +266,7 @@ export default {
       if (cardIndex !== -1) {
         const { data, error } = await supabase
           .from("cards")
-          .select("id, name, power, mana_cost, type")
+          .select("*")
           .order("id", { ascending: false })
           .limit(1);
 
@@ -235,7 +276,7 @@ export default {
       }
 
       dialog.value = false;
-
+      // Trigger attack animation only if the selected card is of type "attack"
       if (selectedCard.value && selectedCard.value.type === "attack") {
         const { data: dataVideo, error: errorVideo } = await supabase
     .from('cards')
@@ -280,197 +321,207 @@ export default {
           if (currentMana <= 0) {
             toast(`You're out of energy!`, {
               type: 'error',
-              position: 'top-right',
+              position: 'top-left',
               timeout: 3000,
               closeOnClick: true,
             });
 
             toast(`You've missed your chance to make a move!`, {
               type: 'warning',
-              position: 'top-right',
+              position: 'top-left',
               timeout: 3000,
               closeOnClick: true,
             });
 
             setTimeout(() => {
-              router.push({ name: "battle_area" });
+              router.push({ name: "next_phase_ai" });
             }, 1000); // 1000 milliseconds = 1 second
             return;
           }
 
           // Check if the character has enough mana for the selected card
           if (selectedCard.value.mana_cost > currentMana) {
-            toast(`Not enough mana!`, {
+            toast(`Not enough Energy!`, {
               type: 'error',
-              position: 'top-right',
+              position: 'top-left',
               timeout: 3000,
               closeOnClick: true,
             });
 
             toast(`You've missed your chance to make a move!`, {
               type: 'warning',
-              position: 'top-right',
+              position: 'top-left',
               timeout: 3000,
               closeOnClick: true,
             });
 
             setTimeout(() => {
-              router.push({ name: "battle_area" });
+              router.push({ name: "next_phase_ai" });
             }, 1000); // 1000 milliseconds = 1 second
             return;
           }
-          player2Ref.value?.toggleAttack();
-          player_variant2Ref.value?.toggleAttack();
+
+
+
+          // Proceed with attack animation and audio
+          player1Ref.value?.toggleAttack();
+          player_variant1Ref.value?.toggleAttack();
           setTimeout(() => {
             audioStore.playPunch();
           }, 1000);
 
+          // Deduct mana cost
           const { data: EnergyMinus, error: errorEnergyMinus } = await supabase
             .from("characters")
             .update({ mana: currentMana - selectedCard.value.mana_cost })
-            .eq("id", revertedCharacter.value);
+            .eq("id", selectedCharacter.value);
 
           if (errorEnergyMinus) {
             console.error("Error updating character mana:", errorEnergyMinus);
-          } else {
-            console.log("Mana deducted");
           }
-          const { data: dataChar, error: errorChar } = await supabase
-            .from("cards")
-            .select(
-              "is_poison, is_burn, is_def_amp, is_crit_amp, is_agil_amp, is_def_debuff, is_agil_debuff, turn_count, is_stunned"
-            )
-            .eq("id", selectedCard.value.id); // Assuming selectedCard has an id
-
-          // Handle errors in fetching card details
-          if (errorChar) {
-            console.error("Error fetching card details:", errorChar);
-            return;
-          }
-
-          // Process fetched data if available
-          if (dataChar && dataChar.length > 0) {
-            // Convert the first result row into an array
-            const cardEffectsArray = [
-              dataChar[0].is_poison,
-              dataChar[0].is_burn,
-              dataChar[0].is_def_debuff,
-              dataChar[0].is_agil_debuff,
-              dataChar[0].turn_count,
-              dataChar[0].is_stunned,
-              dataChar[0].is_def_amp,
-              dataChar[0].is_agil_amp,
-              dataChar[0].is_crit_amp,
-            ];
-
-            // Assuming you want to add these effects to the character status store
-            const characterStatusStore2 = useCharacterStatusStore2();
-            characterStatusStore2.addEffect({
-              is_poison: cardEffectsArray[0],
-              is_burn: cardEffectsArray[1],
-              is_def_debuff: cardEffectsArray[2],
-              is_agil_debuff: cardEffectsArray[3],
-              turn_count: cardEffectsArray[4],
-              is_stunned: cardEffectsArray[5],
-              is_def_amp: cardEffectsArray[6],
-              is_agil_amp: cardEffectsArray[7],
-              is_crit_amp: cardEffectsArray[8],
-            });
-
-
-
-            // Constant character ID
-            const characterId = revertedCharacter.value;
-
-
-
-
-            // Function to process game turn for the character
-            async function gameTurn() {
-              // Apply effects for the character with ID 2
-              await characterStatusStore2.applyEffects(characterId);
-
-              // Log the updated character stats
-              const updatedCharacter = await characterStatusStore2.fetchCharacter(
-                characterId
-              );
-
-            }
-
-            // Call gameTurn
-            await gameTurn();
-
-
-
-            // Store the array in Pinia
-            const store = useStore2();
-            store.setCardEffects(cardEffectsArray);
-          }
-
-
         } catch (error) {
           console.error("Unexpected error:", error);
         }
+
+        // Fetch card effects from Supabase
+        const { data: dataChar, error: errorChar } = await supabase
+          .from("cards")
+          .select(
+            "is_poison, is_burn, is_def_amp, is_crit_amp, is_agil_amp, is_def_debuff, is_agil_debuff, turn_count, is_stunned"
+          )
+          .eq("id", selectedCard.value.id); // Assuming selectedCard has an id
+
+        // Handle errors in fetching card details
+        if (errorChar) {
+          console.error("Error fetching card details:", errorChar);
+          return;
+        }
+
+        // Process fetched data if available
+        if (dataChar && dataChar.length > 0) {
+          // Convert the first result row into an array
+          const cardEffectsArray = [
+            dataChar[0].is_poison,
+            dataChar[0].is_burn,
+            dataChar[0].is_def_debuff,
+            dataChar[0].is_agil_debuff,
+            dataChar[0].turn_count,
+            dataChar[0].is_stunned,
+            dataChar[0].is_def_amp,
+            dataChar[0].is_agil_amp,
+            dataChar[0].is_crit_amp,
+          ];
+
+          // Assuming you want to add these effects to the character status store
+          const characterStatusStore = useCharacterStatusStore();
+          characterStatusStore.addEffect({
+            is_poison: cardEffectsArray[0],
+            is_burn: cardEffectsArray[1],
+            is_def_debuff: cardEffectsArray[2],
+            is_agil_debuff: cardEffectsArray[3],
+            turn_count: cardEffectsArray[4],
+            is_stunned: cardEffectsArray[5],
+            is_def_amp: cardEffectsArray[6],
+            is_agil_amp: cardEffectsArray[7],
+            is_crit_amp: cardEffectsArray[8],
+          });
+
+
+          // Constant character ID
+          const characterId = revertedCharacter.value;
+
+
+          // Function to process game turn for the character
+          async function gameTurn() {
+            // Apply effects for the character with ID 2
+            await characterStatusStore.applyEffects(characterId);
+
+            // Log the updated character stats
+            const updatedCharacter = await characterStatusStore.fetchCharacter(
+              characterId
+            );
+
+
+          }
+
+          // Call gameTurn
+          await gameTurn();
+
+          // Store the array in Pinia
+          const store = useStore();
+          store.setCardEffects(cardEffectsArray);
+        }
+
+        // Trigger Player1's attack animations
+
+
         if (selectedCard.value.is_burn > 0) {
           showMessage("Burn effect triggered");
           setTimeout(() => {
-            player_variant1Ref.value?.toggleHurtInjured();
-            player1Ref.value?.toggleHurtInjured();
+            player_variant2Ref.value?.toggleHurtInjured();
+            player2Ref.value?.toggleHurtInjured();
           }, 300);
         } else if (selectedCard.value.is_poison > 0) {
           showMessage("Poison effect triggered"); // Changed alert message for clarity
           setTimeout(() => {
-            player_variant1Ref.value?.toggleHurtSkinDamage();
-            player1Ref.value?.toggleHurtSkinDamage();
+            player_variant2Ref.value?.toggleHurtSkinDamage();
+            player2Ref.value?.toggleHurtSkinDamage();
           }, 300);
         } else {
-          player_variant1Ref.value?.toggleHurt();
-          player1Ref.value?.toggleHurt();
+          player_variant2Ref.value?.toggleHurt();
+          player2Ref.value?.toggleHurt();
         }
-        /*  setTimeout(() => {
-           player_variant1Ref.value?.toggleHurt();
-           player1Ref.value?.toggleHurt();
-         }, 300); */
 
+
+        // Close dialog immediately after triggering animations
         closeDialog();
-        await new Promise((resolve) => setTimeout(resolve, 500));
 
-        const targetCharacterId = selectedCharacter.value === 2 ? 2 : 1;
+        // Delay to allow the animation to play before updating health
+        await new Promise((resolve) => setTimeout(resolve, 500)); // Adjust delay as needed
+
+        // Get current health and stats of the targeted character (e.g., player2)
+        const targetCharacterId = selectedCharacter.value === 1 ? 2 : 1;
         const { data, error } = await supabase
           .from("characters")
-          .select("health, defense, agility, critical_rate")
+          .select("health, defense, agility, critical_rate") // Select relevant columns
           .eq("id", targetCharacterId)
           .single();
 
+        // Handle errors in fetching character stats
         if (error) {
           console.error("Error fetching character stats:", error);
           return;
         }
 
+        // Destructure the fetched stats into individual variables
         const { health, defense, agility, critical_rate } = data;
 
-
-
-        const missChance = Math.random() * 100;
+        // Calculate the chance to miss the attack based on agility
+        const missChance = Math.random() * 100; // Random number between 0 and 100
         if (missChance < agility) {
           showMessage("Attack missed due to agility!");
+          await new Promise((resolve) => setTimeout(resolve, 1000));
           closeDialog();
-          await new Promise((resolve) => setTimeout(resolve, 1500));
-          router.push({ name: "battle_area" });
-          return;
+          router.push({ name: "next_phase_ai" });
+          return; // Exit if the attack misses
         }
 
-        const defensePercentage = defense / 100;
+        // Calculate damage after defense reduction
+        const defensePercentage = defense / 100; // Convert defense to a decimal
         const damageAfterDefense = Math.max(
           0,
           Math.floor(selectedCard.value.power * (1 - defensePercentage))
-        );
+        ); // Apply percentage reduction and convert to integer
 
-        const isCriticalHit = Math.random() * 100 < critical_rate;
+
+
+        // Check if the attack is a critical hit based on critical_rate
+        const isCriticalHit = Math.random() * 100 < critical_rate; // Check if critical rate is 100% or more
         const finalDamage = isCriticalHit
           ? damageAfterDefense * 2
-          : damageAfterDefense;
+          : damageAfterDefense; // Double damage if critical hit
 
+        // Show message for the damage dealt
         if (isCriticalHit) {
           showMessage(`Critical Hit! You dealt ${finalDamage} damage!`);
         } else {
@@ -479,12 +530,20 @@ export default {
           await new Promise((resolve) => setTimeout(resolve, 1000));
         }
 
+        closeDialog();
+        // Wait before moving to the next phase
+        router.push({ name: "next_phase_ai" });
+
+        // Subtract final damage from target's health
         const newHealth = Math.max(0, health - finalDamage);
+
+        // Update health in the database
         const { error: updateError } = await supabase
           .from("characters")
           .update({ health: newHealth })
           .eq("id", targetCharacterId);
 
+        // Handle errors in updating character health
         if (updateError) {
           console.error("Error updating character health:", updateError);
         }
@@ -496,7 +555,6 @@ export default {
           .select("mana")
           .eq("id", selectedCharacter.value)
           .single();
-
           console.log(selectedCharacter.value);
           console.log(revertedCharacter.value);
         if (errorEnergy) {
@@ -504,23 +562,26 @@ export default {
           return;
         }
 
+        // Assuming card91 is the card being used and has an is_mana property
         if (card91.value && card91.value.is_mana) {
-
+         
           // Calculate the new mana value
           const newMana = EnergyChar.mana + card91.value.is_mana;
-
+         
           // Update the character's mana in the database
           const { data: updateData, error: updateError } = await supabase
             .from("characters")
             .update({ mana: newMana })
-            .eq("id", revertedCharacter.value);
-
+            .eq("id", selectedCharacter.value);
+            
           if (updateError) {
             console.error("Error updating character mana:", updateError);
             return;
           }
 
         }
+
+
 
         // Check if character's mana is sufficient
         const currentMana = EnergyChar.mana;
@@ -540,7 +601,7 @@ export default {
           });
 
           setTimeout(() => {
-            router.push({ name: "battle_area" });
+            router.push({ name: "next_phase_ai" });
           }, 1000); // 1000 milliseconds = 1 second
           return;
         }
@@ -562,12 +623,13 @@ export default {
           });
 
           setTimeout(() => {
-            router.push({ name: "next_phase" });
+            router.push({ name: "next_phase_ai" });
           }, 1000); // 1000 milliseconds = 1 second
           return;
         }
-        player_variant2Ref.value?.toggleBuff();
-        player2Ref.value?.toggleBuff();
+        player1Ref.value?.toggleBuff();
+        player_variant1Ref.value?.toggleBuff();
+
 
 
         // Check if the mana cost is greater than 0 before proceeding
@@ -575,32 +637,21 @@ export default {
           const { data: EnergyMinus, error: errorEnergyMinus } = await supabase
             .from("characters")
             .update({ mana: currentMana - selectedCard.value.mana_cost })
-            .eq("id", revertedCharacter.value);
+            .eq("id", selectedCharacter.value);
 
           if (errorEnergyMinus) {
             console.error("Error updating character mana:", errorEnergyMinus);
           }
-        }
+        } 
 
 
+        // Check if a character has won the battle
 
-        const { data: dataChar, error: errorChar } = await supabase
-          .from("cards")
-          .select(
-            "*"
-          )
-          .eq("id", selectedCard.value.id); // Assuming selectedCard has an id
 
-        // Handle errors in fetching card details
-        if (errorChar) {
-          console.error("Error fetching card details:", errorChar);
-          return;
-        }
-        const targetCharacterId = selectedCharacter.value === 2 ? 2 : 1;
         const { data, error } = await supabase
           .from("characters")
-          .select("health, defense, agility, critical_rate")
-          .eq("id", targetCharacterId)
+          .select("*")
+          .eq("id", selectedCharacter.value)
           .single();
 
         if (error) {
@@ -611,6 +662,19 @@ export default {
         const { health, defense, agility, critical_rate } = data;
 
 
+        // Fetch the card effects for the buff card
+        const { data: dataChar, error: errorChar } = await supabase
+          .from("cards")
+          .select(
+            "*"
+          )
+          .eq("id", selectedCard.value.id);
+
+        // Handle errors in fetching card details
+        if (errorChar) {
+          console.error("Error fetching card details:", errorChar);
+          return;
+        }
 
         // Process fetched data if available
         if (dataChar && dataChar.length > 0) {
@@ -627,9 +691,9 @@ export default {
             dataChar[0].is_crit_amp,
           ];
 
-          // Assuming you want to add these effects to the character status store
-          const characterStatusStore2 = useCharacterStatusStore2();
-          characterStatusStore2.addEffect({
+          // Add effects to the character status store
+          const characterStatusStore = useCharacterStatusStore();
+          characterStatusStore.addEffect({
             is_poison: cardEffectsArray[0],
             is_burn: cardEffectsArray[1],
             is_def_debuff: cardEffectsArray[2],
@@ -644,39 +708,34 @@ export default {
           // Constant character ID
           const characterId = revertedCharacter.value;
 
-
-
-
           // Function to process game turn for the character
           async function gameTurn() {
-            // Apply effects for the character with ID 2
-            await characterStatusStore2.applyEffects(characterId);
+            await characterStatusStore.applyEffects(characterId);
 
             // Log the updated character stats
-            const updatedCharacter = await characterStatusStore2.fetchCharacter(
-              characterId
-            );
-
+            const updatedCharacter = await characterStatusStore.fetchCharacter(characterId);
           }
 
           // Call gameTurn
           await gameTurn();
 
-
-          // Store the array in Pinia
-          const store = useStore2();
+          // Store the effects array in Pinia
+          const store = useStore();
           store.setCardEffects(cardEffectsArray);
-
         }
       }
 
+
+      // Always navigate to the next phase
       closeDialog();
       await new Promise((resolve) => setTimeout(resolve, 200));
-      router.push({ name: "battle_area" });
+      router.push({ name: "next_phase_ai" });
     };
 
     return {
+
       card91,
+
       showCards,
       cards,
       dialog,
@@ -701,6 +760,7 @@ export default {
       videoStore,
 
     };
+
   }, methods: {
     setActiveCard(index) {
       this.activeCard = index;
@@ -712,7 +772,6 @@ export default {
 };
 </script>
 
-
 <style lang="scss" scoped>
 .battleground {
   position: relative;
@@ -723,6 +782,8 @@ export default {
   background-size: cover;
   background-position: bottom;
   background-repeat: no-repeat;
+  overflow-x: hidden;
+
 }
 
 .bg1 {
@@ -735,6 +796,7 @@ export default {
   background-position: bottom;
   background-repeat: no-repeat;
   z-index: 9;
+
 }
 
 .fill-height {
@@ -753,14 +815,13 @@ export default {
   left: 50%;
   transform: translate(-50%, -50%);
   transition: all 0.3s ease;
-  width: auto;
 }
-
 
 .v-card {
   margin-bottom: 10px;
   transition: transform 0.3s ease;
 }
+
 
 .hoverable-card:hover {
   transform: scale(1.05);
@@ -775,6 +836,10 @@ export default {
 @media (max-width: 600px) {
   .floating-card-container {
     top: 50%;
+  }
+
+  .bg1 {
+    height: 100%;
   }
 }
 
@@ -849,6 +914,7 @@ export default {
   transition: background 0.3s, transform 0.3s;
   transform: rotate(calc(var(--i) * 3deg)) translate(calc(var(--i) * 150px), -50px);
 }
+
 @media (max-width: 600px) {
   .container {
     height: 25%;
@@ -898,7 +964,6 @@ export default {
 .container .card:hover {
   transform: rotate(calc(var(--i) * 3deg)) translate(calc(var(--i) * 150px), -80px);
 }
-
 #card_title{
   position: absolute;
   top: 13px;
