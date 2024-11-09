@@ -24,16 +24,12 @@
           class="d-flex justify-center align-center"
         >
           <!-- MENU  -->
-          <v-card
-            class="custom-card mt-3 mx-3"
-            elevation="8"
-            style="width: 100%"
-          >
+          <v-card class="custom-card mx-3" elevation="8" style="width: 100%">
             <v-card-actions class="d-flex flex-column">
               <v-btn
                 :class="{ 'selected-menu': selectedMenu === 0 }"
                 @click="handleNavigation('/select_character')"
-                class="my-2 font-weight-bold"
+                class="my-1 font-weight-bold"
                 block
               >
                 Quickstart
@@ -41,7 +37,7 @@
               <v-btn
                 :class="{ 'selected-menu': selectedMenu === 1 }"
                 @click="handleNavigation('/multiplayer')"
-                class="my-2 font-weight-bold"
+                class="my-1 font-weight-bold"
                 block
               >
                 Multiplayer
@@ -49,7 +45,7 @@
               <v-btn
                 :class="{ 'selected-menu': selectedMenu === 2 }"
                 @click="handleNavigation('/cards')"
-                class="my-2 font-weight-bold"
+                class="my-1 font-weight-bold"
                 block
               >
                 Cards
@@ -57,7 +53,7 @@
               <v-btn
                 :class="{ 'selected-menu': selectedMenu === 3 }"
                 @click="doLogout()"
-                class="my-2 font-weight-bold"
+                class="my-1 font-weight-bold"
                 block
               >
                 Logout
