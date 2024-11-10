@@ -17,56 +17,33 @@ export const useCardStore1 = defineStore("cardStore1", () => {
     }
   };
 
-  // Fetches a single random card from the database, excluding card.id 91 and cards not in deck_builds
+  // Fetches a single random card from the database, excluding card.id 91
   const fetchNewCard = async () => {
-    const userId = localStorage.getItem("user_id");
-
     try {
-      // Step 1: Fetch card_id values from the deck_builds table
-      const { data: deckBuilds, error: deckError } = await supabase
-        .from("deck_builds")
-        .select("card_id")
-        .eq("user_id", userId);
-
-      if (deckError) {
-        throw new Error("Error fetching deck builds:", deckError);
+      const { data, error } = await supabase.from("cards").select("*");
+      if (error) {
+        throw new Error("Error fetching cards:", error);
       }
 
-      // Step 2: Extract card_ids from the deckBuilds data
-      const cardIds = deckBuilds.map((deck) => deck.card_id);
-
-      if (cardIds.length === 0) {
-        console.log("No cards in deck builds.");
-        return null;
-      }
-
-      // Step 3: Fetch cards from the cards table that are in deck_builds (i.e., match card_id)
-      const { data: availableCards, error: cardsError } = await supabase
-        .from("cards")
-        .select("*")
-        .in("id", cardIds); // Filter cards by the card_ids from deck_builds
-
-      if (cardsError) {
-        throw new Error("Error fetching cards:", cardsError);
-      }
-
-      // Step 4: Filter out card with ID 91 and any already on hand
-      const availableFilteredCards = availableCards.filter(
-        (card) => card.id !== 91 && !onHandCards.value.some((c) => c.id === card.id)
+      // Filter out card with ID 91 and any already on hand
+      const availableCards = data.filter(
+        (card) =>
+          card.id !== 91 && !onHandCards.value.some((c) => c.id === card.id)
       );
 
-      if (availableFilteredCards.length) {
-        // Step 5: Create a weighted array based on draw_chance
+      if (availableCards.length) {
+        // Create a weighted array based on draw_chance
         const weightedCards = [];
-        availableFilteredCards.forEach((card) => {
+        availableCards.forEach((card) => {
           const drawCount = Math.floor(card.draw_chance / 10); // Adjust scaling factor if needed
           for (let i = 0; i < drawCount; i++) {
             weightedCards.push(card);
           }
         });
 
-        // Step 6: Select a random card from the weighted array
-        const randomCard = weightedCards[Math.floor(Math.random() * weightedCards.length)];
+        // Select a random card from the weighted array
+        const randomCard =
+          weightedCards[Math.floor(Math.random() * weightedCards.length)];
         return randomCard;
       }
 

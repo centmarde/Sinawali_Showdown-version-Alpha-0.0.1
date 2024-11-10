@@ -216,7 +216,7 @@ if (error) {
   }
 }
 };
-
+  
     onMounted(async () => {
       await fetchRandomCards();
     });
