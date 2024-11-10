@@ -697,7 +697,7 @@ if (error) {
 
       // Always navigate to the next phase
       closeDialog();
-      await new Promise((resolve) => setTimeout(resolve, 200));
+      
       router.push({ name: "next_phase_ai" });
     };
 

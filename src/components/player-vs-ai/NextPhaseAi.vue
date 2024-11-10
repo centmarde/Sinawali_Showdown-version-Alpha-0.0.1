@@ -183,37 +183,41 @@ onMounted(() => {
 
     const fetchRandomCards = async () => {
   try {
-    // Fetch the character's mana
-    const { data: characterData, error: characterError } = await supabase
-      .from("characters")
-      .select("mana")
-      .eq("id", revertedCharacter.value); // Adjust character ID as needed
+    // Fetch the character's mana and health
+const { data: characterData, error: characterError } = await supabase
+  .from("characters")
+  .select("mana, health")
+  .eq("id", revertedCharacter.value); // Adjust character ID as needed
 
-    if (characterError) {
-      console.error("Error fetching character mana:", characterError);
-      return;
-    }
+if (characterError) {
+  console.error("Error fetching character data:", characterError);
+  return;
+}
 
-    const mana = characterData[0]?.mana;
+const character = characterData?.[0];
+if (!character || character.health <= 0) {
+  return;
+}
 
-    // Check if mana is 20 or higher to auto-select card with ID 91
-    if (mana <= 20) {
-      // Fetch the card with ID 91
-      const { data: cardData, error: cardError } = await supabase
-        .from("cards")
-        .select("*")
-        .eq("id", 91)
-        .single();
+const { mana } = character;
+// Check if mana is 20 or less to auto-select card with ID 91
+if (mana <= 20) {
+  // Fetch the card with ID 91
+  const { data: cardData, error: cardError } = await supabase
+    .from("cards")
+    .select("*")
+    .eq("id", 91)
+    .single();
 
-      if (cardError) {
-        console.error("Error fetching card with ID 91:", cardError);
-      } else {
-        selectedCard.value = cardData;
-        toast.error(`Computer Used: ${cardData.name}`);
-        setTimeout(() => confirmSelection(), 5000); // Delay before confirming selection
-      }
-      return;
-    }
+  if (cardError) {
+    console.error("Error fetching card with ID 91:", cardError);
+  } else if (cardData) {
+    selectedCard.value = cardData;
+    toast.error(`Computer Used: ${cardData.name}`);
+    setTimeout(() => confirmSelection(), 5000); // Delay before confirming selection
+  }
+}
+
 
     // Proceed with random card selection if mana is below 20
     const { data, error } = await supabase.from("cards").select("*");
@@ -758,7 +762,7 @@ onMounted(() => {
       }
 
       closeDialog();
-      await new Promise((resolve) => setTimeout(resolve, 200));
+     
       router.push({ name: "battle_area_ai" });
     };
 

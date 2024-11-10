@@ -13,11 +13,10 @@
 </template>
 
 <script>
-import { useAudioStore } from "@/stores/audioStore"; // Adjust path if needed
+import { useAudioStore } from "@/stores/audioStore";
 import { onMounted, ref } from "vue";
 import { supabase } from "@/lib/supabase";
-import { useRouter } from "vue-router";
-
+import router from "@/router";
 
 export default {
   name: "Victory",
@@ -43,10 +42,12 @@ export default {
 
         localStorage.removeItem("battleId");
       }
+
+     
+
+      window.location.href = "/";
       await this.resetDeckBuilds();
       await this.resetCharacters();
-    
-      this.router.push("/");
     },
 
     async resetCharacters() {
@@ -123,6 +124,8 @@ export default {
   },
 };
 </script>
+
+
 
 
 <style scoped>
