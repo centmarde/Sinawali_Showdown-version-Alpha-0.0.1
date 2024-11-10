@@ -267,7 +267,7 @@ export default {
           const { data: EnergyChar, error: errorEnergy } = await supabase
             .from("characters")
             .select("mana")
-            .eq("id", selectedCharacter.value)
+            .eq("id", revertedCharacter.value)
             .single();
 
           if (errorEnergy) {
@@ -494,7 +494,7 @@ export default {
         const { data: EnergyChar, error: errorEnergy } = await supabase
           .from("characters")
           .select("mana")
-          .eq("id", selectedCharacter.value)
+          .eq("id", revertedCharacter.value)
           .single();
 
           console.log(selectedCharacter.value);
