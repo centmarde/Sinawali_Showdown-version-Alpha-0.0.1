@@ -2,8 +2,9 @@
   <div>
     <v-btn class="my-2" color="dark" block to="/"> Back </v-btn>
     <v-row>
+      <v-col></v-col>
         <v-col>
-       <DeckBuild/>
+      <Player2/>
         </v-col>
     </v-row>
 

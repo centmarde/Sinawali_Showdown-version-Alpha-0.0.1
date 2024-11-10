@@ -182,55 +182,83 @@ onMounted(() => {
     });
 
     const fetchRandomCards = async () => {
-     
-  const { data, error } = await supabase.from("cards").select("*");
+  try {
+    // Fetch the character's mana
+    const { data: characterData, error: characterError } = await supabase
+      .from("characters")
+      .select("mana")
+      .eq("id", revertedCharacter.value); // Adjust character ID as needed
 
-  if (error) {
-    console.error("Error fetching cards:", error);
-  } else {
-    // Filter out the card with ID 91
-    const filteredCards = data.filter((card) => card.id !== 91);
-
-    // Create a pool of cards based on their draw_chance
-    const weightedCards = [];
-    filteredCards.forEach((card) => {
-      const drawCount = Math.floor(card.draw_chance / 10); // Adjust based on scale (e.g., 80 means 8 instances)
-      for (let i = 0; i < drawCount; i++) {
-        weightedCards.push(card);
-      }
-    });
-
-    // Shuffle the weighted cards and select 5
-    const shuffledCards = weightedCards.sort(() => 0.5 - Math.random());
-    const selectedCards = shuffledCards.slice(0, 5);
-
-   
-    // Store the selected cards in an array and log it
- // Assuming fetchedCardsArray is already populated
-const fetchedCardsArray = [...selectedCards];
-console.log("Fetched Cards Array:", fetchedCardsArray);
-
-// Select a random card from fetchedCardsArray
-const randomCard = fetchedCardsArray[Math.floor(Math.random() * fetchedCardsArray.length)];
-
-// Set selectedCard to the random card before calling confirmSelection
-selectedCard.value = randomCard;
-
-// Display an alert with the card name
-toast.error(`Computer Used: ${randomCard.name}`);
-
-// Add a 5-second delay before calling confirmSelection
-setTimeout(() => {
-  confirmSelection();
-}, 6000);
-
-
-    // Populate onHandCards if empty
-    if (onHandCards.length === 0) {
-      onHandCards.push(...cards.value.slice(0, 5));
+    if (characterError) {
+      console.error("Error fetching character mana:", characterError);
+      return;
     }
+
+    const mana = characterData[0]?.mana;
+
+    // Check if mana is 20 or higher to auto-select card with ID 91
+    if (mana <= 20) {
+      // Fetch the card with ID 91
+      const { data: cardData, error: cardError } = await supabase
+        .from("cards")
+        .select("*")
+        .eq("id", 91)
+        .single();
+
+      if (cardError) {
+        console.error("Error fetching card with ID 91:", cardError);
+      } else {
+        selectedCard.value = cardData;
+        toast.error(`Computer Used: ${cardData.name}`);
+        setTimeout(() => confirmSelection(), 5000); // Delay before confirming selection
+      }
+      return;
+    }
+
+    // Proceed with random card selection if mana is below 20
+    const { data, error } = await supabase.from("cards").select("*");
+
+    if (error) {
+      console.error("Error fetching cards:", error);
+    } else {
+      // Filter out the card with ID 91
+      const filteredCards = data.filter((card) => card.id !== 91);
+
+      // Create a pool of cards based on their draw_chance
+      const weightedCards = [];
+      filteredCards.forEach((card) => {
+        const drawCount = Math.floor(card.draw_chance / 10); // Adjust based on scale (e.g., 80 means 8 instances)
+        for (let i = 0; i < drawCount; i++) {
+          weightedCards.push(card);
+        }
+      });
+
+      // Shuffle the weighted cards and select 5
+      const shuffledCards = weightedCards.sort(() => 0.5 - Math.random());
+      const selectedCards = shuffledCards.slice(0, 5);
+
+      // Store the selected cards in an array and log it
+      const fetchedCardsArray = [...selectedCards];
+      console.log("Fetched Cards Array:", fetchedCardsArray);
+
+      // Select a random card from fetchedCardsArray
+      const randomCard = fetchedCardsArray[Math.floor(Math.random() * fetchedCardsArray.length)];
+      selectedCard.value = randomCard;
+      toast.error(`Computer Used: ${randomCard.name}`);
+
+      // Add a 5-second delay before calling confirmSelection
+      setTimeout(() => confirmSelection(), 5000);
+
+      // Populate onHandCards if empty
+      if (onHandCards.length === 0) {
+        onHandCards.push(...cards.value.slice(0, 5));
+      }
+    }
+  } catch (error) {
+    console.error("Error in fetchRandomCards function:", error);
   }
 };
+
 
 
     const fetchCard91 = async () => {

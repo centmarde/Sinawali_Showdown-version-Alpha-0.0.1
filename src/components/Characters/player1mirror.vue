@@ -115,13 +115,43 @@ export default {
         idle();
       }
     };
+    const attack2 = () => {
+  if (!this.isattack) return;
 
+  frameY = 3;
+  drawPlayer();
+  if (gameFrame % staggerFrames === 0) frameX = frameX < 6 ? frameX + 1 : 0;
+  gameFrame++;
+  if (frameX < 6) {
+    this.animationFrame = requestAnimationFrame(attack2);
+  } else {
+    frameX = 0;
+    this.isattack = false;
+    idle();
+  }
+};
+
+const attack3 = () => {
+  if (!this.isattack) return;
+
+  frameY = 1; // Assume frameY 4 is the new attack3 animation row
+  drawPlayer();
+  if (gameFrame % 30 === 0) frameX = frameX < 7 ? frameX + 1 : 0; // Example frame count for attack3
+  gameFrame++;
+  if (frameX < 7) {
+    this.animationFrame = requestAnimationFrame(attack3);
+  } else {
+    frameX = 0;
+    this.isattack = false;
+    idle();
+  }
+};
     this.toggleAttack = () => {
       cancelAnimationFrame(this.animationFrame);
       if (!this.isattack) {
         this.isattack = true;
         frameX = 0;
-        attack();
+        attack3();
       }
     };
 
