@@ -359,7 +359,7 @@ if (mana <= 20) {
           const { data: EnergyChar, error: errorEnergy } = await supabase
             .from("characters")
             .select("mana")
-            .eq("id", selectedCharacter.value)
+            .eq("id", revertedCharacter.value)
             .single();
 
           if (errorEnergy) {
@@ -619,14 +619,14 @@ if (mana <= 20) {
         if (currentMana <= 0) {
           toast(`You're out of energy!`, {
             type: 'error',
-            position: 'top-left',
+            position: 'top-right',
             timeout: 3000,
             closeOnClick: true,
           });
 
           toast(`You've missed your chance to make a move!`, {
             type: 'warning',
-            position: 'top-left',
+            position: 'top-right',
             timeout: 3000,
             closeOnClick: true,
           });
@@ -641,14 +641,14 @@ if (mana <= 20) {
         if (selectedCard.value.mana_cost > currentMana) {
           toast(`Not enough Energy!`, {
             type: 'error',
-            position: 'top-left',
+            position: 'top-right',
             timeout: 3000,
             closeOnClick: true,
           });
 
           toast(`You've missed your chance to make a move!`, {
             type: 'warning',
-            position: 'top-left',
+            position: 'top-right',
             timeout: 3000,
             closeOnClick: true,
           });
