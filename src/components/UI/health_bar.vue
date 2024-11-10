@@ -113,22 +113,22 @@ export default {
     };
 
     const checkVictoryCondition = () => {
-      if (player1.health <= 0) {
-        localStorage.setItem("winner", player2.name);
-        
-         
-          router.push({ name: "Victory" });
-      
-        
-      } else if (player2.health <= 0) {
-        localStorage.setItem("winner", player1.name);
-     
-         
-          router.push({ name: "Victory" });
-     
-       
-      }
-    };
+  if (player1.health <= 0) {
+    localStorage.setItem("winner", player2.name);
+
+    setTimeout(() => {
+      router.push({ name: "Victory" });
+    }, 3000); // 3-second delay
+
+  } else if (player2.health <= 0) {
+    localStorage.setItem("winner", player1.name);
+
+    setTimeout(() => {
+      router.push({ name: "Victory" });
+    }, 3000); // 3-second delay
+  }
+};
+
 
     const setupRealtimeSubscription = () => {
       const channel = supabase
