@@ -151,15 +151,17 @@ this.toggleAttack = () => {
     this.isattack = true;
     frameX = 0;
 
-    // Randomly select between attack, attack2, and attack3
-    const randomAttack = Math.floor(Math.random() * 3);
+   
+   /*  const randomAttack = Math.floor(Math.random() * 3);
     if (randomAttack === 0) {
       attack();
     } else if (randomAttack === 1) {
       attack2();
     } else {
       attack3();
-    }
+    } */
+
+    attack3();
   }
 };
 

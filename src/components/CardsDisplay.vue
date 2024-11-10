@@ -185,25 +185,13 @@ onMounted(() => {
   font-size: 22px;
   font-weight: bold;
   color: #fff;
-  background: #fcd20e; /* temporary */
+  background: none; /* temporary */
 }
 
 .card-image {
   width: 100%;
   height: auto;
   border-radius: 18px;
-}
-
-.attack_bg {
-  background-color: #fe0c4c;
-}
-
-.defense_bg {
-  background-color: #0055ff;
-}
-
-.buff_bg {
-  background-color: #fcd20e;
 }
 
 .top-right-button {
