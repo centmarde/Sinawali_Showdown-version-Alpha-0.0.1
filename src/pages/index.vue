@@ -107,7 +107,7 @@ const loginEmail = ref('');
 const loginPassword = ref('');
 
 const showSignUpDialog = ref(false);
-const showLoginDialog = ref(true);
+const showLoginDialog = ref(false);
 
 // Computed property to check if the user is already logged in
 const isLoggedIn = computed(() => userStore.isAuthenticated);
