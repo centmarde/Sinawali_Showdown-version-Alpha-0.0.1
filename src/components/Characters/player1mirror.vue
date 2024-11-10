@@ -136,7 +136,7 @@ const attack3 = () => {
 
   frameY = 1; // Assume frameY 4 is the new attack3 animation row
   drawPlayer();
-  if (gameFrame % 30 === 0) frameX = frameX < 7 ? frameX + 1 : 0; // Example frame count for attack3
+  if (gameFrame % staggerFrames === 0) frameX = frameX < 7 ? frameX + 1 : 0; // Example frame count for attack3
   gameFrame++;
   if (frameX < 7) {
     this.animationFrame = requestAnimationFrame(attack3);
