@@ -146,7 +146,20 @@ export default {
     const player_variant1Ref = ref(null);
 
     const fetchRandomCards = async () => {
+      const { data: characterData, error: characterError } = await supabase
+  .from("characters")
+  .select("mana, health")
+  .eq("id", selectedCharacter.value); // Adjust character ID as needed
 
+if (characterError) {
+  console.error("Error fetching character data:", characterError);
+  return;
+}
+
+const character = characterData?.[0];
+if (!character || character.health <= 0) {
+  return;
+}
 
 const { data, error } = await supabase.from("cards").select("*");
 
@@ -519,7 +532,7 @@ if (error) {
       }
 
       if (selectedCard.value && selectedCard.value.type === "buff") {
-        const { data: EnergyChar, error: errorEnergy } = await supabase
+        const { data: EnergyChar1, error: errorEnergy } = await supabase
           .from("characters")
           .select("mana")
           .eq("id", selectedCharacter.value)
@@ -535,7 +548,7 @@ if (error) {
         if (card91.value && card91.value.is_mana) {
          
           // Calculate the new mana value
-          const newMana = EnergyChar.mana + card91.value.is_mana;
+          const newMana = EnergyChar1.mana + card91.value.is_mana;
          
           // Update the character's mana in the database
           const { data: updateData, error: updateError } = await supabase
@@ -553,7 +566,7 @@ if (error) {
 
 
         // Check if character's mana is sufficient
-        const currentMana = EnergyChar.mana;
+        const currentMana = EnergyChar1.mana;
         if (currentMana <= 0) {
           toast(`You're out of energy!`, {
             type: 'error',

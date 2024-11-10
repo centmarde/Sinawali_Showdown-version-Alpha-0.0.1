@@ -43,11 +43,11 @@ export default {
         localStorage.removeItem("battleId");
       }
 
-     
-
-      window.location.href = "/";
       await this.resetDeckBuilds();
       await this.resetCharacters();
+
+      window.location.href = "/";
+     
     },
 
     async resetCharacters() {

@@ -216,6 +216,7 @@ if (mana <= 20) {
     toast.error(`Computer Used: ${cardData.name}`);
     setTimeout(() => confirmSelection(), 5000); // Delay before confirming selection
   }
+  return;
 }
 
 
@@ -585,7 +586,7 @@ if (mana <= 20) {
         const { data: EnergyChar, error: errorEnergy } = await supabase
           .from("characters")
           .select("mana")
-          .eq("id", selectedCharacter.value)
+          .eq("id", revertedCharacter.value)
           .single();
 
           console.log(selectedCharacter.value);
@@ -599,7 +600,7 @@ if (mana <= 20) {
 
           // Calculate the new mana value
           const newMana = EnergyChar.mana + card91.value.is_mana;
-
+          console.log ("New mana value:", newMana);
           // Update the character's mana in the database
           const { data: updateData, error: updateError } = await supabase
             .from("characters")
