@@ -24,14 +24,13 @@ export const useCardStore1 = defineStore("cardStore1", () => {
       if (error) {
         throw new Error("Error fetching cards:", error);
       }
-  
+
       // Filter out card with ID 91 and any already on hand
       const availableCards = data.filter(
-        (card) => 
-          card.id !== 91 &&
-          !onHandCards.value.some((c) => c.id === card.id)
+        (card) =>
+          card.id !== 91 && !onHandCards.value.some((c) => c.id === card.id)
       );
-  
+
       if (availableCards.length) {
         // Create a weighted array based on draw_chance
         const weightedCards = [];
@@ -41,18 +40,18 @@ export const useCardStore1 = defineStore("cardStore1", () => {
             weightedCards.push(card);
           }
         });
-  
+
         // Select a random card from the weighted array
-        const randomCard = weightedCards[Math.floor(Math.random() * weightedCards.length)];
+        const randomCard =
+          weightedCards[Math.floor(Math.random() * weightedCards.length)];
         return randomCard;
       }
-  
+
       return null;
     } catch (error) {
       console.error(error);
     }
   };
-  
 
   // Removes a card at a specified index and replaces it with a new card
   const removeCardAndAddNew = async (index) => {

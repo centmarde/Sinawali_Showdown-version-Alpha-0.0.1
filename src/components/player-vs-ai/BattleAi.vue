@@ -40,22 +40,50 @@
     </v-container>
 
     <v-dialog v-model="dialog" max-width="500" style="z-index: 99999">
-      <v-card
-        :style="{ backgroundImage: `url(${selectedCard?.modal_bg})`, backgroundSize: 'cover', backgroundPosition: 'center', color: '#fff' }">
-        <v-card-title>{{ selectedCard?.name }}</v-card-title>
-        <v-card-subtitle>Type: {{ selectedCard?.type }}</v-card-subtitle>
-        <v-card-text>
-          <p>Power: {{ selectedCard?.power }}</p>
-          <p>Mana Cost: {{ selectedCard?.mana_cost }}</p>
-          <p>Description: {{ selectedCard?.description }}</p>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn text @click="closeDialog">Cancel</v-btn>
-          <v-btn text color="primary" @click="confirmSelection">Confirm</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+  <v-card :style="{ color: '#fff', position: 'relative', overflow: 'hidden' }">
+    <!-- Video Background -->
+    <div v-if="selectedCard?.video_modal" :style="{
+      position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: -1
+    }">
+      <video autoplay loop muted playsinline :src="selectedCard.video_modal" 
+        :style="{ width: '100%', height: '100%', objectFit: 'cover' }" />
+      <!-- Dark Overlay -->
+      <div :style="{
+        position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)', zIndex: 0
+      }"></div>
+    </div>
+
+    <!-- Fallback for non-video background -->
+    <div v-else :style="{
+      backgroundImage: `url(${selectedCard?.modal_bg})`,
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      height: '100%',
+      position: 'absolute',
+      top: 0, left: 0, right: 0, bottom: 0,
+      zIndex: -1
+    }"></div>
+
+    <!-- Text Content -->
+    <v-card-title :style="{ position: 'relative', zIndex: 1 }">{{ selectedCard?.name }}</v-card-title>
+    <v-card-subtitle :style="{ position: 'relative', zIndex: 1 }">Type: {{ selectedCard?.type }}</v-card-subtitle>
+    <v-card-text :style="{ position: 'relative', zIndex: 1 }">
+      <p>Power: {{ selectedCard?.power }}</p>
+      <p>Mana Cost: {{ selectedCard?.mana_cost }}</p>
+      <p>Description: {{ selectedCard?.description }}</p>
+    </v-card-text>
+
+    <!-- Actions -->
+    <v-card-actions :style="{ position: 'relative', zIndex: 1 }">
+      <v-spacer></v-spacer>
+      <v-btn text @click="closeDialog">Cancel</v-btn>
+      <v-btn text color="primary" @click="confirmSelection">Confirm</v-btn>
+    </v-card-actions>
+  </v-card>
+</v-dialog>
+
+
   </div>
 
   <v-dialog v-model="messageDialog" max-width="500" persistent style="z-index: 99999">
