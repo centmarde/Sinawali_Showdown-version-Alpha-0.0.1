@@ -129,14 +129,17 @@ export default {
 
           // Check for victory condition
           if (player1.health <= 0) {
-            localStorage.setItem("winner", player2.name);
-            await new Promise((resolve) => setTimeout(resolve, 1500)); // Delay for 1500 ms
-            window.location.href = "/Victory";
-          } else if (player2.health <= 0) {
-            localStorage.setItem("winner", player1.name);
-            await new Promise((resolve) => setTimeout(resolve, 1500)); // Delay for 1500 ms
-           window.location.href = "/Victory";
-          }
+  localStorage.setItem("winner", player2.name);
+  setTimeout(() => {
+    window.location.href = "/Victory";
+  }, 1500); // Delay for 1500 ms
+} else if (player2.health <= 0) {
+  localStorage.setItem("winner", player1.name);
+  setTimeout(() => {
+    window.location.href = "/Victory";
+  }, 1500); // Delay for 1500 ms
+}
+
         })
         .subscribe();
     };

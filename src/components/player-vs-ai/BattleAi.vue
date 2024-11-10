@@ -148,64 +148,33 @@ export default {
     const fetchRandomCards = async () => {
 
 
-      try {
-        const userId = localStorage.getItem("user_id");
+const { data, error } = await supabase.from("cards").select("*");
 
-        // Step 1: Fetch card_id values from the deck_builds table
-        const { data: deckBuilds, error: deckError } = await supabase
-          .from("deck_builds")
-          .select("card_id")
-          .eq("user_id", userId);
+if (error) {
+  console.error("Error fetching cards:", error);
+} else {
+  // Filter out the card with ID 91
+  const filteredCards = data.filter((card) => card.id !== 91);
 
-        if (deckError) {
-          console.error("Error fetching deck builds:", deckError);
-          return;
-        }
+  // Create a pool of cards based on their draw_chance
+  const weightedCards = [];
+  filteredCards.forEach((card) => {
+    const drawCount = Math.floor(card.draw_chance / 10); // Adjust based on scale (e.g., 80 means 8 instances)
+    for (let i = 0; i < drawCount; i++) {
+      weightedCards.push(card);
+    }
+  });
 
-        // Step 2: Extract card_ids from the deckBuilds data
-        const cardIds = deckBuilds.map((deck) => deck.card_id);
+  // Shuffle the weighted cards and select 5
+  const shuffledCards = weightedCards.sort(() => 0.5 - Math.random());
+  cards.value = shuffledCards.slice(0, 5);
 
-        if (cardIds.length === 0) {
-          console.log("No cards in deck builds.");
-          return;
-        }
-
-        // Step 3: Fetch the cards that match the card_ids from the deck builds
-        const { data, error } = await supabase
-          .from("cards")
-          .select("*")
-          .in("id", cardIds); // Filter cards by the card_ids from deck_builds
-
-        if (error) {
-          console.error("Error fetching cards:", error);
-        } else {
-          // Step 4: Filter out the card with ID 91
-          const filteredCards = data.filter((card) => card.id !== 91);
-
-          // Step 5: Create a pool of cards based on their draw_chance
-          const weightedCards = [];
-          filteredCards.forEach((card) => {
-            const drawCount = Math.floor(card.draw_chance / 10); // Adjust based on scale (e.g., 80 means 8 instances)
-            for (let i = 0; i < drawCount; i++) {
-              weightedCards.push(card);
-            }
-          });
-
-          // Step 6: Shuffle the weighted cards and select 5
-          const shuffledCards = weightedCards.sort(() => 0.5 - Math.random());
-          cards.value = shuffledCards.slice(0, 5);
-
-          // Step 7: Populate onHandCards if empty
-          if (onHandCards.length === 0) {
-            onHandCards.push(...cards.value.slice(0, 5));
-          }
-        }
-      } catch (error) {
-        console.error("An unexpected error occurred:", error);
-      }
-
-
-    };
+  // Populate onHandCards if empty
+  if (onHandCards.length === 0) {
+    onHandCards.push(...cards.value.slice(0, 5));
+  }
+}
+};
 
     onMounted(async () => {
       await fetchRandomCards();
@@ -850,15 +819,16 @@ export default {
 }
 
 .skip {
-  top: 18.3rem;
+  top: 17.3rem;
   position: fixed;
-  left: 35rem;
+  left: 38rem;
 }
 
 .bag {
   top: 18.3rem;
   position: fixed;
   left: 39rem;
+  display: none;
 }
 
 .bar {

@@ -16,6 +16,8 @@
 import { useAudioStore } from "@/stores/audioStore"; // Adjust path if needed
 import { onMounted, ref } from "vue";
 import { supabase } from "@/lib/supabase";
+import { useRouter } from "vue-router";
+
 
 export default {
   name: "Victory",
@@ -44,7 +46,7 @@ export default {
       await this.resetDeckBuilds();
       await this.resetCharacters();
     
-      window.location.href = "/";
+      this.router.push("/");
     },
 
     async resetCharacters() {
