@@ -41,9 +41,9 @@ export default {
 
         localStorage.removeItem("battleId");
       }
-
+      await this.resetDeckBuilds();
       await this.resetCharacters();
-      localStorage.clear();
+    
       window.location.href = "/";
     },
 
@@ -80,7 +80,23 @@ export default {
         return;
       }
     },
+
+    async resetDeckBuilds() {
+      const user_id = localStorage.getItem("user_id");
+
+      const { data, error } = await supabase
+        .from("deck_builds")
+        .delete()
+        .eq("user_id", user_id);
+
+      if (error) {
+        console.error("Error deleting rows for user_id:", error);
+      } else {
+        console.log("Rows deleted successfully for user_id:", data);
+      }
+    },
   },
+
   setup() {
     const audioStore = useAudioStore();
     const victoryVideo = ref(null);
@@ -105,6 +121,7 @@ export default {
   },
 };
 </script>
+
 
 <style scoped>
 .victory-container {

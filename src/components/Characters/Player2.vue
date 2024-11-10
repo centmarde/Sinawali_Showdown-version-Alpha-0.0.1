@@ -4,7 +4,7 @@
     <v-row>
       <v-col class="d-flex justify-content-center">
         <!-- Control buttons can be uncommented for use -->
-       <!--  <button @click="toggleAttack">{{ isattack ? 'Switch to Idle' : 'Attack' }}</button>
+      <!--   <button @click="toggleAttack">{{ isattack ? 'Switch to Idle' : 'Attack' }}</button>
         <button @click="toggleHurtInjured">Hurt (Injured)</button>
         <button @click="toggleHurtSkinDamage">Hurt (Skin Damage)</button>
         <button @click="toggleBuff">Buff</button>  -->

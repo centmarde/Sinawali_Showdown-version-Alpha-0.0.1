@@ -240,9 +240,11 @@
   };
   
   // Function to change character on mouse click
-  const selectCharacter = (characterId) => {
-    selectedCharacter.value = characterId;
-  };
+ const selectCharacter = (characterId) => {
+  selectedCharacter.value = characterId;
+  localStorage.setItem("selectedCharacter", characterId);
+};
+
   
   // Function to open confirmation dialog
   const openDialog = () => {
