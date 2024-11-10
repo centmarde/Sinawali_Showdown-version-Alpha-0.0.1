@@ -24,40 +24,44 @@
           class="d-flex justify-center align-center"
         >
           <!-- MENU  -->
-          <v-card
-            class="custom-card mt-3 mx-3"
-            elevation="8"
-            style="width: 100%"
-          >
+          <v-card class="custom-card mx-3" elevation="8" style="width: 100%">
             <v-card-actions class="d-flex flex-column">
               <v-btn
                 :class="{ 'selected-menu': selectedMenu === 0 }"
-                @click="handleNavigation('/select_character')"
-                class="my-2 font-weight-bold"
+                @click="handleNavigation('/select_character_ai')"
+                class="my-1 font-weight-bold"
                 block
               >
-                Quickstart
+                Player vs. Computer
               </v-btn>
               <v-btn
                 :class="{ 'selected-menu': selectedMenu === 1 }"
-                @click="handleNavigation('/multiplayer')"
-                class="my-2 font-weight-bold"
+                @click="handleNavigation('/select_character')"
+                class="my-1 font-weight-bold"
                 block
               >
-                Multiplayer
+                Local Competitive
               </v-btn>
               <v-btn
                 :class="{ 'selected-menu': selectedMenu === 2 }"
+                @click="handleNavigation('/multiplayer')"
+                class="my-1 font-weight-bold"
+                block
+              >
+                Online
+              </v-btn>
+              <v-btn
+                :class="{ 'selected-menu': selectedMenu === 3 }"
                 @click="handleNavigation('/cards')"
-                class="my-2 font-weight-bold"
+                class="my-1 font-weight-bold"
                 block
               >
                 Cards
               </v-btn>
               <v-btn
-                :class="{ 'selected-menu': selectedMenu === 3 }"
+                :class="{ 'selected-menu': selectedMenu === 4 }"
                 @click="doLogout()"
-                class="my-2 font-weight-bold"
+                class="my-1 font-weight-bold"
                 block
               >
                 Logout
@@ -110,14 +114,15 @@ const handleNavigation = (route) => {
 // Method to handle keyboard navigation
 const handleKeydown = (event) => {
   if (event.key === "ArrowDown") {
-    selectedMenu.value = (selectedMenu.value + 1) % 4;
+    selectedMenu.value = (selectedMenu.value + 1) % 5;
   } else if (event.key === "ArrowUp") {
-    selectedMenu.value = (selectedMenu.value - 1 + 4) % 4;
+    selectedMenu.value = (selectedMenu.value - 1 + 5) % 5;
   } else if (event.key === "Enter") {
-    if (selectedMenu.value === 0) handleNavigation("/select_character");
-    else if (selectedMenu.value === 1) handleNavigation("/multiplayer");
-    else if (selectedMenu.value === 2) handleNavigation("/cards");
-    else if (selectedMenu.value === 3) doLogout();
+    if (selectedMenu.value === 0) handleNavigation("/select_character_ai");
+    else if (selectedMenu.value === 1) handleNavigation("/select_character");
+    else if (selectedMenu.value === 2) handleNavigation("/multiplayer");
+    else if (selectedMenu.value === 3) handleNavigation("/cards");
+    else if (selectedMenu.value === 4) doLogout();
   }
 };
 </script>
