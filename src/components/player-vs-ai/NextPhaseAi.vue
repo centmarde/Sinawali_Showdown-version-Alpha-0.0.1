@@ -881,6 +881,7 @@ if (mana <= 20) {
   top: 17.3rem;
   position: fixed;
   left: 38rem;
+  display: none;
 }
 
 .bag {

@@ -241,8 +241,10 @@ const navigateWithSound = (route) => {
 
 // Function to change character on mouse click
 const selectCharacter = (characterId) => {
-  selectedCharacter.value = characterId;
+selectedCharacter.value = characterId;
+localStorage.setItem("selectedCharacter", characterId);
 };
+
 
 // Function to open confirmation dialog
 const openDialog = () => {
@@ -277,10 +279,24 @@ const openDialog = () => {
 // };
 
 const confirmChoice = async () => {
-  dialog.value = false;
-  toast("Build a set of Cards first!");
+localStorage.setItem("selectedCharacter", selectedCharacter.value);
+console.log(localStorage.getItem("selectedCharacter"));
 
-  navigateWithSound("/deck_build");
+// Set the first attacker explicitly (choose "Player 1" or "Player 2")
+const firstAttacker = "Player 1"; // Or "Player 2" depending on your logic
+
+// Show alert for who attacks first
+toast(`${firstAttacker} attacks first!`);
+
+// Close the dialog
+dialog.value = false;
+
+// Navigate based on who attacks first
+if (firstAttacker === "Player 1") {
+  navigateWithSound("/battle_area_ai"); // Navigate to /battle for Player 1
+} else {
+  navigateWithSound("/next_phase"); // Navigate to /nextphase for Player 2
+}
 };
 
 // Function to handle keyboard arrow keys

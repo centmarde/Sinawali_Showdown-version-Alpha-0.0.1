@@ -69,7 +69,7 @@ export default {
       cancelAnimationFrame(this.animationFrame);
       frameY = 5;
       drawPlayer();
-      if (gameFrame % 30 === 0) {
+      if (gameFrame % staggerFrames === 0) {
         frameX = frameX < 4 ? frameX + 1 : 0;
 
         // End buff animation cycle if it reaches the last frame
