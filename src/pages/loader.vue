@@ -6,8 +6,8 @@
         v-if="showLogo"
         class="logo fade"
         :class="{ 'fade-out': !showLogo }"
-        src="../assets/images/charge.png"
-        width="200"
+        src="../assets/images/flogo.png"
+        width="1000"
         alt="Logo"
       >
     </v-img>
@@ -16,7 +16,7 @@
         <v-row>
           <v-col>
             <div v-if="showText" class="centered-text fade" :class="{ 'fade-out': !showText }">
-              <b>GAME TITLE</b> A CSU GAME DEV. PROJECT
+              <b>SINAWALI SHOWDOWN</b> | A battle of skill and precision in Arnis
             </div>
           </v-col>
         </v-row>
@@ -27,7 +27,9 @@
               class="centered-text2 fade"
               :class="{ 'fade-out': !showSecondText }"
             >
-             Lorem ipsum dolor sit amet consectetur, adipisicing elit. Soluta, quibusdam. Molestias temporibus alias adipisci maiores pariatur commodi laborum laudantium nihil ab similique distinctio labore doloribus, sed facere earum cupiditate dignissimos.
+             Note: Arnis teaches self-defense and respect, emphasizing that martial skills should be used only to protect oneself and others, never to harm or intimidate. It builds discipline, focus, and confidence, encouraging practitioners to remain calm under pressure. Through the use of weapons and empty-hand techniques, Arnis enhances reflexes and adaptability in real-life situations. Above all, it fosters a deep sense of respect for others, promoting peace and harmony in the community.
+
+
             </div>
           </v-col>
         </v-row>
@@ -35,7 +37,7 @@
   
       <div v-if="showLoader" class="bottom-loader fade" :class="{ 'fade-out': !showLoader }">
         <div v-if="showThirdText" class="third-text fade mb-2" :class="{ 'fade-out': !showThirdText }">
-          "C: Game Development Team"<br />
+          "C: Developed by Campado, Lidasan, Verdad | Coached by Penalver"<br />
           - Caraga State University
         </div>
         <v-progress-linear indeterminate color="dark"></v-progress-linear>
@@ -85,7 +87,7 @@ onMounted(() => {
   left: 0;
   width: 100%;
   height: 100vh;
-  background-color: #FDD835;
+  background-color: #e6d011;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -93,14 +95,14 @@ onMounted(() => {
 }
 
 .logo {
-  max-width: 200px;
+  max-width: 1000px;
 }
 
 .loading {
   position: fixed; /* Fixed position for loading text */
   bottom: 20px;    /* Distance from the bottom */
   left: 20px;      /* Distance from the left */
-  color: #151515;
+  color: #FFFFFF;
   font-size: 18px; /* Adjust size */
   z-index: 1000;   /* Ensure it's on top of other elements */
 }
@@ -111,7 +113,7 @@ onMounted(() => {
     bottom: 12%;        /* Distance from the bottom */
     left: 50%;          /* Start from the center horizontally */
     transform: translateX(-50%); /* Shift left by 50% of its width to center it */
-    color: #151515;
+    color: #FFFFFF;
     font-size: 18px;    /* Adjust size */
     z-index: 1000;      /* Ensure it's on top of other elements */
   }
@@ -119,18 +121,18 @@ onMounted(() => {
 
 
 .centered-text {
-  font-size: 20px;
+  font-size: 25px;
   text-align: center;
   color: #151515;
   margin-top: 20px;
 }
 
 .centered-text2 {
-  font-size: 10px;
-  padding: 10px;
+  font-size: 15px;
+  padding: 5px;
   text-align: center;
   color: #151515;
-  margin-top: 20px;
+  margin-top: 10px;
 }
 
 .bottom-loader {
@@ -149,7 +151,7 @@ onMounted(() => {
 .third-text {
   text-align: center;
   color: #151515;
-  font-size: 12px; /* Adjust size */
+  font-size: 18px; /* Adjust size */
   margin-top: 10px; /* Space from the loading bar */
 }
 

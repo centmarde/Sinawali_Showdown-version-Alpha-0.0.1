@@ -95,6 +95,7 @@
             </h6>
 
             <div>
+
               <small class="text-uppercase font-weight-medium">Energy</small>
               <v-progress-linear
                 class="mt-2 mb-4 text-overline font-weight-bold animated-progress"
@@ -152,6 +153,7 @@
                 });`"
               >
               </v-progress-linear>
+
             </div>
 
             <div class="mt-5">

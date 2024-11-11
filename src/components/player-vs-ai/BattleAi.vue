@@ -1082,4 +1082,6 @@ export default {
     max-height: 95vh;
   }
 }
+
 </style>
+
