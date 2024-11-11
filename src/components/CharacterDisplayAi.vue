@@ -95,63 +95,76 @@
             </h6>
 
             <div>
-              <small class="text-uppercase font-weight-medium">Energy</small>
-              <v-progress-linear
-                class="mt-2 mb-4 text-overline font-weight-bold animated-progress"
-                :model-value="character.mana"
-                max="100"
-                color="#ffd82b"
-                height="14"
-                rounded
-                :style="`--progress-shadow-color: rgba(255, 216, 43, ${
-                  character.mana / 100
-                });`"
-              >
-              </v-progress-linear>
 
-              <small class="text-uppercase font-weight-medium">Agility</small>
-              <v-progress-linear
-                class="mt-2 mb-4 text-overline font-weight-bold animated-progress"
-                :model-value="character.agility"
-                max="10"
-                color="#ffd82b"
-                height="14"
-                rounded
-                :style="`--progress-shadow-color: rgba(255, 216, 43, ${
-                  character.agility / 10
-                });`"
-              >
-              </v-progress-linear>
+              <h2 class="text-uppercase text-center">{{ character.name }}</h2>
+              <h6 class="text-center text-medium-emphasis font-weight-regular">
+                {{ character.tagline }}
+              </h6>
+  
+              <div>
+                <small class="text-uppercase font-weight-medium">Energy</small>
+                <v-progress-linear
+                  class="mt-2 mb-4 text-overline font-weight-bold animated-progress"
+                  :model-value="character.mana"
+                  max="100"
+                  color="#ffd82b"
+                  height="14"
+                  rounded
+                  :style="`--progress-shadow-color: rgba(255, 216, 43, ${
+                    character.mana / 100
+                  });`"
+                >
+                </v-progress-linear>
+  
+                <small class="text-uppercase font-weight-medium">Agility</small>
+                <v-progress-linear
+                  class="mt-2 mb-4 text-overline font-weight-bold animated-progress"
+                  :model-value="character.agility"
+                  max="100"
+                  color="#ffd82b"
+                  height="14"
+                  rounded
+                  :style="`--progress-shadow-color: rgba(255, 216, 43, ${
+                    character.agility / 10
+                  });`"
+                >
+                </v-progress-linear>
+  
+                <small class="text-uppercase font-weight-medium">Defense</small>
+                <v-progress-linear
+                  class="mt-2 mb-4 text-overline font-weight-bold animated-progress"
+                  :model-value="character.defense"
+                  max="100"
+                  color="#ffd82b"
+                  height="14"
+                  rounded
+                  :style="`--progress-shadow-color: rgba(255, 216, 43, ${
+                    character.defense / 10
+                  });`"
+                >
+                </v-progress-linear>
+  
+                <small class="text-uppercase font-weight-medium"
+                  >Critical Rate</small
+                >
+                <v-progress-linear
+                  class="mt-2 mb-4 text-overline font-weight-bold animated-progress"
+                  :model-value="parseFloat(character.critical_rate)"
+                  max="100"
+                  color="#ffd82b"
+                  height="14"
+                  rounded
+                  :style="`--progress-shadow-color: rgba(255, 216, 43, ${
+                    character.critical_rate / 10
+                  });`"
+                >
+                </v-progress-linear>
+              </div>
+  
+              <div class="mt-5">
+                <small class="text-caption">{{ character.lore }}</small>
+              </div>
 
-              <small class="text-uppercase font-weight-medium">Defense</small>
-              <v-progress-linear
-                class="mt-2 mb-4 text-overline font-weight-bold animated-progress"
-                :model-value="character.defense"
-                max="10"
-                color="#ffd82b"
-                height="14"
-                rounded
-                :style="`--progress-shadow-color: rgba(255, 216, 43, ${
-                  character.defense / 10
-                });`"
-              >
-              </v-progress-linear>
-
-              <small class="text-uppercase font-weight-medium"
-                >Critical Rate</small
-              >
-              <v-progress-linear
-                class="mt-2 mb-4 text-overline font-weight-bold animated-progress"
-                :model-value="parseFloat(character.critical_rate)"
-                max="10"
-                color="#ffd82b"
-                height="14"
-                rounded
-                :style="`--progress-shadow-color: rgba(255, 216, 43, ${
-                  character.critical_rate / 10
-                });`"
-              >
-              </v-progress-linear>
             </div>
 
             <div class="mt-5">
