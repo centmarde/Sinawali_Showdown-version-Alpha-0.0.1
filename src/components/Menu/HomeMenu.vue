@@ -21,15 +21,15 @@
           lg="4"
           md="4"
           sm="6"
-          class="d-flex justify-center align-center"
+          class="d-flex justify-center align-center py-0 px-3"
         >
           <!-- MENU  -->
-          <v-card class="custom-card mx-3" elevation="8" style="width: 100%">
+          <v-card class="bg-card mx-3" elevation="24" style="width: 100%">
             <v-card-actions class="d-flex flex-column">
               <v-btn
                 :class="{ 'selected-menu': selectedMenu === 0 }"
                 @click="handleNavigation('/select_character_ai')"
-                class="my-1 font-weight-bold"
+                class="font-weight-bold"
                 block
               >
                 Player vs. Computer
@@ -37,7 +37,7 @@
               <v-btn
                 :class="{ 'selected-menu': selectedMenu === 1 }"
                 @click="handleNavigation('/select_character')"
-                class="my-1 font-weight-bold"
+                class="font-weight-bold"
                 block
               >
                 Local Competitive
@@ -45,7 +45,7 @@
               <v-btn
                 :class="{ 'selected-menu': selectedMenu === 2 }"
                 @click="handleNavigation('/multiplayer')"
-                class="my-1 font-weight-bold"
+                class="font-weight-bold"
                 block
               >
                 Online
@@ -53,7 +53,7 @@
               <v-btn
                 :class="{ 'selected-menu': selectedMenu === 3 }"
                 @click="handleNavigation('/cards')"
-                class="my-1 font-weight-bold"
+                class="font-weight-bold"
                 block
               >
                 Cards
@@ -61,7 +61,7 @@
               <v-btn
                 :class="{ 'selected-menu': selectedMenu === 4 }"
                 @click="doLogout()"
-                class="my-1 font-weight-bold"
+                class="font-weight-bold"
                 block
               >
                 Logout
@@ -159,5 +159,14 @@ const handleKeydown = (event) => {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+}
+
+.bg-card {
+  background-color: rgba(0, 0, 0, 0.591);
+
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3.4px);
+  border: 1px solid rgba(0, 0, 0, 0.06);
 }
 </style>
