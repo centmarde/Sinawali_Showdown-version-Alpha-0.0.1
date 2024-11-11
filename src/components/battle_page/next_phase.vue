@@ -277,26 +277,7 @@ export default {
 
           // Check if character's mana is sufficient
           const currentMana = EnergyChar.mana;
-          if (currentMana <= 0) {
-            toast(`You're out of energy!`, {
-              type: 'error',
-              position: 'top-right',
-              timeout: 3000,
-              closeOnClick: true,
-            });
-
-            toast(`You've missed your chance to make a move!`, {
-              type: 'warning',
-              position: 'top-right',
-              timeout: 3000,
-              closeOnClick: true,
-            });
-
-            setTimeout(() => {
-              router.push({ name: "battle_area" });
-            }, 1000); // 1000 milliseconds = 1 second
-            return;
-          }
+         
 
           // Check if the character has enough mana for the selected card
           if (selectedCard.value.mana_cost > currentMana) {
@@ -524,26 +505,7 @@ export default {
 
         // Check if character's mana is sufficient
         const currentMana = EnergyChar.mana;
-        if (currentMana <= 0) {
-          toast(`You're out of energy!`, {
-            type: 'error',
-            position: 'top-left',
-            timeout: 3000,
-            closeOnClick: true,
-          });
-
-          toast(`You've missed your chance to make a move!`, {
-            type: 'warning',
-            position: 'top-left',
-            timeout: 3000,
-            closeOnClick: true,
-          });
-
-          setTimeout(() => {
-            router.push({ name: "battle_area" });
-          }, 1000); // 1000 milliseconds = 1 second
-          return;
-        }
+       
 
         // Check if the character has enough mana for the selected card
         if (selectedCard.value.mana_cost > currentMana) {
