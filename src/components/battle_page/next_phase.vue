@@ -267,7 +267,7 @@ export default {
           const { data: EnergyChar, error: errorEnergy } = await supabase
             .from("characters")
             .select("mana")
-            .eq("id", selectedCharacter.value)
+            .eq("id", revertedCharacter.value)
             .single();
 
           if (errorEnergy) {
@@ -494,7 +494,7 @@ export default {
         const { data: EnergyChar, error: errorEnergy } = await supabase
           .from("characters")
           .select("mana")
-          .eq("id", selectedCharacter.value)
+          .eq("id", revertedCharacter.value)
           .single();
 
           console.log(selectedCharacter.value);
@@ -785,15 +785,16 @@ export default {
 }
 
 .skip {
-  top: 18.3rem;
+  top: 17.3rem;
   position: fixed;
-  left: 35rem;
+  left: 38rem;
 }
 
 .bag {
   top: 18.3rem;
   position: fixed;
   left: 39rem;
+  display: none;
 }
 
 .bar {

@@ -42,30 +42,30 @@
               >
                 Local Competitive
               </v-btn>
-              <v-btn
+             <!--  <v-btn
                 :class="{ 'selected-menu': selectedMenu === 2 }"
                 @click="handleNavigation('/multiplayer')"
                 class="font-weight-bold"
                 block
               >
                 Online
-              </v-btn>
+              </v-btn> -->
               <v-btn
-                :class="{ 'selected-menu': selectedMenu === 3 }"
+                :class="{ 'selected-menu': selectedMenu === 2 }"
                 @click="handleNavigation('/cards')"
                 class="font-weight-bold"
                 block
               >
                 Cards
               </v-btn>
-              <v-btn
+              <!-- <v-btn
                 :class="{ 'selected-menu': selectedMenu === 4 }"
                 @click="doLogout()"
                 class="font-weight-bold"
                 block
               >
                 Logout
-              </v-btn>
+              </v-btn> -->
             </v-card-actions>
           </v-card>
         </v-col>
@@ -114,15 +114,15 @@ const handleNavigation = (route) => {
 // Method to handle keyboard navigation
 const handleKeydown = (event) => {
   if (event.key === "ArrowDown") {
-    selectedMenu.value = (selectedMenu.value + 1) % 5;
+    selectedMenu.value = (selectedMenu.value + 1) % 2;
   } else if (event.key === "ArrowUp") {
-    selectedMenu.value = (selectedMenu.value - 1 + 5) % 5;
+    selectedMenu.value = (selectedMenu.value - 1 + 2) % 2;
   } else if (event.key === "Enter") {
     if (selectedMenu.value === 0) handleNavigation("/select_character_ai");
     else if (selectedMenu.value === 1) handleNavigation("/select_character");
-    else if (selectedMenu.value === 2) handleNavigation("/multiplayer");
-    else if (selectedMenu.value === 3) handleNavigation("/cards");
-    else if (selectedMenu.value === 4) doLogout();
+    // else if (selectedMenu.value === 2) handleNavigation("/multiplayer");
+    else if (selectedMenu.value === 2) handleNavigation("/cards");
+ /*    else if (selectedMenu.value === 4) doLogout(); */
   }
 };
 </script>

@@ -229,7 +229,7 @@ const loginEmail = ref("");
 const loginPassword = ref("");
 
 const showSignUpDialog = ref(false);
-const showLoginDialog = ref(true);
+const showLoginDialog = ref(false);
 
 const isLoginEmailFocused = ref(false);
 const isLoginPasswordFocused = ref(false);

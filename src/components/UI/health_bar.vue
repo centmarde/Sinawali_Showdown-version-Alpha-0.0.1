@@ -68,7 +68,7 @@
 
 <script>
 import { computed, onMounted } from "vue";
-import { useRouter } from "vue-router"; // Import useRouter
+import router from "@/router";
 import { supabase } from "../../lib/supabase";
 import { usePlayerStore } from "../../stores/healtbar";
 
@@ -76,16 +76,15 @@ export default {
   setup() {
     const playerStore = usePlayerStore();
     const { player1, player2, updatePlayerMana, updatePlayerHealth } = playerStore;
-    const router = useRouter(); // Get the router instance
     const maxHealth = 100;
     const maxMana = 100;
     const selectedChar = localStorage.getItem("selectedCharacter");
 
     // Computed properties for dynamic health and mana values
-    const currentPlayerHealth = computed(() => selectedChar === "1" ? player1.health : player2.health);
-    const currentPlayer2Health = computed(() => selectedChar === "1" ? player2.health : player1.health);
-    const currentPlayerMana = computed(() => selectedChar === "1" ? player1.mana : player2.mana);
-    const currentPlayer2Mana = computed(() => selectedChar === "1" ? player2.mana : player1.mana);
+    const currentPlayerHealth = computed(() => (selectedChar === "1" ? player1.health : player2.health));
+    const currentPlayer2Health = computed(() => (selectedChar === "1" ? player2.health : player1.health));
+    const currentPlayerMana = computed(() => (selectedChar === "1" ? player1.mana : player2.mana));
+    const currentPlayer2Mana = computed(() => (selectedChar === "1" ? player2.mana : player1.mana));
 
     const fetchCharacterData = async () => {
       try {
@@ -94,7 +93,6 @@ export default {
           .select("name, health, mana")
           .eq("id", 1)
           .single();
-
         const { data: player2Data } = await supabase
           .from("characters")
           .select("name, health, mana")
@@ -114,29 +112,39 @@ export default {
       }
     };
 
+    const checkVictoryCondition = () => {
+  if (player1.health <= 0) {
+    localStorage.setItem("winner", player2.name);
+
+    setTimeout(() => {
+      router.push({ name: "Victory" });
+    }, 3000); // 3-second delay
+
+  } else if (player2.health <= 0) {
+    localStorage.setItem("winner", player1.name);
+
+    setTimeout(() => {
+      router.push({ name: "Victory" });
+    }, 3000); // 3-second delay
+  }
+};
+
+
     const setupRealtimeSubscription = () => {
       const channel = supabase
         .channel("public:characters")
         .on("postgres_changes", { event: "*", schema: "public", table: "characters" }, async (payload) => {
-          if (payload.new.id === 1) {
-            updatePlayerHealth(1, payload.new.health);
-            updatePlayerMana(1, payload.new.mana);
-          }
-          if (payload.new.id === 2) {
-            updatePlayerHealth(2, payload.new.health);
-            updatePlayerMana(2, payload.new.mana);
+          const { id, health, mana } = payload.new;
+          if (id === 1) {
+            updatePlayerHealth(1, health);
+            updatePlayerMana(1, mana);
+          } else if (id === 2) {
+            updatePlayerHealth(2, health);
+            updatePlayerMana(2, mana);
           }
 
           // Check for victory condition
-          if (player1.health <= 0) {
-            localStorage.setItem("winner", player2.name);
-            await new Promise((resolve) => setTimeout(resolve, 1500)); // Delay for 1500 ms
-            window.location.href = "/Victory";
-          } else if (player2.health <= 0) {
-            localStorage.setItem("winner", player1.name);
-            await new Promise((resolve) => setTimeout(resolve, 1500)); // Delay for 1500 ms
-           window.location.href = "/Victory";
-          }
+          checkVictoryCondition();
         })
         .subscribe();
     };
@@ -160,6 +168,7 @@ export default {
   },
 };
 </script>
+
 
 <style scoped>
 /* Common styles for both health bars */

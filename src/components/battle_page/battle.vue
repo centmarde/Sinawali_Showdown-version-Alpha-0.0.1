@@ -828,6 +828,7 @@ export default {
   top: 18.3rem;
   position: fixed;
   left: 39rem;
+  display: none;
 }
 
 .bar {

@@ -40,22 +40,50 @@
     </v-container>
 
     <v-dialog v-model="dialog" max-width="500" style="z-index: 99999">
-      <v-card
-        :style="{ backgroundImage: `url(${selectedCard?.modal_bg})`, backgroundSize: 'cover', backgroundPosition: 'center', color: '#fff' }">
-        <v-card-title>{{ selectedCard?.name }}</v-card-title>
-        <v-card-subtitle>Type: {{ selectedCard?.type }}</v-card-subtitle>
-        <v-card-text>
-          <p>Power: {{ selectedCard?.power }}</p>
-          <p>Mana Cost: {{ selectedCard?.mana_cost }}</p>
-          <p>Description: {{ selectedCard?.description }}</p>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn text @click="closeDialog">Cancel</v-btn>
-          <v-btn text color="primary" @click="confirmSelection">Confirm</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+  <v-card :style="{ color: '#fff', position: 'relative', overflow: 'hidden' }">
+    <!-- Video Background -->
+    <div v-if="selectedCard?.video_modal" :style="{
+      position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: -1
+    }">
+      <video autoplay loop muted playsinline :src="selectedCard.video_modal" 
+        :style="{ width: '100%', height: '100%', objectFit: 'cover' }" />
+      <!-- Dark Overlay -->
+      <div :style="{
+        position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)', zIndex: 0
+      }"></div>
+    </div>
+
+    <!-- Fallback for non-video background -->
+    <div v-else :style="{
+      backgroundImage: `url(${selectedCard?.modal_bg})`,
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      height: '100%',
+      position: 'absolute',
+      top: 0, left: 0, right: 0, bottom: 0,
+      zIndex: -1
+    }"></div>
+
+    <!-- Text Content -->
+    <v-card-title :style="{ position: 'relative', zIndex: 1 }">{{ selectedCard?.name }}</v-card-title>
+    <v-card-subtitle :style="{ position: 'relative', zIndex: 1 }">Type: {{ selectedCard?.type }}</v-card-subtitle>
+    <v-card-text :style="{ position: 'relative', zIndex: 1 }">
+      <p>Power: {{ selectedCard?.power }}</p>
+      <p>Mana Cost: {{ selectedCard?.mana_cost }}</p>
+      <p>Description: {{ selectedCard?.description }}</p>
+    </v-card-text>
+
+    <!-- Actions -->
+    <v-card-actions :style="{ position: 'relative', zIndex: 1 }">
+      <v-spacer></v-spacer>
+      <v-btn text @click="closeDialog">Cancel</v-btn>
+      <v-btn text color="primary" @click="confirmSelection">Confirm</v-btn>
+    </v-card-actions>
+  </v-card>
+</v-dialog>
+
+
   </div>
 
   <v-dialog v-model="messageDialog" max-width="500" persistent style="z-index: 99999">
@@ -146,67 +174,49 @@ export default {
     const player_variant1Ref = ref(null);
 
     const fetchRandomCards = async () => {
+      const { data: characterData, error: characterError } = await supabase
+  .from("characters")
+  .select("mana, health")
+  .eq("id", selectedCharacter.value); // Adjust character ID as needed
 
+if (characterError) {
+  console.error("Error fetching character data:", characterError);
+  return;
+}
 
-      try {
-        const userId = localStorage.getItem("user_id");
+const character = characterData?.[0];
+if (!character || character.health <= 0) {
+  return;
+}
 
-        // Step 1: Fetch card_id values from the deck_builds table
-        const { data: deckBuilds, error: deckError } = await supabase
-          .from("deck_builds")
-          .select("card_id")
-          .eq("user_id", userId);
+const { data, error } = await supabase.from("cards").select("*");
 
-        if (deckError) {
-          console.error("Error fetching deck builds:", deckError);
-          return;
-        }
+if (error) {
+  console.error("Error fetching cards:", error);
+} else {
+  // Filter out the card with ID 91
+  const filteredCards = data.filter((card) => card.id !== 91);
 
-        // Step 2: Extract card_ids from the deckBuilds data
-        const cardIds = deckBuilds.map((deck) => deck.card_id);
+  // Create a pool of cards based on their draw_chance
+  const weightedCards = [];
+  filteredCards.forEach((card) => {
+    const drawCount = Math.floor(card.draw_chance / 10); // Adjust based on scale (e.g., 80 means 8 instances)
+    for (let i = 0; i < drawCount; i++) {
+      weightedCards.push(card);
+    }
+  });
 
-        if (cardIds.length === 0) {
-          console.log("No cards in deck builds.");
-          return;
-        }
+  // Shuffle the weighted cards and select 5
+  const shuffledCards = weightedCards.sort(() => 0.5 - Math.random());
+  cards.value = shuffledCards.slice(0, 5);
 
-        // Step 3: Fetch the cards that match the card_ids from the deck builds
-        const { data, error } = await supabase
-          .from("cards")
-          .select("*")
-          .in("id", cardIds); // Filter cards by the card_ids from deck_builds
-
-        if (error) {
-          console.error("Error fetching cards:", error);
-        } else {
-          // Step 4: Filter out the card with ID 91
-          const filteredCards = data.filter((card) => card.id !== 91);
-
-          // Step 5: Create a pool of cards based on their draw_chance
-          const weightedCards = [];
-          filteredCards.forEach((card) => {
-            const drawCount = Math.floor(card.draw_chance / 10); // Adjust based on scale (e.g., 80 means 8 instances)
-            for (let i = 0; i < drawCount; i++) {
-              weightedCards.push(card);
-            }
-          });
-
-          // Step 6: Shuffle the weighted cards and select 5
-          const shuffledCards = weightedCards.sort(() => 0.5 - Math.random());
-          cards.value = shuffledCards.slice(0, 5);
-
-          // Step 7: Populate onHandCards if empty
-          if (onHandCards.length === 0) {
-            onHandCards.push(...cards.value.slice(0, 5));
-          }
-        }
-      } catch (error) {
-        console.error("An unexpected error occurred:", error);
-      }
-
-
-    };
-
+  // Populate onHandCards if empty
+  if (onHandCards.length === 0) {
+    onHandCards.push(...cards.value.slice(0, 5));
+  }
+}
+};
+  
     onMounted(async () => {
       await fetchRandomCards();
     });
@@ -318,26 +328,7 @@ export default {
 
           // Check if character's mana is sufficient
           const currentMana = EnergyChar.mana;
-          if (currentMana <= 0) {
-            toast(`You're out of energy!`, {
-              type: 'error',
-              position: 'top-left',
-              timeout: 3000,
-              closeOnClick: true,
-            });
-
-            toast(`You've missed your chance to make a move!`, {
-              type: 'warning',
-              position: 'top-left',
-              timeout: 3000,
-              closeOnClick: true,
-            });
-
-            setTimeout(() => {
-              router.push({ name: "next_phase_ai" });
-            }, 1000); // 1000 milliseconds = 1 second
-            return;
-          }
+       
 
           // Check if the character has enough mana for the selected card
           if (selectedCard.value.mana_cost > currentMana) {
@@ -550,7 +541,7 @@ export default {
       }
 
       if (selectedCard.value && selectedCard.value.type === "buff") {
-        const { data: EnergyChar, error: errorEnergy } = await supabase
+        const { data: EnergyChar1, error: errorEnergy } = await supabase
           .from("characters")
           .select("mana")
           .eq("id", selectedCharacter.value)
@@ -566,7 +557,7 @@ export default {
         if (card91.value && card91.value.is_mana) {
          
           // Calculate the new mana value
-          const newMana = EnergyChar.mana + card91.value.is_mana;
+          const newMana = EnergyChar1.mana + card91.value.is_mana;
          
           // Update the character's mana in the database
           const { data: updateData, error: updateError } = await supabase
@@ -584,27 +575,8 @@ export default {
 
 
         // Check if character's mana is sufficient
-        const currentMana = EnergyChar.mana;
-        if (currentMana <= 0) {
-          toast(`You're out of energy!`, {
-            type: 'error',
-            position: 'top-left',
-            timeout: 3000,
-            closeOnClick: true,
-          });
-
-          toast(`You've missed your chance to make a move!`, {
-            type: 'warning',
-            position: 'top-left',
-            timeout: 3000,
-            closeOnClick: true,
-          });
-
-          setTimeout(() => {
-            router.push({ name: "next_phase_ai" });
-          }, 1000); // 1000 milliseconds = 1 second
-          return;
-        }
+        const currentMana = EnergyChar1.mana;
+       
 
         // Check if the character has enough mana for the selected card
         if (selectedCard.value.mana_cost > currentMana) {
@@ -728,7 +700,7 @@ export default {
 
       // Always navigate to the next phase
       closeDialog();
-      await new Promise((resolve) => setTimeout(resolve, 200));
+      
       router.push({ name: "next_phase_ai" });
     };
 
@@ -850,15 +822,16 @@ export default {
 }
 
 .skip {
-  top: 18.3rem;
+  top: 17.3rem;
   position: fixed;
-  left: 35rem;
+  left: 38rem;
 }
 
 .bag {
   top: 18.3rem;
   position: fixed;
   left: 39rem;
+  display: none;
 }
 
 .bar {

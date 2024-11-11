@@ -346,11 +346,7 @@ onBeforeUnmount(() => {
 .tilt-card {
   transform: perspective(1000px) rotateY(18deg); /* Adjust the degree as needed */
   transition: transform 0.3s ease-in-out;
-  background-color: rgba(0, 0, 0, 0.323);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(3px);
-  -webkit-backdrop-filter: blur(3.4px);
-  border: 1px solid rgba(0, 0, 0, 0.06);
+  background-color: #00000048;
   z-index: 999;
 }
 
@@ -460,6 +456,9 @@ onBeforeUnmount(() => {
 
   .tilt-card {
     transform: none;
+    transition: transform 0.3s ease-in-out;
+    background-color: #00000048;
+    z-index: 999;
   }
 }
 </style>
