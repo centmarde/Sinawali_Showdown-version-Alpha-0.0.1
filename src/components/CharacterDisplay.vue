@@ -4,7 +4,7 @@
       <v-row class="mt-2 align-items-center">
         <!-- Character Selection -->
         <v-col cols="12" lg="4" md="4" sm="6">
-          <v-card class="tilt-card">
+          <v-card class="tilt-card bg-card">
             <h2
               class="pt-1 text-uppercase font-weight-bold text-light text-center"
             >
@@ -360,7 +360,11 @@ onBeforeUnmount(() => {
 .tilt-card {
   transform: perspective(1000px) rotateY(18deg); /* Adjust the degree as needed */
   transition: transform 0.3s ease-in-out;
-  background-color: #00000048;
+  background-color: rgba(0, 0, 0, 0.313);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3.4px);
+  border: 1px solid rgba(0, 0, 0, 0.06);
   z-index: 999;
 }
 
@@ -396,6 +400,7 @@ onBeforeUnmount(() => {
   width: 27rem; /* Adjust the width as needed */
   height: auto; /* Maintain aspect ratio */
   margin-top: 8rem;
+  margin-right: 5rem;
 }
 
 .animated-progress {
@@ -470,9 +475,6 @@ onBeforeUnmount(() => {
 
   .tilt-card {
     transform: none;
-    transition: transform 0.3s ease-in-out;
-    background-color: #00000048;
-    z-index: 999;
   }
 }
 </style>
