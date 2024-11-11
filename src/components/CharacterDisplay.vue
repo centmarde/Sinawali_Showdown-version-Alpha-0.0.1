@@ -360,7 +360,7 @@ onBeforeUnmount(() => {
 .tilt-card {
   transform: perspective(1000px) rotateY(18deg); /* Adjust the degree as needed */
   transition: transform 0.3s ease-in-out;
-  background-color: rgba(0, 0, 0, 0.323);
+  background-color: rgba(0, 0, 0, 0.313);
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(3px);
   -webkit-backdrop-filter: blur(3.4px);
@@ -400,6 +400,7 @@ onBeforeUnmount(() => {
   width: 27rem; /* Adjust the width as needed */
   height: auto; /* Maintain aspect ratio */
   margin-top: 8rem;
+  margin-right: 5rem;
 }
 
 .animated-progress {
