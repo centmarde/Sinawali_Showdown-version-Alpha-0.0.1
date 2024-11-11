@@ -24,12 +24,12 @@
           class="d-flex justify-center align-center py-0 px-3"
         >
           <!-- MENU  -->
-          <v-card class="bg-card mx-3" elevation="24" style="width: 100%">
+          <v-card class="bg-card mx-6" elevation="24" style="width: 100%">
             <v-card-actions class="d-flex flex-column">
               <v-btn
                 :class="{ 'selected-menu': selectedMenu === 0 }"
                 @click="handleNavigation('/select_character_ai')"
-                class="font-weight-bold"
+                class="font-weight-bold my-1"
                 block
               >
                 Player vs. Computer
@@ -37,12 +37,12 @@
               <v-btn
                 :class="{ 'selected-menu': selectedMenu === 1 }"
                 @click="handleNavigation('/select_character')"
-                class="font-weight-bold"
+                class="font-weight-bold my-1"
                 block
               >
                 Local Competitive
               </v-btn>
-             <!--  <v-btn
+              <!--  <v-btn
                 :class="{ 'selected-menu': selectedMenu === 2 }"
                 @click="handleNavigation('/multiplayer')"
                 class="font-weight-bold"
@@ -53,7 +53,7 @@
               <v-btn
                 :class="{ 'selected-menu': selectedMenu === 2 }"
                 @click="handleNavigation('/cards')"
-                class="font-weight-bold"
+                class="font-weight-bold my-1"
                 block
               >
                 Cards
@@ -113,16 +113,17 @@ const handleNavigation = (route) => {
 
 // Method to handle keyboard navigation
 const handleKeydown = (event) => {
+  const menuItems = 3; // Update this to the number of menu items
   if (event.key === "ArrowDown") {
-    selectedMenu.value = (selectedMenu.value + 1) % 2;
+    selectedMenu.value = (selectedMenu.value + 1) % menuItems;
   } else if (event.key === "ArrowUp") {
-    selectedMenu.value = (selectedMenu.value - 1 + 2) % 2;
+    selectedMenu.value = (selectedMenu.value - 1 + menuItems) % menuItems;
   } else if (event.key === "Enter") {
     if (selectedMenu.value === 0) handleNavigation("/select_character_ai");
     else if (selectedMenu.value === 1) handleNavigation("/select_character");
     // else if (selectedMenu.value === 2) handleNavigation("/multiplayer");
     else if (selectedMenu.value === 2) handleNavigation("/cards");
- /*    else if (selectedMenu.value === 4) doLogout(); */
+    /*    else if (selectedMenu.value === 4) doLogout(); */
   }
 };
 </script>
