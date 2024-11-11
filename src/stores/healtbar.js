@@ -1,10 +1,10 @@
 // stores/healtbar.js
-import { defineStore } from 'pinia';
+import { defineStore } from "pinia";
 
-export const usePlayerStore = defineStore('player', {
+export const usePlayerStore = defineStore("player", {
   state: () => ({
-    player1: { name: 'Lexi', health: 100, mana: 100 },
-    player2: { name: 'Jonny', health: 100, mana: 100 },
+    player1: { name: "Kidlat", health: 100, mana: 100 },
+    player2: { name: "Alon", health: 100, mana: 100 },
   }),
   actions: {
     updatePlayerMana(playerId, mana) {
@@ -23,4 +23,3 @@ export const usePlayerStore = defineStore('player', {
     },
   },
 });
-

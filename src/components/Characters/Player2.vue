@@ -4,7 +4,7 @@
     <v-row>
       <v-col class="d-flex justify-content-center">
         <!-- Control buttons can be uncommented for use -->
-      <!--   <button @click="toggleAttack">{{ isattack ? 'Switch to Idle' : 'Attack' }}</button>
+       <!--  <button @click="toggleAttack">{{ isattack ? 'Switch to Idle' : 'Attack' }}</button>
         <button @click="toggleHurtInjured">Hurt (Injured)</button>
         <button @click="toggleHurtSkinDamage">Hurt (Skin Damage)</button>
         <button @click="toggleBuff">Buff</button>  -->
@@ -70,7 +70,7 @@ export default {
       cancelAnimationFrame(this.animationFrame);
       frameY = 5;
       drawPlayer();
-      if (gameFrame % 30 === 0) {
+      if (gameFrame % staggerFrames === 0) {
         frameX = frameX < 4 ? frameX + 1 : 0;
         if (frameX === 0) {
           this.buffActive = false; // Deactivate buff

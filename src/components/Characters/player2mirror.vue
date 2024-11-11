@@ -75,7 +75,7 @@ export default {
         spriteWidth,
         spriteHeight
       );
-      if (gameFrame % 30 === 0) {
+      if (gameFrame % staggerFrames === 0) {
         frameX = frameX < 4 ? frameX + 1 : 0;
 
         // End buff animation cycle
