@@ -113,7 +113,7 @@
               <v-progress-linear
                 class="mt-2 mb-4 text-overline font-weight-bold animated-progress"
                 :model-value="character.agility"
-                max="10"
+                max="100"
                 color="#ffd82b"
                 height="14"
                 rounded
@@ -127,7 +127,7 @@
               <v-progress-linear
                 class="mt-2 mb-4 text-overline font-weight-bold animated-progress"
                 :model-value="character.defense"
-                max="10"
+                max="100"
                 color="#ffd82b"
                 height="14"
                 rounded
@@ -143,7 +143,7 @@
               <v-progress-linear
                 class="mt-2 mb-4 text-overline font-weight-bold animated-progress"
                 :model-value="parseFloat(character.critical_rate)"
-                max="10"
+                max="100"
                 color="#ffd82b"
                 height="14"
                 rounded
