@@ -3,20 +3,32 @@
   <div class="floating-card-container">
     <v-container v-if="showCards">
       <v-row class="d-flex justify-center">
-        <div class="container" id="container">
-          <div v-for="(card, index) in onHandCards" :key="card.id" class="card" tabindex="0"
-            :style="`--i: ${index - Math.floor(onHandCards.length / 2)}; background-image: url(${card.img}); background-size: cover; background-position: center;`"
-            @click="openDialog(card)">
-            <div id="card_title" >{{ card.name }}</div>
-            <div class="type">Type: {{ card.type }}</div>
-            <div class="power">Power: {{ card.power }}</div>
-            <div class="mana">Mana Cost: {{ card.mana_cost }}</div>
-            
-          </div>
-        </div>
-      </v-row>
-
-
+  <div class="container" id="container">
+    <div
+      v-for="(card, index) in onHandCards"
+      :key="card.id"
+      class="card"
+      tabindex="0"
+      :style="`
+        --i: ${index - Math.floor(onHandCards.length / 2)};
+        background-image: url(${card.img});
+        background-size: cover;
+        background-position: center;
+        background-color: ${
+          card.is_burn ? 'rgba(255, 0, 0, 0.5)' :
+          card.is_poison ? 'rgba(0, 255, 0, 0.5)' : 'transparent'
+        };
+      `"
+      @click="openDialog(card)"
+      :ref="el => setCardGlow(el, card)"
+    >
+      <div id="card_title">{{ card.name }}</div>
+      <div class="type">Type: {{ card.type }}</div>
+      <div class="power">Power: {{ card.power }}</div>
+      <div class="mana">Mana Cost: {{ card.mana_cost }}</div>
+    </div>
+  </div>
+</v-row>
       <!-- Separate section for the card with id = 91 -->
       <v-row class="d-flex justify-center" v-if="card91">
         <v-col cols="8" lg="4" sm="4" md="5" class="text-center skip ">
@@ -40,22 +52,56 @@
     </v-container>
 
     <v-dialog v-model="dialog" max-width="500" style="z-index: 99999">
-      <v-card
-        :style="{ backgroundImage: `url(${selectedCard?.modal_bg})`, backgroundSize: 'cover', backgroundPosition: 'center', color: '#fff' }">
-        <v-card-title>{{ selectedCard?.name }}</v-card-title>
-        <v-card-subtitle>Type: {{ selectedCard?.type }}</v-card-subtitle>
-        <v-card-text>
-          <p>Power: {{ selectedCard?.power }}</p>
-          <p>Mana Cost: {{ selectedCard?.mana_cost }}</p>
-          <p>Description: {{ selectedCard?.description }}</p>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn text @click="closeDialog">Cancel</v-btn>
-          <v-btn text color="primary" @click="confirmSelection">Confirm</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+  <v-card :style="{ color: '#fff', position: 'relative', overflow: 'hidden' }">
+    <!-- Indicators for Burn and Poison -->
+    <div v-if="selectedCard" :style="{ position: 'absolute', top: '10px', right: '10px', zIndex: 1 }">
+      <v-icon v-if="selectedCard.is_burn" color="red" :style="{ marginRight: '8px' }">mdi-fire</v-icon>
+      <v-icon v-if="selectedCard.is_poison" color="green">mdi-skull-crossbones</v-icon>
+    </div>
+
+    <!-- Video Background -->
+    <div v-if="selectedCard?.video_modal" :style="{
+      position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: -1
+    }">
+      <video autoplay loop muted playsinline :src="selectedCard.video_modal"
+        :style="{ width: '100%', height: '100%', objectFit: 'cover' }" />
+      <!-- Dark Overlay -->
+      <div :style="{
+        position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)', zIndex: 0
+      }"></div>
+    </div>
+
+    <!-- Fallback for non-video background -->
+    <div v-else :style="{
+      backgroundImage: `url(${selectedCard?.modal_bg})`,
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      height: '100%',
+      position: 'absolute',
+      top: 0, left: 0, right: 0, bottom: 0,
+      zIndex: -1
+    }"></div>
+
+    <!-- Text Content -->
+    <v-card-title :style="{ position: 'relative', zIndex: 1 }">{{ selectedCard?.name }}</v-card-title>
+    <v-card-subtitle :style="{ position: 'relative', zIndex: 1 }">Type: {{ selectedCard?.type }}</v-card-subtitle>
+    <v-card-text :style="{ position: 'relative', zIndex: 1 }">
+      <p>Power: {{ selectedCard?.power }}</p>
+      <p>Mana Cost: {{ selectedCard?.mana_cost }}</p>
+      <p>Description: {{ selectedCard?.description }}</p>
+    </v-card-text>
+
+    <!-- Actions -->
+    <v-card-actions :style="{ position: 'relative', zIndex: 1 }">
+      <v-spacer></v-spacer>
+      <v-btn text @click="closeDialog">Cancel</v-btn>
+      <v-btn text color="primary" @click="confirmSelection">Confirm</v-btn>
+    </v-card-actions>
+  </v-card>
+</v-dialog>
+
+
   </div>
 
   <v-dialog v-model="messageDialog" max-width="500" persistent style="z-index: 99999">
@@ -86,8 +132,8 @@
   </div>
 
   <div v-if="videoStore.isPlaying" class="video-overlay">
-  <video :src="videoStore.videoUrl" autoplay loop class="overlay-video"></video>
-</div>
+    <video :src="videoStore.videoUrl" autoplay loop class="overlay-video"></video>
+  </div>
 </template>
 
 <script>
@@ -147,47 +193,47 @@ export default {
 
     const fetchRandomCards = async () => {
       const { data: characterData, error: characterError } = await supabase
-  .from("characters")
-  .select("mana, health")
-  .eq("id", selectedCharacter.value); // Adjust character ID as needed
+        .from("characters")
+        .select("mana, health")
+        .eq("id", selectedCharacter.value); // Adjust character ID as needed
 
-if (characterError) {
-  console.error("Error fetching character data:", characterError);
-  return;
-}
+      if (characterError) {
+        console.error("Error fetching character data:", characterError);
+        return;
+      }
 
-const character = characterData?.[0];
-if (!character || character.health <= 0) {
-  return;
-}
+      const character = characterData?.[0];
+      if (!character || character.health <= 0) {
+        return;
+      }
 
-const { data, error } = await supabase.from("cards").select("*");
+      const { data, error } = await supabase.from("cards").select("*");
 
-if (error) {
-  console.error("Error fetching cards:", error);
-} else {
-  // Filter out the card with ID 91
-  const filteredCards = data.filter((card) => card.id !== 91);
+      if (error) {
+        console.error("Error fetching cards:", error);
+      } else {
+        // Filter out the card with ID 91
+        const filteredCards = data.filter((card) => card.id !== 91);
 
-  // Create a pool of cards based on their draw_chance
-  const weightedCards = [];
-  filteredCards.forEach((card) => {
-    const drawCount = Math.floor(card.draw_chance / 10); // Adjust based on scale (e.g., 80 means 8 instances)
-    for (let i = 0; i < drawCount; i++) {
-      weightedCards.push(card);
-    }
-  });
+        // Create a pool of cards based on their draw_chance
+        const weightedCards = [];
+        filteredCards.forEach((card) => {
+          const drawCount = Math.floor(card.draw_chance / 10); // Adjust based on scale (e.g., 80 means 8 instances)
+          for (let i = 0; i < drawCount; i++) {
+            weightedCards.push(card);
+          }
+        });
 
-  // Shuffle the weighted cards and select 5
-  const shuffledCards = weightedCards.sort(() => 0.5 - Math.random());
-  cards.value = shuffledCards.slice(0, 5);
+        // Shuffle the weighted cards and select 5
+        const shuffledCards = weightedCards.sort(() => 0.5 - Math.random());
+        cards.value = shuffledCards.slice(0, 5);
 
-  // Populate onHandCards if empty
-  if (onHandCards.length === 0) {
-    onHandCards.push(...cards.value.slice(0, 5));
-  }
-}
-};
+        // Populate onHandCards if empty
+        if (onHandCards.length === 0) {
+          onHandCards.push(...cards.value.slice(0, 5));
+        }
+      }
+    };
 
     onMounted(async () => {
       await fetchRandomCards();
@@ -261,30 +307,30 @@ if (error) {
       // Trigger attack animation only if the selected card is of type "attack"
       if (selectedCard.value && selectedCard.value.type === "attack") {
         const { data: dataVideo, error: errorVideo } = await supabase
-    .from('cards')
-    .select('video_src') // Get the video_src column
-    .eq('id', selectedCard.value.id) // Match the selected card's ID
-    .single();
+          .from('cards')
+          .select('video_src') // Get the video_src column
+          .eq('id', selectedCard.value.id) // Match the selected card's ID
+          .single();
 
-    if (errorVideo) {
-    console.error('Error fetching video:', errorVideo); // Corrected error variable name
-    return;
-  }
+        if (errorVideo) {
+          console.error('Error fetching video:', errorVideo); // Corrected error variable name
+          return;
+        }
 
-  if (dataVideo && dataVideo.video_src) {
-    const videoUrl = dataVideo.video_src;
+        if (dataVideo && dataVideo.video_src) {
+          const videoUrl = dataVideo.video_src;
 
-    // Play the video preview before the attack animation
-    videoStore.playVideo(videoUrl);
+          // Play the video preview before the attack animation
+          videoStore.playVideo(videoUrl);
 
-    // Wait for the video to finish (e.g., 5 seconds), then proceed
-    await new Promise(resolve => setTimeout(resolve, 5000));
+          // Wait for the video to finish (e.g., 5 seconds), then proceed
+          await new Promise(resolve => setTimeout(resolve, 5000));
 
-    // Stop the video after the delay
-    videoStore.stopVideo();
-  } else {
-    console.error('No video URL found for the selected card');
-  }
+          // Stop the video after the delay
+          videoStore.stopVideo();
+        } else {
+          console.error('No video URL found for the selected card');
+        }
         try {
           // Fetch the character's mana
           const { data: EnergyChar, error: errorEnergy } = await supabase
@@ -300,7 +346,7 @@ if (error) {
 
           // Check if character's mana is sufficient
           const currentMana = EnergyChar.mana;
-       
+
 
           // Check if the character has enough mana for the selected card
           if (selectedCard.value.mana_cost > currentMana) {
@@ -518,8 +564,8 @@ if (error) {
           .select("mana")
           .eq("id", selectedCharacter.value)
           .single();
-          console.log(selectedCharacter.value);
-          console.log(revertedCharacter.value);
+        console.log(selectedCharacter.value);
+        console.log(revertedCharacter.value);
         if (errorEnergy) {
           console.error("Error fetching character mana details:", errorEnergy);
           return;
@@ -527,16 +573,16 @@ if (error) {
 
         // Assuming card91 is the card being used and has an is_mana property
         if (card91.value && card91.value.is_mana) {
-         
+
           // Calculate the new mana value
           const newMana = EnergyChar1.mana + card91.value.is_mana;
-         
+
           // Update the character's mana in the database
           const { data: updateData, error: updateError } = await supabase
             .from("characters")
             .update({ mana: newMana })
             .eq("id", selectedCharacter.value);
-            
+
           if (updateError) {
             console.error("Error updating character mana:", updateError);
             return;
@@ -548,7 +594,7 @@ if (error) {
 
         // Check if character's mana is sufficient
         const currentMana = EnergyChar1.mana;
-       
+
 
         // Check if the character has enough mana for the selected card
         if (selectedCard.value.mana_cost > currentMana) {
@@ -586,7 +632,7 @@ if (error) {
           if (errorEnergyMinus) {
             console.error("Error updating character mana:", errorEnergyMinus);
           }
-        } 
+        }
 
 
         // Check if a character has won the battle
@@ -672,7 +718,7 @@ if (error) {
 
       // Always navigate to the next phase
       closeDialog();
-      
+
       router.push({ name: "next_phase_ai" });
     };
 
@@ -705,14 +751,46 @@ if (error) {
 
     };
 
-  }, methods: {
-    setActiveCard(index) {
-      this.activeCard = index;
-    },
-    resetCards() {
-      this.activeCard = null;
-    },
-  }
+  },methods: {
+  setActiveCard(index) {
+    this.activeCard = index;
+  },
+  setCardGlow(cardElement, card) {
+    if (!cardElement) return;
+
+    let size = 10;
+    let growing = true;
+    let animationFrame;
+
+    const animateGlow = () => {
+      if (card.is_burn || card.is_poison) {
+        const color = card.is_burn ? 'rgba(255, 0, 0, 0.7)' : 'rgba(0, 255, 0, 0.7)';
+        
+        // Adjust the glow size smoothly
+        size = growing ? size + 0.3 : size - 0.3;
+        if (size >= 20) growing = false;
+        if (size <= 10) growing = true;
+
+        // Apply the dynamic shadow glow
+        cardElement.style.boxShadow = `0 0 ${size}px ${size / 2}px ${color}`;
+
+        // Continue animation
+        animationFrame = requestAnimationFrame(animateGlow);
+      } else {
+        // Remove shadow and cancel animation if not burn or poison
+        cardElement.style.boxShadow = 'none';
+        cancelAnimationFrame(animationFrame);
+      }
+    };
+
+    // Start the glow animation
+    animateGlow();
+  },
+  resetCards() {
+    this.activeCard = null;
+  },
+}
+
 };
 </script>
 
@@ -909,40 +987,45 @@ if (error) {
 .container .card:hover {
   transform: rotate(calc(var(--i) * 3deg)) translate(calc(var(--i) * 150px), -80px);
 }
-#card_title{
+
+#card_title {
   position: absolute;
   top: 13px;
-  }
+}
+
 .type {
   position: absolute;
- top: 70%;
- left: 15%;
+  top: 70%;
+  left: 15%;
 }
 
 .power {
   position: absolute;
- top: 75%;
- left: 15%;
+  top: 75%;
+  left: 15%;
 }
-.mana{
+
+.mana {
   position: absolute;
- top: 80%;
- left: 15%;
+  top: 80%;
+  left: 15%;
 }
 
 @media (max-width: 600px) {
   .power {
-    display:none;
+    display: none;
   }
 
   .mana {
     right: 8px;
   }
-  #card_title{
+
+  #card_title {
     top: 7px;
     font-size: 10px;
   }
-  .type{
+
+  .type {
     right: 8px;
   }
 }
@@ -953,22 +1036,26 @@ if (error) {
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(0, 0, 0, 0.7); /* Semi-transparent overlay background */
+  background: rgba(0, 0, 0, 0.7);
+  /* Semi-transparent overlay background */
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 9999;
-  overflow: hidden; /* Ensures content doesn’t overflow */
+  overflow: hidden;
+  /* Ensures content doesn’t overflow */
 }
 
 .overlay-video {
   width: 100%;
   height: auto;
-  max-width: 90vw; /* Adjust max size to fit on smaller screens */
+  max-width: 90vw;
+  /* Adjust max size to fit on smaller screens */
   max-height: 90vh;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-  z-index: 9998; /* Places video behind the GIF overlay */
+  z-index: 9998;
+  /* Places video behind the GIF overlay */
 }
 
 .video-overlay::before {
@@ -978,11 +1065,14 @@ if (error) {
   left: 0;
   width: 100%;
   height: 100%;
-  background-image: url("@/assets/video/video-overlay.gif"); /* Path to your GIF */
-  background-size: cover; /* Ensures it covers the entire viewport */
+  background-image: url("@/assets/video/video-overlay.gif");
+  /* Path to your GIF */
+  background-size: cover;
+  /* Ensures it covers the entire viewport */
   background-position: center;
   background-repeat: no-repeat;
-  z-index: 99999; /* Ensures GIF is above the video */
+  z-index: 99999;
+  /* Ensures GIF is above the video */
 }
 
 /* Media query for smaller screens */
@@ -994,3 +1084,4 @@ if (error) {
 }
 
 </style>
+

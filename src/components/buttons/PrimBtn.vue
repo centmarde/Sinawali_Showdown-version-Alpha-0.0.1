@@ -1,12 +1,37 @@
 <template>
-  <v-btn class="Btn"></v-btn>
+  <v-btn
+    class="Btn"
+    :data-content="dynamicContent"
+    :style="{ width: buttonWidth, height: buttonHeight }"
+  ></v-btn>
 </template>
+
+<script setup>
+import { computed } from "vue";
+
+const props = defineProps({
+  content: {
+    type: String,
+    default: "PLAY",
+  },
+  width: {
+    type: String,
+    default: "110px",
+  },
+  height: {
+    type: String,
+    default: "40px",
+  },
+});
+
+const dynamicContent = computed(() => props.content);
+const buttonWidth = computed(() => props.width);
+const buttonHeight = computed(() => props.height);
+</script>
 
 <style scoped>
 /* From Uiverse.io by vinodjangid07 */
 .Btn {
-  width: 110px;
-  height: 40px;
   border: none;
   border-radius: 10px;
   background: linear-gradient(
@@ -31,7 +56,7 @@
 
 .Btn::before {
   position: absolute;
-  content: "PLAY";
+  content: attr(data-content);
   color: #ffd277;
   display: flex;
   align-items: center;
