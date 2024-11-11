@@ -26,8 +26,8 @@
   export default {
     data() {
       return {
-        timeLeft: 120, // Initial countdown time in seconds
-        totalTime: 120,
+        timeLeft: 60, // Initial countdown time in seconds
+        totalTime: 60,
         dialog: false,
         timer: null,
       };
