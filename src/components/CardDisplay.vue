@@ -1,10 +1,10 @@
 <template>
   <div class="display">
-    <SecBtn class="top-right-button" @click="navigateWithSound('/')" />
+    <SecBtn id="back_btn" class="top-right-button" @click="navigateWithSound('/')" />
     <v-container>
       <v-row>
         <!-- Card Display -->
-        <v-col cols="12" lg="6">
+        <v-col id="cards" cols="12" lg="6">
           <swiper
             :effect="'cards'"
             :grabCursor="true"
@@ -52,26 +52,26 @@
                 </svg>
               </div>
 
-              <div
+              <div id="card_rarity"
                 class="card-rarity merienda text-capitalize"
                 :style="{ bottom: cardRarityBottom }"
               >
                 <span>{{ activeCard.rarity }} Card</span>
               </div>
 
-              <div
+              <div 
                 class="card-description balsamiq-sans text-center text-uppercase"
                 :style="cardDescriptionStyle"
               >
-                <small>{{ activeCard.description }}</small>
+                <small id="card_desc" >{{ activeCard.description }}</small>
               </div>
             </swiper-slide>
           </swiper>
         </v-col>
 
         <!-- Card Details -->
-        <v-col cols="12" lg="6">
-          <CardDetails
+        <v-col  cols="12" lg="6">
+          <CardDetails 
             :activeCard="activeCard"
             :avatarImage="avatarImage"
             :cardRarityClass="cardRarityClass"
@@ -425,6 +425,46 @@ onMounted(() => {
   50% {
     box-shadow: 0 0 40px #ddb75a;
     background-color: #ddb75a; /* Slightly lighter shade for emphasis */
+  }
+}
+@media (max-width: 1300px) {
+  #cards{
+    position: relative;
+    top: 10rem;
+  }
+  
+
+ 
+  .display{
+    height: 100%;
+  }
+}
+@media (max-width: 360px) {
+  #cards {
+   top: 4rem;
+    max-width: 100%; /* Adjust further if needed for smaller screens */
+  }
+  .mySwiper {
+    width: 100%;
+  }
+  #card_rarity{
+    position: absolute;
+    top: 16.3rem;
+    font-size: 15px;
+  }
+ #card_desc{
+  position: absolute;
+  right: -0.2rem;
+  bottom: 1.4rem;
+  width: 100%;
+  font-size: 8px;
+ }
+  .display{
+    height: 100%;
+  }
+  #back_btn{
+    position: absolute;
+    left: 8.5rem;
   }
 }
 </style>

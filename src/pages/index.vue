@@ -77,6 +77,7 @@
               <span>Login as Guest</span>
             </v-card-title>
           </v-card>
+          <br>
         </v-form>
       </v-card-text>
       <v-card-actions class="d-flex justify-content-center pb-7">
