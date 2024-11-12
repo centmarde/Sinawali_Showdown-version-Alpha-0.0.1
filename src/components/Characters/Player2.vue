@@ -209,7 +209,7 @@ this.toggleAttack = () => {
     transform: translateX(-200px);
   }
   #canvas {
-    margin-top: 23rem;
+    margin-top: 10rem;
     width: 13rem;
     transition: transform 0.5s ease;
   }
