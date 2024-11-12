@@ -30,7 +30,9 @@
         </v-progress-linear>
       </v-col>
       <v-col cols="2" lg="2">
-      <!--   <timer/> -->
+        <!-- Conditionally render Timer component based on route -->
+        <Timer v-if="isStandardBattleRoute" />
+        <TimerAi v-else-if="isAiBattleRoute" />
       </v-col>
       <!-- Player 2 Health Bar -->
       <v-col cols="5">
@@ -71,14 +73,26 @@ import { computed, onMounted } from "vue";
 import router from "@/router";
 import { supabase } from "../../lib/supabase";
 import { usePlayerStore } from "../../stores/healtbar";
+import { useRoute } from 'vue-router';
+import Timer from './timer.vue'
+import TimerAi from './timerAi.vue'
+
 
 export default {
+  components: { Timer, TimerAi },
   setup() {
+    const route = useRoute();
     const playerStore = usePlayerStore();
     const { player1, player2, updatePlayerMana, updatePlayerHealth } = playerStore;
     const maxHealth = 100;
     const maxMana = 100;
     const selectedChar = localStorage.getItem("selectedCharacter");
+    const isStandardBattleRoute = computed(() =>
+      ['battle_area', 'next_phase'].includes(route.name)
+    );
+    const isAiBattleRoute = computed(() =>
+      ['battle_area_ai', 'next_phase_ai'].includes(route.name)
+    );
 
     // Computed properties for dynamic health and mana values
     const currentPlayerHealth = computed(() => (selectedChar === "1" ? player1.health : player2.health));
@@ -164,6 +178,8 @@ export default {
       currentPlayer2Health,
       currentPlayerMana,
       currentPlayer2Mana,
+      isStandardBattleRoute,
+      isAiBattleRoute,
     };
   },
 };

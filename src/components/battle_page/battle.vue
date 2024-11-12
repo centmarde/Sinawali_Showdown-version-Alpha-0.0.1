@@ -287,26 +287,7 @@ export default {
 
           // Check if character's mana is sufficient
           const currentMana = EnergyChar.mana;
-          if (currentMana <= 0) {
-            toast(`You're out of energy!`, {
-              type: 'error',
-              position: 'top-left',
-              timeout: 3000,
-              closeOnClick: true,
-            });
-
-            toast(`You've missed your chance to make a move!`, {
-              type: 'warning',
-              position: 'top-left',
-              timeout: 3000,
-              closeOnClick: true,
-            });
-
-            setTimeout(() => {
-              router.push({ name: "next_phase" });
-            }, 1000); // 1000 milliseconds = 1 second
-            return;
-          }
+         
 
           // Check if the character has enough mana for the selected card
           if (selectedCard.value.mana_cost > currentMana) {
@@ -554,27 +535,7 @@ export default {
 
         // Check if character's mana is sufficient
         const currentMana = EnergyChar.mana;
-        if (currentMana <= 0) {
-          toast(`You're out of energy!`, {
-            type: 'error',
-            position: 'top-left',
-            timeout: 3000,
-            closeOnClick: true,
-          });
-
-          toast(`You've missed your chance to make a move!`, {
-            type: 'warning',
-            position: 'top-left',
-            timeout: 3000,
-            closeOnClick: true,
-          });
-
-          setTimeout(() => {
-            router.push({ name: "next_phase" });
-          }, 1000); // 1000 milliseconds = 1 second
-          return;
-        }
-
+       
         // Check if the character has enough mana for the selected card
         if (selectedCard.value.mana_cost > currentMana) {
           toast(`Not enough Energy!`, {
@@ -837,10 +798,14 @@ export default {
   font-size: 10px;
 
 }
-
+@media (max-width: 1300px) {
+.battleground{
+  background-image: url("../../assets/background/bg-md.gif");
+}
+}
 @media (max-width: 600px) {
   .skip {
-    top: -15.5rem;
+    top: -17.5rem;
     position: fixed;
     left: 7.2rem;
   }

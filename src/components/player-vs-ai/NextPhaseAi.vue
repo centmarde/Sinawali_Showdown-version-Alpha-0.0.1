@@ -881,6 +881,7 @@ if (mana <= 20) {
   top: 17.3rem;
   position: fixed;
   left: 38rem;
+  display: none;
 }
 
 .bag {
@@ -896,10 +897,14 @@ if (mana <= 20) {
   font-size: 10px;
 
 }
-
+@media (max-width: 1300px) {
+.battleground{
+  background-image: url("../../assets/background/bg-md.gif");
+}
+}
 @media (max-width: 600px) {
   .skip {
-    top: -15.5rem;
+    top: -17.5rem;
     position: fixed;
     left: 7.2rem;
   }
