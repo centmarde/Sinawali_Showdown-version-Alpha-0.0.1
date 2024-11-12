@@ -5,5 +5,5 @@
 </template>
 
 <script setup>
-import cards_display from "@/components/CardsDisplay.vue";
+import cards_display from "@/components/CardDisplay.vue";
 </script>
