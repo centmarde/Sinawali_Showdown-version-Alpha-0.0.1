@@ -295,9 +295,9 @@ export default {
 
       // Navigate based on who attacks first
       if (firstAttacker === "Player 1") {
-        navigateWithSound("/battle_area"); // Navigate to /battle for Player 1
+        navigateWithSound("/battle_area_ai"); // Navigate to /battle for Player 1
       } else {
-        navigateWithSound("/next_phase"); // Navigate to /nextphase for Player 2
+        navigateWithSound("/next_phase_ai"); // Navigate to /nextphase for Player 2
       }
     };
 
