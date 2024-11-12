@@ -1,5 +1,5 @@
 <template>
-  <div v-if="activeCard" class="p-5">
+  <div id="info" v-if="activeCard" class="p-5">
     <v-row>
       <v-col cols="2">
         <v-avatar
@@ -11,7 +11,7 @@
       </v-col>
 
       <v-col>
-        <div class="ms-6">
+        <div id="info2" class="ms-6">
           <h2 class="mt-1">{{ activeCard.name }}</h2>
           <v-card :class="[' d-inline-block me-4', cardRarityClass]">
             <v-card-text
@@ -147,6 +147,48 @@ const props = defineProps({
   50% {
     box-shadow: 0 0 40px #ddb75a;
     background-color: #ddb75a; /* Slightly lighter shade for emphasis */
+  }
+}
+
+@media (max-width: 1300px) {
+  #cards{
+    position: relative;
+    top: 10rem;
+  }
+  
+  #info{
+    position: relative;
+   margin-top:10rem;
+   left: 2.5rem;
+  }
+  #info2{
+    position: relative;
+    left: 5rem;
+  }
+  .display{
+    height: 100%;
+  }
+}
+@media (max-width: 360px) {
+  #cards {
+   top: 4rem;
+    max-width: 100%; /* Adjust further if needed for smaller screens */
+  }
+  .mySwiper {
+    width: 100%;
+  }
+ 
+  #info{
+    position: relative;
+   margin-top:0;
+    left: 0;
+  }
+  .display{
+    height: 100%;
+  }
+  #back_btn{
+    position: absolute;
+    left: 8.5rem;
   }
 }
 </style>

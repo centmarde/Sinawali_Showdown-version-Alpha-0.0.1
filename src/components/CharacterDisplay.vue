@@ -189,7 +189,7 @@
       </v-row>
 
       <!-- Navigation button for play and back -->
-      <div class="btn-wrapper text-center">
+      <div class="btn-wrapper d-flex text-center">
         <SecBtn @click="navigateWithSound('/')" />
         <PrimeBtn @click="openDialog" class="ml-4" />
       </div>
@@ -470,32 +470,39 @@ export default {
 }
 
 @media (max-width: 768px) {
-  .character-viewer {
-    position: absolute;
-    bottom: 60px;
-    background-image: url("./../assets/background/bg2.png");
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-  }
+ 
+ .character-viewer {
+   position: relative;
+   gap: 0;
+   left: 2.5rem;
+   padding: 0;
+   background-position:50%;
+   width: 100%;
+ }
+ .display{
+   height: 100%;
+   background-image: url("./../assets/background/small_screen.png");
+ }
+ .details {
+   position: relative;
+   z-index: 1;
+   font-size: 0.8rem;
+ }
 
-  .details {
-    position: relative;
-    z-index: 1;
-    font-size: 0.8rem;
-  }
+ .btn-wrapper {
+   position: fixed; /* Change from relative to absolute */
+   bottom: 60rem; /* Adjust as needed */
+   left: 11.3rem;
+   transform: translateX(-50%);
+   text-align: center;
+   z-index: 1000; /* Ensure it stays on top */
+ }
 
-  .btn-wrapper {
-    position: absolute; /* Change from relative to absolute */
-    bottom: 20px; /* Adjust as needed */
-    left: 50%;
-    transform: translateX(-50%);
-    text-align: center;
-    z-index: 1000; /* Ensure it stays on top */
-  }
-
-  .tilt-card {
-    transform: none;
-  }
+ .tilt-card {
+   transform: none;
+   transition: transform 0.3s ease-in-out;
+   background-color: #00000048;
+   z-index: 999;
+ }
 }
 </style>

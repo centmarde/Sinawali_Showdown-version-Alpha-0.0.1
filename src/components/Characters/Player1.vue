@@ -222,11 +222,7 @@ this.toggleAttack = () => {
   .moveLeft {
     transform: translateX(400px);
   }
-  #canvas {
-    margin-top: 23rem;
-    width: 13rem;
-    transition: transform 0.5s ease;
-  }
+ 
 }
 
 @media (max-width: 768px) {
@@ -234,7 +230,7 @@ this.toggleAttack = () => {
     transform: translateX(200px);
   }
   #canvas {
-    margin-top: 23rem;
+    margin-top: 10rem;
     width: 13rem;
     transition: transform 0.5s ease;
   }

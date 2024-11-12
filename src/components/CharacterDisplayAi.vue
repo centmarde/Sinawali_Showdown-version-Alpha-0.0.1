@@ -60,7 +60,7 @@
             </v-row>
           </v-card>
         </v-col>
-
+     
         <!-- Character Viewer -->
         <v-col
           cols="12"
@@ -191,7 +191,7 @@
       </v-row>
 
       <!-- Navigation button for play and back -->
-      <div class="btn-wrapper text-center">
+      <div class="btn-wrapper d-flex">
         <SecBtn @click="navigateWithSound('/')" />
         <PrimeBtn @click="openDialog" class="ml-4" />
       </div>
@@ -473,15 +473,19 @@ export default {
 }
 
 @media (max-width: 768px) {
+ 
   .character-viewer {
-    position: absolute;
-    bottom: 60px;
-    background-image: url("./../assets/background/bg2.png");
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
+    position: relative;
+    gap: 0;
+    left: 2.5rem;
+    padding: 0;
+    background-position:50%;
+    width: 100%;
   }
-
+  .display{
+    height: 100%;
+    background-image: url("./../assets/background/small_screen.png");
+  }
   .details {
     position: relative;
     z-index: 1;
@@ -489,9 +493,9 @@ export default {
   }
 
   .btn-wrapper {
-    position: absolute; /* Change from relative to absolute */
-    bottom: 20px; /* Adjust as needed */
-    left: 50%;
+    position: fixed; /* Change from relative to absolute */
+    bottom: 60rem; /* Adjust as needed */
+    left: 11.3rem;
     transform: translateX(-50%);
     text-align: center;
     z-index: 1000; /* Ensure it stays on top */
