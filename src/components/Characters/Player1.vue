@@ -2,7 +2,7 @@
   <div class="canvas-container">
     <!-- Canvas for Player 1's animations, toggles moveLeft class based on isattack state -->
     <canvas id="canvas" ref="canvas1" :class="{ moveLeft: isattack }"></canvas>
-   <!--  <button @click="toggleHurtInjured">Hurt (Injured)</button>
+    <!-- <button @click="toggleHurtInjured">Hurt (Injured)</button>
         <button @click="toggleHurtSkinDamage">Hurt (Skin Damage)</button>
         <button @click="toggleBuff">Buff</button>
         <button @click="toggleAttack">attack</button>  -->
@@ -152,16 +152,14 @@ this.toggleAttack = () => {
     frameX = 0;
 
    
-   /*  const randomAttack = Math.floor(Math.random() * 3);
+    const randomAttack = Math.floor(Math.random() * 2);
     if (randomAttack === 0) {
-      attack();
-    } else if (randomAttack === 1) {
-      attack2();
-    } else {
       attack3();
-    } */
+    } else if (randomAttack === 1) {
+      attack();
+    } 
 
-    attack3();
+   
   }
 };
 
