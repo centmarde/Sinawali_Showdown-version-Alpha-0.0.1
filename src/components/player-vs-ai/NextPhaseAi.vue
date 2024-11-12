@@ -73,7 +73,7 @@
           </div>
         </v-col>
         <v-col cols="6">
-  <p style="
+  <p id="taunt-message" style="
     position: fixed; 
     z-index: 9999; 
     top: 35%; 
