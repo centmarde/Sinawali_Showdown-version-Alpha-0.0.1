@@ -21,6 +21,7 @@ export default {
     onMounted(() => {
       // Play the audio when the component is mounted
       if (audioPlayer.value) {
+        audioPlayer.value.volume = 0.3; // Set volume (0.0 to 1.0)
         audioPlayer.value.play();
       }
     });
