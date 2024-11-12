@@ -11,7 +11,7 @@ export const state = reactive({
 // Set the URL based on the environment
 // src/socket.js
 const URL =
-  process.env.NODE_ENV === "production" ? undefined : "http://localhost:3001";
+  process.env.NODE_ENV === "production" ? undefined : "http://localhost:3002";
 export const socket = io(URL);
 
 socket.on("connect", () => {
