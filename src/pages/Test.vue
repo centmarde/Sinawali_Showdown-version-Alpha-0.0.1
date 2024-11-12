@@ -3,6 +3,15 @@
     <v-btn class="my-2" color="dark" block to="/"> Back </v-btn>
     <v-row>
       <v-col>
+        <Player2mirror/>
+      <ConnectionState/>
+      </v-col>
+        <v-col>
+      <Player1mirror/>
+        </v-col>
+    </v-row>
+    <v-row>
+      <v-col>
         <Player1/>
       <ConnectionState/>
       </v-col>

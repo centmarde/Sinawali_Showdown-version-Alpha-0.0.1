@@ -87,6 +87,7 @@ import { useRouter } from "vue-router";
 import AudioPlayer from "../buttonSounds/buttonAudio.vue"; // Adjust the path if necessary
 import { doLogout } from "@/lib/supabase";
 import { useAudioStore } from "@/stores/audioStore";
+import { supabase } from "@/lib/supabase";
 
 const audioStore = useAudioStore();
 const router = useRouter();
@@ -101,14 +102,54 @@ onMounted(() => {
 });
 
 // Method to play audio and navigate after a delay
-const handleNavigation = (route) => {
+const handleNavigation = async (route) => {
+  // Reset characters before proceeding
+  await resetCharacters();
+
+  // Play audio and pause all other audio
   if (audioPlayerRef.value) {
     audioPlayerRef.value.playAudio();
     audioStore.allPause();
   }
+
+  // Delay and navigate
   setTimeout(() => {
     router.push(route);
   }, 500); // 500 ms delay before navigation
+};
+
+const resetCharacters = async () => {
+  const { error: error1 } = await supabase
+    .from("characters")
+    .update({
+      health: 100,
+      mana: 100,
+      agility: 10,
+      defense: 0,
+      critical_rate: 50,
+    })
+    .eq("id", 1);
+
+  if (error1) {
+    console.error("Failed to update character 1:", error1);
+    return;
+  }
+
+  const { error: error2 } = await supabase
+    .from("characters")
+    .update({
+      health: 100,
+      mana: 100,
+      agility: 50,
+      defense: 0,
+      critical_rate: 10,
+    })
+    .eq("id", 2);
+
+  if (error2) {
+    console.error("Failed to update character 2:", error2);
+    return;
+  }
 };
 
 // Method to handle keyboard navigation
