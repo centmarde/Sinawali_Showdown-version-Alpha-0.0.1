@@ -17,7 +17,7 @@ export const useTauntStore = defineStore("taunt", {
           {
             role: "system",
             content:
-              "imagine a scenario that you encounter a native warrior opponent, pretend that you are a native warrior also in the philippines, that isnt afraid of any battles. limit your respone in 1 sentence, 15 words only. give me a taunt message. to ignite my anger roast me!",
+              "imagine a scenario that you encounter a native warrior opponent, pretend that you are a native warrior also in the philippines, that isnt afraid of any battles. limit your respone in 1 sentence, maximum of 6 words only. give me a taunt message. to ignite my anger roast me!",
           },
           {
             role: "user",
