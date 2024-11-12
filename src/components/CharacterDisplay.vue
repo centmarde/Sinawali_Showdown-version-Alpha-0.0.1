@@ -189,7 +189,7 @@
       </v-row>
 
       <!-- Navigation button for play and back -->
-      <div class="btn-wrapper text-center">
+      <div class="btn-wrapper d-flex text-center">
         <SecBtn @click="navigateWithSound('/')" />
         <PrimeBtn @click="openDialog" class="ml-4" />
       </div>
@@ -203,7 +203,7 @@
   </div>
 </template>
 
-<script setup>
+<script>
 import { ref, onMounted, onBeforeUnmount, watch } from "vue";
 import { useRouter } from "vue-router";
 import { supabase } from "../lib/supabase";
@@ -211,131 +211,152 @@ import PrimeBtn from "./buttons/PrimBtn.vue";
 import SecBtn from "./buttons/SecBtn.vue";
 import AudioPlayer from "./buttonSounds/buttonAudio.vue";
 import { useToast } from "vue-toastification";
+import { useSpeechStore } from "@/stores/characterSpeech";
 
-// Track the selected character
-const toast = useToast();
-const selectedCharacter = ref(
-  Number(localStorage.getItem("selectedCharacter")) || 1
-); // Ensure it's a number
-const dialog = ref(false);
-const character = ref({});
-const router = useRouter();
-const audioSrc = new URL("@/assets/audio/click.mp3", import.meta.url).href;
-const audioPlayerRef = ref(null);
-const userId = localStorage.getItem("user_id");
+export default {
+  components: {
+    PrimeBtn,
+    SecBtn,
+    AudioPlayer,
+  },
+  setup() {
+    const router = useRouter();
+    const toast = useToast();
+    const speechStore = useSpeechStore();
+    
+    const selectedCharacter = ref(Number(localStorage.getItem("selectedCharacter")) || 1);
+    const dialog = ref(false);
+    const character = ref({});
+    const audioSrc = new URL("@/assets/audio/click.mp3", import.meta.url).href;
+    const audioPlayerRef = ref(null);
+    const userId = localStorage.getItem("user_id");
+    
+    const playAudio = () => {
+      if (audioPlayerRef.value) {
+        audioPlayerRef.value.playAudio();
+      }
+    };
+    
+    const navigateWithSound = (route) => {
+      playAudio();
+      setTimeout(() => {
+        router.push(route);
+      }, 500); // 500 ms delay before navigation
+    };
 
-console.log(userId);
+    const selectCharacter = (characterId) => {
+      selectedCharacter.value = characterId;
 
-const playAudio = () => {
-  if (audioPlayerRef.value) {
-    audioPlayerRef.value.playAudio();
-  }
+      // Ensure speechStore is initialized and methods exist
+      if (speechStore && typeof speechStore.stopAlon === 'function' && typeof speechStore.stopKidlat === 'function') {
+        // Stop Alon audio if character 1 is selected
+        if (characterId === 1) {
+          speechStore.stopAlon();
+          speechStore.playKidlat();
+        }
+
+        // Stop Kidlat audio if character 2 is selected
+        if (characterId === 2) {
+          speechStore.stopKidlat();
+          speechStore.playAlon();
+          console.log("speech 2");
+        }
+      } else {
+        console.error("speechStore or its methods are not available");
+      }
+    };
+
+    const openDialog = () => {
+      if (audioPlayerRef.value) {
+        audioPlayerRef.value.playAudio();
+      }
+      dialog.value = true;
+    };
+
+    const confirmChoice = async () => {
+      // Save the selected character to local storage
+      localStorage.setItem("selectedCharacter", selectedCharacter.value);
+      console.log(localStorage.getItem("selectedCharacter"));
+
+      // Retrieve player IDs from local storage
+      const player1Id = localStorage.getItem("player1");
+      const player2Id = localStorage.getItem("player2");
+
+      // Decide first attacker based on player IDs (customize this logic as needed)
+      const firstAttacker = player1Id ? "Player 1" : "Player 2"; 
+
+      // Show alert for who attacks first
+      toast(`${firstAttacker} attacks first!`);
+
+      // Close the dialog
+      dialog.value = false;
+
+      // Navigate based on who attacks first
+      if (firstAttacker === "Player 1") {
+        navigateWithSound("/battle_area"); // Navigate to /battle for Player 1
+      } else {
+        navigateWithSound("/next_phase"); // Navigate to /nextphase for Player 2
+      }
+    };
+
+    const handleKeyDown = (event) => {
+      if (event.key === "ArrowLeft") {
+        selectedCharacter.value = Math.max(1, selectedCharacter.value - 1);
+      } else if (event.key === "ArrowRight") {
+        selectedCharacter.value = Math.min(2, selectedCharacter.value + 1);
+      }
+    };
+
+    const fetchCharacterDetails = async (characterId) => {
+      const { data, error } = await supabase
+        .from("characters")
+        .select("*")
+        .eq("id", characterId)
+        .single();
+
+      if (error) {
+        console.error("Error fetching character details:", error);
+      } else {
+        character.value = data;
+      }
+    };
+
+    // Watch for changes to selectedCharacter
+    watch(selectedCharacter, (newCharacterId) => {
+      fetchCharacterDetails(newCharacterId);
+    });
+
+    // Lifecycle hooks
+    onMounted(() => {
+      window.addEventListener("keydown", handleKeyDown);
+      fetchCharacterDetails(selectedCharacter.value); // Fetch initial character details
+    });
+
+    onBeforeUnmount(() => {
+      window.removeEventListener("keydown", handleKeyDown);
+    });
+
+    return {
+      selectedCharacter,
+      dialog,
+      character,
+      audioSrc,
+      audioPlayerRef,
+      userId,
+      playAudio,
+      navigateWithSound,
+      selectCharacter,
+      openDialog,
+      confirmChoice,
+      handleKeyDown,
+      fetchCharacterDetails,
+      playAlon: speechStore.playAlon,
+      playKidlat: speechStore.playKidlat,
+      stopAlon: speechStore.stopAlon,
+      stopKidlat: speechStore.stopKidlat,
+    };
+  },
 };
-
-const navigateWithSound = (route) => {
-  playAudio();
-  setTimeout(() => {
-    router.push(route);
-  }, 500); // 500 ms delay before navigation
-};
-
-// Function to change character on mouse click
-const selectCharacter = (characterId) => {
-  selectedCharacter.value = characterId;
-};
-
-// Function to open confirmation dialog
-const openDialog = () => {
-  if (audioPlayerRef.value) {
-    audioPlayerRef.value.playAudio();
-  }
-  dialog.value = true;
-};
-
-// Function to confirm choice and redirect to 'battle_loading'
-// const confirmChoice = async () => {
-//   localStorage.setItem("selectedCharacter", selectedCharacter.value);
-//   console.log(localStorage.getItem("selectedCharacter"));
-
-//   // Insert a new battle row into the battles table
-
-//   // Randomly select which player attacks first
-//   const firstAttacker = Math.random() < 0.5 ? "Player 1" : "Player 2";
-
-//   // Show alert for who attacks first
-//   toast(`${firstAttacker} attacks first!`);
-
-//   // Close the dialog
-//   dialog.value = false;
-
-//   // Navigate based on who attacks first
-//   if (firstAttacker === "Player 1") {
-//     navigateWithSound("/battle_area"); // Navigate to /battle for Player 1
-//   } else {
-//     navigateWithSound("/next_phase"); // Navigate to /nextphase for Player 2
-//   }
-// };
-
-const confirmChoice = async () => {
-  localStorage.setItem("selectedCharacter", selectedCharacter.value);
-  console.log(localStorage.getItem("selectedCharacter"));
-
-  // Set the first attacker explicitly (choose "Player 1" or "Player 2")
-  const firstAttacker = "Player 1"; // Or "Player 2" depending on your logic
-
-  // Show alert for who attacks first
-  toast(`${firstAttacker} attacks first!`);
-
-  // Close the dialog
-  dialog.value = false;
-
-  // Navigate based on who attacks first
-  if (firstAttacker === "Player 1") {
-    navigateWithSound("/battle_area"); // Navigate to /battle for Player 1
-  } else {
-    navigateWithSound("/next_phase"); // Navigate to /nextphase for Player 2
-  }
-};
-
-// Function to handle keyboard arrow keys
-const handleKeyDown = (event) => {
-  if (event.key === "ArrowLeft") {
-    selectedCharacter.value = Math.max(1, selectedCharacter.value - 1);
-  } else if (event.key === "ArrowRight") {
-    selectedCharacter.value = Math.min(2, selectedCharacter.value + 1);
-  }
-};
-
-// Fetch character details from Supabase
-const fetchCharacterDetails = async (characterId) => {
-  const { data, error } = await supabase
-    .from("characters")
-
-    .select("*")
-
-    .eq("id", characterId)
-    .single();
-
-  if (error) {
-    console.error("Error fetching character details:", error);
-  } else {
-    character.value = data;
-  }
-};
-
-// Watch for changes in selectedCharacter and fetch details
-watch(selectedCharacter, (newCharacterId) => {
-  fetchCharacterDetails(newCharacterId);
-});
-
-// Mount and cleanup event listeners
-onMounted(() => {
-  window.addEventListener("keydown", handleKeyDown);
-  fetchCharacterDetails(selectedCharacter.value); // Fetch initial character details
-});
-onBeforeUnmount(() => {
-  window.removeEventListener("keydown", handleKeyDown);
-});
 </script>
 
 <style scoped>
@@ -449,32 +470,39 @@ onBeforeUnmount(() => {
 }
 
 @media (max-width: 768px) {
-  .character-viewer {
-    position: absolute;
-    bottom: 60px;
-    background-image: url("./../assets/background/bg2.png");
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-  }
+ 
+ .character-viewer {
+   position: relative;
+   gap: 0;
+   left: 2.5rem;
+   padding: 0;
+   background-position:50%;
+   width: 100%;
+ }
+ .display{
+   height: 100%;
+   background-image: url("./../assets/background/small_screen.png");
+ }
+ .details {
+   position: relative;
+   z-index: 1;
+   font-size: 0.8rem;
+ }
 
-  .details {
-    position: relative;
-    z-index: 1;
-    font-size: 0.8rem;
-  }
+ .btn-wrapper {
+   position: fixed; /* Change from relative to absolute */
+   bottom: 60rem; /* Adjust as needed */
+   left: 11.3rem;
+   transform: translateX(-50%);
+   text-align: center;
+   z-index: 1000; /* Ensure it stays on top */
+ }
 
-  .btn-wrapper {
-    position: absolute; /* Change from relative to absolute */
-    bottom: 20px; /* Adjust as needed */
-    left: 50%;
-    transform: translateX(-50%);
-    text-align: center;
-    z-index: 1000; /* Ensure it stays on top */
-  }
-
-  .tilt-card {
-    transform: none;
-  }
+ .tilt-card {
+   transform: none;
+   transition: transform 0.3s ease-in-out;
+   background-color: #00000048;
+   z-index: 999;
+ }
 }
 </style>

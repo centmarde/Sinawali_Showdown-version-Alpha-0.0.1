@@ -4,11 +4,10 @@
     <canvas id="canvas" ref="canvas1" :class="{ moveLeft: isattack }"></canvas>
     <v-row>
       <v-col class="d-flex justify-content-center">
-        <!-- Buttons for controlling animations -->
-      
-        <!-- <<button @click="toggleAttack">{{ isattack ? 'Switch to Idle' : 'Attack' }}</button>
-        <button @click="toggleHurt">Hurt</button>
-        <button @click="toggleBuff">Buff</button>  -->
+       <!--  <button @click="toggleHurtInjured">Hurt (Injured)</button>
+        <button @click="toggleHurtSkinDamage">Hurt (Skin Damage)</button>
+        <button @click="toggleBuff">Buff</button>
+        <button @click="toggleAttack">attack</button>   -->
       </v-col>
     </v-row>
   </div>
@@ -146,15 +145,23 @@ const attack3 = () => {
     idle();
   }
 };
-    this.toggleAttack = () => {
-      cancelAnimationFrame(this.animationFrame);
-      if (!this.isattack) {
-        this.isattack = true;
-        frameX = 0;
-        attack3();
-      }
-    };
+this.toggleAttack = () => {
+  cancelAnimationFrame(this.animationFrame);
+  if (!this.isattack) {
+    this.isattack = true;
+    frameX = 0;
 
+   
+    const randomAttack = Math.floor(Math.random() * 2);
+    if (randomAttack === 0) {
+      attack3();
+    } else if (randomAttack === 1) {
+      attack();
+    } 
+
+   
+  }
+};
     this.toggleHurt = () => {
       cancelAnimationFrame(this.animationFrame);
       frameX = 0;
@@ -223,7 +230,7 @@ const attack3 = () => {
     transform: translateX(-200px);
   }
   #canvas {
-  margin-top: 23rem;
+    margin-top: 10rem;
   width: 13rem;
   transition: transform 0.5s ease;
   }

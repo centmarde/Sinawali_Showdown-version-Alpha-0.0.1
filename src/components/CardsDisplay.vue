@@ -1,9 +1,9 @@
 <template>
   <div class="display">
-    <SecBtn class="top-right-button" @click="navigateWithSound('/')" />
+    <SecBtn id="back_btn" class="top-right-button" @click="navigateWithSound('/')" />
     <v-container>
       <v-row>
-        <v-col cols="12" lg="6">
+        <v-col id="cards" cols="12" lg="6">
           <swiper
             :effect="'cards'"
             :grabCursor="true"
@@ -16,7 +16,7 @@
             </swiper-slide>
           </swiper>
         </v-col>
-        <v-col cols="12" lg="6">
+        <v-col id="info"  cols="12" lg="6">
           <div v-if="activeCard" class="p-5">
             <v-row>
               <v-col cols="2">
@@ -28,8 +28,8 @@
                 ></v-avatar>
               </v-col>
 
-              <v-col>
-                <div class="ms-6">
+              <v-col id="info2">
+                <div  class="ms-6">
                   <h2 class="mt-1">{{ activeCard.name }}</h2>
                   <v-card :class="[' d-inline-block me-4', cardRarityClass]">
                     <v-card-text
@@ -50,7 +50,7 @@
             </v-row>
 
             <!-- Card Stats -->
-            <div class="me-16 pe-4 mt-5">
+            <div  class="me-16 pe-4 mt-5">
               <small class="text-uppercase font-weight-medium">Power</small>
               <v-progress-linear
                 class="mt-2 mb-4 text-button font-weight-bold animated-progress"
@@ -317,7 +317,6 @@ onMounted(() => {
 .special_bg {
   background-color: #936529;
   position: relative;
-  overflow: hidden;
   box-shadow: 0 0 15px #936529;
   animation: fadeInOut 2s infinite;
 }
@@ -331,6 +330,49 @@ onMounted(() => {
   50% {
     box-shadow: 0 0 40px #ddb75a;
     background-color: #ddb75a; /* Slightly lighter shade for emphasis */
+  }
+}
+
+@media (max-width: 1300px) {
+  #cards{
+    position: relative;
+    top: 10rem;
+  }
+  
+  #info{
+    position: relative;
+   margin-top:10rem;
+   left: 2.5rem;
+  }
+  #info2{
+    position: relative;
+    left: 5rem;
+  }
+  .display{
+    height: 100%;
+  }
+}
+
+@media (max-width: 360px) {
+  #cards {
+   top: 4rem;
+    max-width: 100%; /* Adjust further if needed for smaller screens */
+  }
+  .mySwiper {
+    width: 100%;
+  }
+ 
+  #info{
+    position: relative;
+   margin-top:0;
+    left: 0;
+  }
+  .display{
+    height: 100%;
+  }
+  #back_btn{
+    position: absolute;
+    left: 8.5rem;
   }
 }
 </style>
