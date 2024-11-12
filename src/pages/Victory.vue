@@ -56,9 +56,9 @@ export default {
         .update({
           health: 100,
           mana: 100,
-          agility: 5,
+          agility: 10,
           defense: 0,
-          critical_rate: 0,
+          critical_rate: 50,
         })
         .eq("id", 1);
 
@@ -72,9 +72,9 @@ export default {
         .update({
           health: 100,
           mana: 100,
-          agility: 0,
+          agility: 50,
           defense: 0,
-          critical_rate: 5,
+          critical_rate: 10,
         })
         .eq("id", 2);
 

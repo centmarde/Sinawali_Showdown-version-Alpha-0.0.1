@@ -4,10 +4,10 @@
     <canvas id="canvas" ref="canvas1" :class="{ moveLeft: isattack }"></canvas>
     <v-row>
       <v-col class="d-flex justify-content-center">
-       <!--  <button @click="toggleAttack">{{ isattack ? 'Switch to Idle' : 'Attack' }}</button>
-        <button @click="toggleHurtInjured">Hurt (Injured)</button>
+      <!--   <button @click="toggleHurtInjured">Hurt (Injured)</button>
         <button @click="toggleHurtSkinDamage">Hurt (Skin Damage)</button>
-        <button @click="toggleBuff">Buff</button> -->
+        <button @click="toggleBuff">Buff</button>
+        <button @click="toggleAttack">attack</button>   -->
       </v-col>
     </v-row>
   </div>
@@ -75,7 +75,7 @@ export default {
         spriteWidth,
         spriteHeight
       );
-      if (gameFrame % 30 === 0) {
+      if (gameFrame % staggerFrames === 0) {
         frameX = frameX < 4 ? frameX + 1 : 0;
 
         // End buff animation cycle
@@ -143,15 +143,61 @@ export default {
       }
     };
 
-    this.toggleAttack = () => {
-      cancelAnimationFrame(this.animationFrame);
-      if (!this.isattack) {
-        this.isattack = true;
-        frameX = 0;
-        attack();
-      }
-    };
+    const attack2 = () => {
+  if (!this.isattack) return;
 
+  ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+  frameY = 9; // Set to attack frame row
+
+  // Draw the current frame of the attack animation
+  ctx.drawImage(
+    playerImage,
+    frameX * spriteWidth,
+    frameY * spriteHeight,
+    spriteWidth,
+    spriteHeight,
+    CANVAS_WIDTH / 2 - spriteWidth / 2,
+    CANVAS_HEIGHT / 2 - spriteHeight / 2,
+    spriteWidth,
+    spriteHeight
+  );
+
+  // Increment frame counter
+  if (gameFrame % staggerFrames === 0) {
+    frameX = frameX < 6 ? frameX + 1 : 0;
+  }
+  gameFrame++;
+
+  if (frameX < 6) {
+    // Continue animation if not yet complete
+    this.animationFrame = requestAnimationFrame(attack2);
+  } else {
+    // Reset and switch to idle after the attack animation completes
+    frameX = 0;
+    this.isattack = false;
+    cancelAnimationFrame(this.animationFrame); // Optional: in case you need to clear previous frames
+    idle(); // Switch to idle animation
+  }
+};
+
+
+this.toggleAttack = () => {
+  cancelAnimationFrame(this.animationFrame);
+  if (!this.isattack) {
+    this.isattack = true;
+    frameX = 0;
+
+   
+    const randomAttack = Math.floor(Math.random() * 2);
+    if (randomAttack === 0) {
+      attack();
+    } else if (randomAttack === 1) {
+      attack2();
+    } 
+
+   
+  }
+};
     this.toggleHurt = () => {
       cancelAnimationFrame(this.animationFrame);
       frameX = 0;

@@ -5,7 +5,7 @@
     <!-- <button @click="toggleHurtInjured">Hurt (Injured)</button>
         <button @click="toggleHurtSkinDamage">Hurt (Skin Damage)</button>
         <button @click="toggleBuff">Buff</button>
-        <button @click="toggleAttack">attack</button>     -->
+        <button @click="toggleAttack">attack</button>  -->
   </div>
 </template>
 
@@ -64,7 +64,7 @@ export default {
 
       frameY = 5;
       drawPlayer();
-      if (gameFrame % 30 === 0) {
+      if (gameFrame % staggerFrames === 0) {
         frameX = frameX < 4 ? frameX + 1 : 0;
 
         // End buff animation cycle if it reaches the last frame
@@ -152,16 +152,14 @@ this.toggleAttack = () => {
     frameX = 0;
 
    
-   /*  const randomAttack = Math.floor(Math.random() * 3);
+    const randomAttack = Math.floor(Math.random() * 2);
     if (randomAttack === 0) {
-      attack();
-    } else if (randomAttack === 1) {
-      attack2();
-    } else {
       attack3();
-    } */
+    } else if (randomAttack === 1) {
+      attack();
+    } 
 
-    attack3();
+   
   }
 };
 

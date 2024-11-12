@@ -4,7 +4,7 @@
     <v-row>
       <v-col class="d-flex justify-content-center">
         <!-- Control buttons can be uncommented for use -->
-      <!--   <button @click="toggleAttack">{{ isattack ? 'Switch to Idle' : 'Attack' }}</button>
+        <!-- <button @click="toggleAttack">{{ isattack ? 'Switch to Idle' : 'Attack' }}</button>
         <button @click="toggleHurtInjured">Hurt (Injured)</button>
         <button @click="toggleHurtSkinDamage">Hurt (Skin Damage)</button>
         <button @click="toggleBuff">Buff</button>  -->
@@ -70,7 +70,7 @@ export default {
       cancelAnimationFrame(this.animationFrame);
       frameY = 5;
       drawPlayer();
-      if (gameFrame % 30 === 0) {
+      if (gameFrame % staggerFrames === 0) {
         frameX = frameX < 4 ? frameX + 1 : 0;
         if (frameX === 0) {
           this.buffActive = false; // Deactivate buff
@@ -114,14 +114,39 @@ export default {
       }
     };
 
-    this.toggleAttack = () => {
-      cancelAnimationFrame(this.animationFrame);
-      if (!this.isattack) {
-        this.isattack = true;
-        frameX = 0;
-        attack();
-      }
-    };
+    const attack2 = () => {
+  if (!this.isattack) return;
+
+  frameY = 9;
+  drawPlayer();
+  if (gameFrame % staggerFrames === 0) frameX = frameX < 6 ? frameX + 1 : 0;
+  gameFrame++;
+  if (frameX < 6) {
+    this.animationFrame = requestAnimationFrame(attack2);
+  } else {
+    frameX = 0;
+    this.isattack = false;
+    idle();
+  }
+};
+
+this.toggleAttack = () => {
+  cancelAnimationFrame(this.animationFrame);
+  if (!this.isattack) {
+    this.isattack = true;
+    frameX = 0;
+
+   
+    const randomAttack = Math.floor(Math.random() * 2);
+    if (randomAttack === 0) {
+      attack2();
+    } else if (randomAttack === 1) {
+      attack();
+    } 
+
+   
+  }
+};
     this.toggleHurt = () => {
       cancelAnimationFrame(this.animationFrame);
       frameX = 0;

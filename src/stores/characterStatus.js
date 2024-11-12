@@ -1,6 +1,9 @@
 // store/characterStatus.js
 import { defineStore } from "pinia";
 import { supabase } from "../lib/supabase"; // Adjust the import path as necessary
+import { useToast } from "vue-toastification"; // Import toast
+
+const toast = useToast(); // Initialize toast
 
 export const useCharacterStatusStore = defineStore("characterStatus", {
   state: () => ({
@@ -26,10 +29,8 @@ export const useCharacterStatusStore = defineStore("characterStatus", {
 
     // Method to apply effects and update character stats
     async applyEffects(characterId) {
-      // Fetch character data
       const character = await this.fetchCharacter(characterId);
 
-      // Store original stats if not already stored
       if (!this.originalStats[characterId]) {
         this.originalStats[characterId] = {
           defense: character.defense,
@@ -37,25 +38,35 @@ export const useCharacterStatusStore = defineStore("characterStatus", {
         };
       }
 
-      // Reset character stats to original values
       character.defense = this.originalStats[characterId].defense;
       character.agility = this.originalStats[characterId].agility;
 
-      // Calculate cumulative debuff for this turn
       let cumulativeDefDebuff = 0;
       let cumulativeAgilDebuff = 0;
 
-      // Loop through each effect to apply debuffs and decrement turn count
       this.effects.forEach((effect) => {
         if (!this.appliedEffects[effect.id]) {
           if (effect.is_poison) {
-            character.health -= effect.is_poison; // Subtract poison damage
+            character.health -= effect.is_poison;
+            toast.info(
+              `Poison: -${effect.is_poison} HP (Turns left: ${effect.turn_count})`,
+              {
+                position: "top-right",
+                timeout: 5000,
+              }
+            );
           }
           if (effect.is_burn) {
-            character.health -= effect.is_burn; // Subtract burn damage
+            character.health -= effect.is_burn;
+            toast.info(
+              `Burn: -${effect.is_burn} HP (Turns left: ${effect.turn_count})`,
+              {
+                position: "top-right",
+                timeout: 5000,
+              }
+            );
           }
 
-          // Accumulate debuff values only for active effects
           if (effect.is_def_debuff) {
             cumulativeDefDebuff += effect.is_def_debuff;
           }
@@ -63,26 +74,21 @@ export const useCharacterStatusStore = defineStore("characterStatus", {
             cumulativeAgilDebuff += effect.is_agil_debuff;
           }
 
-          // Mark this effect as applied for the current turn
           this.appliedEffects[effect.id] = true;
         }
 
-        // Decrement turn count for each effect and remove expired ones
         effect.turn_count -= 1;
         if (effect.turn_count <= 0) {
-          this.removeEffect(effect); // Remove expired effects
+          this.removeEffect(effect);
         }
       });
 
-      // Apply the cumulative debuffs to character stats
       character.defense -= cumulativeDefDebuff;
       character.agility -= cumulativeAgilDebuff;
 
-      // Update character stats in the database
       await this.updateCharacter(characterId, character);
     },
 
-    // Method to fetch character data from Supabase
     async fetchCharacter(characterId) {
       const { data, error } = await supabase
         .from("characters")
@@ -92,13 +98,11 @@ export const useCharacterStatusStore = defineStore("characterStatus", {
 
       if (error) {
         console.error("Error fetching character:", error);
-        return null; // Return null or handle the error as needed
+        return null;
       }
-
-      return data; // Return character data
+      return data;
     },
 
-    // Method to update character data in Supabase
     async updateCharacter(characterId, character) {
       const { error } = await supabase
         .from("characters")
@@ -114,11 +118,10 @@ export const useCharacterStatusStore = defineStore("characterStatus", {
       }
     },
 
-    // Method to remove an effect from the effects array
     removeEffect(effect) {
       this.effects = this.effects.filter((e) => e !== effect);
       delete this.appliedEffects[effect.id];
-      delete this.effectValues[effect.id]; // Remove effect tracking on removal
+      delete this.effectValues[effect.id];
     },
   },
 });
