@@ -72,6 +72,7 @@
             <player2mirror v-if="selectedCharacter === 2" ref="player_variant1Ref" />
           </div>
         </v-col>
+        <p id="player2">PLayer 2</p>
         <v-col cols="6">
   <p id="taunt-message" style="
     position: fixed; 
@@ -1081,5 +1082,12 @@ if (mana <= 20) {
     max-height: 95vh;
   }
 }
-
+#player2 {
+  position: absolute;
+  left: 40rem;
+  top: 6rem;
+  font-size: 1.2rem;
+  z-index: 99999;
+  color: #151515;
+}
 </style>
