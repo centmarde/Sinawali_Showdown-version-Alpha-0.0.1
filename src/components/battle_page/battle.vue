@@ -61,7 +61,9 @@
 
   <div class="battleground">
     <div class="bg1">
+      <p id="player1" class="text-center">PLayer 1</p>
       <v-row class="fill-height">
+        
         <v-col cols="6">
           <div class="char1">
            
@@ -69,7 +71,7 @@
             <player2mirror v-if="selectedCharacter === 2" ref="player_variant1Ref" />
           </div>
         </v-col>
-        <p id="player1">PLayer 1</p>
+      
         <v-col cols="6">
           <div class="char2">
             <Player2 v-if="selectedCharacter === 1" ref="player2Ref" />
@@ -265,9 +267,7 @@ export default {
 
     // Stop the video after the delay
     videoStore.stopVideo();
-  } else {
-    console.error('No video URL found for the selected card');
-  }
+  } 
         try {
           // Fetch the character's mana
           const { data: EnergyChar, error: errorEnergy } = await supabase
@@ -729,7 +729,7 @@ export default {
 
 .char1,
 .char2 {
-  margin-top: 5rem;
+  margin-top: -1.5rem;
 }
 
 .floating-card-container {
@@ -929,6 +929,14 @@ export default {
   .type{
     right: 8px;
   }
+  #player1 {
+  top: 1rem;
+  font-size: 1.2rem;
+  z-index: 99999;
+ 
+}
+
+  
 }
 
 .video-overlay {
@@ -977,13 +985,14 @@ export default {
   }
 }
 #player1 {
-  position: absolute;
-  left: 40rem;
-  top: 6rem;
-  font-size: 1.2rem;
-  z-index: 99999;
+  margin-top: 70px;
   color: #151515;
+  margin-right: 18px;
 }
 
-
+@media (max-width: 400px) {
+  #player2 {
+  margin-right: 0px;
+}
+}
 </style>

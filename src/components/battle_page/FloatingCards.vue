@@ -264,4 +264,25 @@ const getTitleStyle = (card) => {
     font-size: 12px;
   }
 }
+@media (max-width: 400px) {
+  .card-title {
+    position: absolute;
+    font-size: 10px;
+    margin-top: 14%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+
+  .card-rarity {
+    bottom: 46px;
+    font-size: 12px;
+    font-size: 5px;
+  }
+
+  .card-description {
+    top: 98px;
+    font-size: 5px;
+  }
+}
 </style>
