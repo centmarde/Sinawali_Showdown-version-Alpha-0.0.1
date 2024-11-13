@@ -3,31 +3,7 @@
   <div class="floating-card-container">
     <v-container v-if="showCards">
       <v-row class="d-flex justify-center">
-  <div class="container" id="container">
-    <div
-      v-for="(card, index) in onHandCards"
-      :key="card.id"
-      class="card"
-      tabindex="0"
-      :style="`
-        --i: ${index - Math.floor(onHandCards.length / 2)};
-        background-image: url(${card.img});
-        background-size: cover;
-        background-position: center;
-        background-color: ${
-          card.is_burn ? 'rgba(255, 0, 0, 0.5)' :
-          card.is_poison ? 'rgba(0, 255, 0, 0.5)' : 'transparent'
-        };
-      `"
-      @click="openDialog(card)"
-      :ref="el => setCardGlow(el, card)"
-    >
-      <div id="card_title">{{ card.name }}</div>
-      <div class="type">Type: {{ card.type }}</div>
-      <div class="power">Power: {{ card.power }}</div>
-      <div class="mana">Mana Cost: {{ card.mana_cost }}</div>
-    </div>
-  </div>
+        <FloatingCards :cards="onHandCards" :openDialog="openDialog" />
 </v-row>
       <!-- Separate section for the card with id = 91 -->
       <v-row class="d-flex justify-center" v-if="card91">
@@ -121,6 +97,7 @@
             <player2mirror v-if="selectedCharacter === 2" ref="player_variant1Ref" />
           </div>
         </v-col>
+        <p id="player1">PLayer 1</p>
         <v-col cols="6">
           <div class="char2">
             <Player2 v-if="selectedCharacter === 1" ref="player2Ref" />
@@ -137,6 +114,7 @@
 </template>
 
 <script>
+import FloatingCards from "../battle_page/FloatingCards.vue";
 import Player1 from "../Characters/Player1.vue";
 import Player2 from "../Characters/Player2.vue";
 import player2mirror from "../Characters/player2mirror.vue";
@@ -155,6 +133,7 @@ import { useVideoStore } from '@/stores/videoStore';
 
 export default {
   components: {
+    FloatingCards,
     Player1,
     Player2,
     player2mirror,
@@ -890,10 +869,14 @@ export default {
   font-size: 10px;
 
 }
-
+@media (max-width: 1300px) {
+.battleground{
+  background-image: url("../../assets/background/bg-md.gif");
+}
+}
 @media (max-width: 600px) {
   .skip {
-    top: -15.5rem;
+    top: -17.5rem;
     position: fixed;
     left: 7.2rem;
   }
@@ -1082,4 +1065,13 @@ export default {
     max-height: 95vh;
   }
 }
+#player1 {
+  position: absolute;
+  left: 40rem;
+  top: 6rem;
+  font-size: 1.2rem;
+  z-index: 99999;
+  color: #151515;
+}
 </style>
+

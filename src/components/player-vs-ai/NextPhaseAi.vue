@@ -72,8 +72,9 @@
             <player2mirror v-if="selectedCharacter === 2" ref="player_variant1Ref" />
           </div>
         </v-col>
+        <p id="player2">PLayer 2</p>
         <v-col cols="6">
-  <p style="
+  <p id="taunt-message" style="
     position: fixed; 
     z-index: 9999; 
     top: 35%; 
@@ -897,10 +898,14 @@ if (mana <= 20) {
   font-size: 10px;
 
 }
-
+@media (max-width: 1300px) {
+.battleground{
+  background-image: url("../../assets/background/bg-md.gif");
+}
+}
 @media (max-width: 600px) {
   .skip {
-    top: -15.5rem;
+    top: -17.5rem;
     position: fixed;
     left: 7.2rem;
   }
@@ -1077,5 +1082,12 @@ if (mana <= 20) {
     max-height: 95vh;
   }
 }
-
+#player2 {
+  position: absolute;
+  left: 40rem;
+  top: 6rem;
+  font-size: 1.2rem;
+  z-index: 99999;
+  color: #151515;
+}
 </style>

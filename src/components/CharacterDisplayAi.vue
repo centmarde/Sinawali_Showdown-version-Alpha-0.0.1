@@ -60,7 +60,7 @@
             </v-row>
           </v-card>
         </v-col>
-
+     
         <!-- Character Viewer -->
         <v-col
           cols="12"
@@ -96,74 +96,63 @@
 
             <div>
 
-              <h2 class="text-uppercase text-center">{{ character.name }}</h2>
-              <h6 class="text-center text-medium-emphasis font-weight-regular">
-                {{ character.tagline }}
-              </h6>
-  
-              <div>
-                <small class="text-uppercase font-weight-medium">Energy</small>
-                <v-progress-linear
-                  class="mt-2 mb-4 text-overline font-weight-bold animated-progress"
-                  :model-value="character.mana"
-                  max="100"
-                  color="#ffd82b"
-                  height="14"
-                  rounded
-                  :style="`--progress-shadow-color: rgba(255, 216, 43, ${
-                    character.mana / 100
-                  });`"
-                >
-                </v-progress-linear>
-  
-                <small class="text-uppercase font-weight-medium">Agility</small>
-                <v-progress-linear
-                  class="mt-2 mb-4 text-overline font-weight-bold animated-progress"
-                  :model-value="character.agility"
-                  max="100"
-                  color="#ffd82b"
-                  height="14"
-                  rounded
-                  :style="`--progress-shadow-color: rgba(255, 216, 43, ${
-                    character.agility / 10
-                  });`"
-                >
-                </v-progress-linear>
-  
-                <small class="text-uppercase font-weight-medium">Defense</small>
-                <v-progress-linear
-                  class="mt-2 mb-4 text-overline font-weight-bold animated-progress"
-                  :model-value="character.defense"
-                  max="100"
-                  color="#ffd82b"
-                  height="14"
-                  rounded
-                  :style="`--progress-shadow-color: rgba(255, 216, 43, ${
-                    character.defense / 10
-                  });`"
-                >
-                </v-progress-linear>
-  
-                <small class="text-uppercase font-weight-medium"
-                  >Critical Rate</small
-                >
-                <v-progress-linear
-                  class="mt-2 mb-4 text-overline font-weight-bold animated-progress"
-                  :model-value="parseFloat(character.critical_rate)"
-                  max="100"
-                  color="#ffd82b"
-                  height="14"
-                  rounded
-                  :style="`--progress-shadow-color: rgba(255, 216, 43, ${
-                    character.critical_rate / 10
-                  });`"
-                >
-                </v-progress-linear>
-              </div>
-  
-              <div class="mt-5">
-                <small class="text-caption">{{ character.lore }}</small>
-              </div>
+              <small class="text-uppercase font-weight-medium">Energy</small>
+              <v-progress-linear
+                class="mt-2 mb-4 text-overline font-weight-bold animated-progress"
+                :model-value="character.mana"
+                max="100"
+                color="#ffd82b"
+                height="14"
+                rounded
+                :style="`--progress-shadow-color: rgba(255, 216, 43, ${
+                  character.mana / 100
+                });`"
+              >
+              </v-progress-linear>
+
+              <small class="text-uppercase font-weight-medium">Agility</small>
+              <v-progress-linear
+                class="mt-2 mb-4 text-overline font-weight-bold animated-progress"
+                :model-value="character.agility"
+                max="100"
+                color="#ffd82b"
+                height="14"
+                rounded
+                :style="`--progress-shadow-color: rgba(255, 216, 43, ${
+                  character.agility / 10
+                });`"
+              >
+              </v-progress-linear>
+
+              <small class="text-uppercase font-weight-medium">Defense</small>
+              <v-progress-linear
+                class="mt-2 mb-4 text-overline font-weight-bold animated-progress"
+                :model-value="character.defense"
+                max="100"
+                color="#ffd82b"
+                height="14"
+                rounded
+                :style="`--progress-shadow-color: rgba(255, 216, 43, ${
+                  character.defense / 10
+                });`"
+              >
+              </v-progress-linear>
+
+              <small class="text-uppercase font-weight-medium"
+                >Critical Rate</small
+              >
+              <v-progress-linear
+                class="mt-2 mb-4 text-overline font-weight-bold animated-progress"
+                :model-value="parseFloat(character.critical_rate)"
+                max="100"
+                color="#ffd82b"
+                height="14"
+                rounded
+                :style="`--progress-shadow-color: rgba(255, 216, 43, ${
+                  character.critical_rate / 10
+                });`"
+              >
+              </v-progress-linear>
 
             </div>
 
@@ -202,7 +191,7 @@
       </v-row>
 
       <!-- Navigation button for play and back -->
-      <div class="btn-wrapper text-center">
+      <div class="btn-wrapper d-flex">
         <SecBtn @click="navigateWithSound('/')" />
         <PrimeBtn @click="openDialog" class="ml-4" />
       </div>
@@ -216,7 +205,7 @@
   </div>
 </template>
 
-<script setup>
+<script>
 import { ref, onMounted, onBeforeUnmount, watch } from "vue";
 import { useRouter } from "vue-router";
 import { supabase } from "../lib/supabase";
@@ -224,118 +213,154 @@ import PrimeBtn from "./buttons/PrimBtn.vue";
 import SecBtn from "./buttons/SecBtn.vue";
 import AudioPlayer from "./buttonSounds/buttonAudio.vue";
 import { useToast } from "vue-toastification";
+import { useSpeechStore } from "@/stores/characterSpeech";
 
-// Track the selected character
-const toast = useToast();
-const selectedCharacter = ref(
-  Number(localStorage.getItem("selectedCharacter")) || 1
-); // Ensure it's a number
-const dialog = ref(false);
-const character = ref({});
-const router = useRouter();
-const audioSrc = new URL("@/assets/audio/click.mp3", import.meta.url).href;
-const audioPlayerRef = ref(null);
-const userId = localStorage.getItem("user_id");
+export default {
+  components: {
+    PrimeBtn,
+    SecBtn,
+    AudioPlayer,
+  },
+  setup() {
+    const router = useRouter();
+    const toast = useToast();
+    const speechStore = useSpeechStore();
+    
+    const selectedCharacter = ref(Number(localStorage.getItem("selectedCharacter")) || 1);
+    const dialog = ref(false);
+    const character = ref({});
+    const audioSrc = new URL("@/assets/audio/click.mp3", import.meta.url).href;
+    const audioPlayerRef = ref(null);
+    const userId = localStorage.getItem("user_id");
+    
+    const playAudio = () => {
+      if (audioPlayerRef.value) {
+        audioPlayerRef.value.playAudio();
+      }
+    };
+    
+    const navigateWithSound = (route) => {
+      playAudio();
+      setTimeout(() => {
+        router.push(route);
+      }, 500); // 500 ms delay before navigation
+    };
 
-console.log(userId);
+    const selectCharacter = (characterId) => {
+      selectedCharacter.value = characterId;
 
-const playAudio = () => {
-  if (audioPlayerRef.value) {
-    audioPlayerRef.value.playAudio();
-  }
-};
+      // Ensure speechStore is initialized and methods exist
+      if (speechStore && typeof speechStore.stopAlon === 'function' && typeof speechStore.stopKidlat === 'function') {
+        // Stop Alon audio if character 1 is selected
+        if (characterId === 1) {
+          speechStore.stopAlon();
+          speechStore.playKidlat();
+        }
 
-const navigateWithSound = (route) => {
-  playAudio();
-  setTimeout(() => {
-    router.push(route);
-  }, 500); // 500 ms delay before navigation
-};
+        // Stop Kidlat audio if character 2 is selected
+        if (characterId === 2) {
+          speechStore.stopKidlat();
+          speechStore.playAlon();
+          console.log("speech 2");
+        }
+      } else {
+        console.error("speechStore or its methods are not available");
+      }
+    };
 
-// Function to change character on mouse click
-const selectCharacter = (characterId) => {
-  selectedCharacter.value = characterId;
-};
+    const openDialog = () => {
+      if (audioPlayerRef.value) {
+        audioPlayerRef.value.playAudio();
+      }
+      dialog.value = true;
+    };
 
-// Function to open confirmation dialog
-const openDialog = () => {
-  if (audioPlayerRef.value) {
-    audioPlayerRef.value.playAudio();
-  }
-  dialog.value = true;
-};
+    const confirmChoice = async () => {
+  // Save the selected character to local storage
+  localStorage.setItem("selectedCharacter", selectedCharacter.value);
+  console.log(localStorage.getItem("selectedCharacter"));
 
-// Function to confirm choice and redirect to 'battle_loading'
-// const confirmChoice = async () => {
-//   localStorage.setItem("selectedCharacter", selectedCharacter.value);
-//   console.log(localStorage.getItem("selectedCharacter"));
+  // Retrieve player IDs from local storage
+  const player1Id = localStorage.getItem("player1");
+  const player2Id = localStorage.getItem("player2");
 
-//   // Insert a new battle row into the battles table
+  // Randomly decide the first attacker
+  const firstAttacker = Math.random() < 0.5 ? "Player 1" : "Player 2";
 
-//   // Randomly select which player attacks first
-//   const firstAttacker = Math.random() < 0.5 ? "Player 1" : "Player 2";
+  // Show alert for who attacks first
+  toast(`${firstAttacker} attacks first!`);
 
-//   // Show alert for who attacks first
-//   toast(`${firstAttacker} attacks first!`);
-
-//   // Close the dialog
-//   dialog.value = false;
-
-//   // Navigate based on who attacks first
-//   if (firstAttacker === "Player 1") {
-//     navigateWithSound("/battle_area"); // Navigate to /battle for Player 1
-//   } else {
-//     navigateWithSound("/next_phase"); // Navigate to /nextphase for Player 2
-//   }
-// };
-
-const confirmChoice = async () => {
+  // Close the dialog
   dialog.value = false;
-  toast("Build a set of Cards first!");
 
-  navigateWithSound("/deck_build");
-};
-
-// Function to handle keyboard arrow keys
-const handleKeyDown = (event) => {
-  if (event.key === "ArrowLeft") {
-    selectedCharacter.value = Math.max(1, selectedCharacter.value - 1);
-  } else if (event.key === "ArrowRight") {
-    selectedCharacter.value = Math.min(2, selectedCharacter.value + 1);
-  }
-};
-
-// Fetch character details from Supabase
-const fetchCharacterDetails = async (characterId) => {
-  const { data, error } = await supabase
-    .from("characters")
-
-    .select("*")
-
-    .eq("id", characterId)
-    .single();
-
-  if (error) {
-    console.error("Error fetching character details:", error);
+  // Navigate based on who attacks first
+  if (firstAttacker === "Player 1") {
+    navigateWithSound("/battle_area_ai"); // Navigate to /battle for Player 1
   } else {
-    character.value = data;
+    navigateWithSound("/next_phase_ai"); // Navigate to /nextphase for Player 2
   }
 };
 
-// Watch for changes in selectedCharacter and fetch details
-watch(selectedCharacter, (newCharacterId) => {
-  fetchCharacterDetails(newCharacterId);
-});
+    const handleKeyDown = (event) => {
+      if (event.key === "ArrowLeft") {
+        selectedCharacter.value = Math.max(1, selectedCharacter.value - 1);
+      } else if (event.key === "ArrowRight") {
+        selectedCharacter.value = Math.min(2, selectedCharacter.value + 1);
+      }
+    };
 
-// Mount and cleanup event listeners
-onMounted(() => {
-  window.addEventListener("keydown", handleKeyDown);
-  fetchCharacterDetails(selectedCharacter.value); // Fetch initial character details
-});
-onBeforeUnmount(() => {
-  window.removeEventListener("keydown", handleKeyDown);
-});
+    const fetchCharacterDetails = async (characterId) => {
+      const { data, error } = await supabase
+        .from("characters")
+        .select("*")
+        .eq("id", characterId)
+        .single();
+
+      if (error) {
+        console.error("Error fetching character details:", error);
+      } else {
+        character.value = data;
+      }
+    };
+
+    // Watch for changes to selectedCharacter
+    watch(selectedCharacter, (newCharacterId) => {
+      fetchCharacterDetails(newCharacterId);
+    });
+
+    // Lifecycle hooks
+    onMounted(() => {
+      window.addEventListener("keydown", handleKeyDown);
+      fetchCharacterDetails(selectedCharacter.value); // Fetch initial character details
+    });
+
+    onBeforeUnmount(() => {
+      window.removeEventListener("keydown", handleKeyDown);
+    });
+
+    return {
+      selectedCharacter,
+      dialog,
+      character,
+      audioSrc,
+      audioPlayerRef,
+      userId,
+      playAudio,
+      navigateWithSound,
+      selectCharacter,
+      openDialog,
+      confirmChoice,
+      handleKeyDown,
+      fetchCharacterDetails,
+      playAlon: speechStore.playAlon,
+      playKidlat: speechStore.playKidlat,
+      stopAlon: speechStore.stopAlon,
+      stopKidlat: speechStore.stopKidlat,
+    };
+  },
+};
 </script>
+
 
 <style scoped>
 .display {
@@ -448,15 +473,19 @@ onBeforeUnmount(() => {
 }
 
 @media (max-width: 768px) {
+ 
   .character-viewer {
-    position: absolute;
-    bottom: 60px;
-    background-image: url("./../assets/background/bg2.png");
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
+    position: relative;
+    gap: 0;
+    left: 2.5rem;
+    padding: 0;
+    background-position:50%;
+    width: 100%;
   }
-
+  .display{
+    height: 100%;
+    background-image: url("./../assets/background/small_screen.png");
+  }
   .details {
     position: relative;
     z-index: 1;
@@ -464,9 +493,9 @@ onBeforeUnmount(() => {
   }
 
   .btn-wrapper {
-    position: absolute; /* Change from relative to absolute */
-    bottom: 20px; /* Adjust as needed */
-    left: 50%;
+    position: fixed; /* Change from relative to absolute */
+    bottom: 60rem; /* Adjust as needed */
+    left: 11.3rem;
     transform: translateX(-50%);
     text-align: center;
     z-index: 1000; /* Ensure it stays on top */

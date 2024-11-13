@@ -1,19 +1,12 @@
 <template>
   <health_bar class="hp" />
+  
   <div class="floating-card-container">
+   
     <v-container v-if="showCards">
+      
       <v-row class="d-flex justify-center">
-        <div class="container" id="container">
-          <div v-for="(card, index) in onHandCards" :key="card.id" class="card" tabindex="0"
-            :style="`--i: ${index - Math.floor(onHandCards.length / 2)}; background-image: url(${card.img}); background-size: cover; background-position: center;`"
-            @click="openDialog(card)">
-            <div id="card_title" >{{ card.name }}</div>
-            <div class="type">Type: {{ card.type }}</div>
-            <div class="power">Power: {{ card.power }}</div>
-            <div class="mana">Mana Cost: {{ card.mana_cost }}</div>
-            
-          </div>
-        </div>
+        <FloatingCards :cards="onHandCards" :openDialog="openDialog" />
       </v-row>
 
 
@@ -71,10 +64,12 @@
       <v-row class="fill-height">
         <v-col cols="6">
           <div class="char1">
+           
             <Player1 v-if="selectedCharacter === 1" ref="player1Ref" />
             <player2mirror v-if="selectedCharacter === 2" ref="player_variant1Ref" />
           </div>
         </v-col>
+        <p id="player1">PLayer 1</p>
         <v-col cols="6">
           <div class="char2">
             <Player2 v-if="selectedCharacter === 1" ref="player2Ref" />
@@ -91,6 +86,7 @@
 </template>
 
 <script>
+import FloatingCards from './FloatingCards.vue';
 import Player1 from "../Characters/Player1.vue";
 import Player2 from "../Characters/Player2.vue";
 import player2mirror from "../Characters/player2mirror.vue";
@@ -106,9 +102,9 @@ import { useToast } from "vue-toastification";
 import { useVideoStore } from '@/stores/videoStore';
 
 
-
 export default {
   components: {
+    FloatingCards,
     Player1,
     Player2,
     player2mirror,
@@ -287,26 +283,7 @@ export default {
 
           // Check if character's mana is sufficient
           const currentMana = EnergyChar.mana;
-          if (currentMana <= 0) {
-            toast(`You're out of energy!`, {
-              type: 'error',
-              position: 'top-left',
-              timeout: 3000,
-              closeOnClick: true,
-            });
-
-            toast(`You've missed your chance to make a move!`, {
-              type: 'warning',
-              position: 'top-left',
-              timeout: 3000,
-              closeOnClick: true,
-            });
-
-            setTimeout(() => {
-              router.push({ name: "next_phase" });
-            }, 1000); // 1000 milliseconds = 1 second
-            return;
-          }
+         
 
           // Check if the character has enough mana for the selected card
           if (selectedCard.value.mana_cost > currentMana) {
@@ -554,27 +531,7 @@ export default {
 
         // Check if character's mana is sufficient
         const currentMana = EnergyChar.mana;
-        if (currentMana <= 0) {
-          toast(`You're out of energy!`, {
-            type: 'error',
-            position: 'top-left',
-            timeout: 3000,
-            closeOnClick: true,
-          });
-
-          toast(`You've missed your chance to make a move!`, {
-            type: 'warning',
-            position: 'top-left',
-            timeout: 3000,
-            closeOnClick: true,
-          });
-
-          setTimeout(() => {
-            router.push({ name: "next_phase" });
-          }, 1000); // 1000 milliseconds = 1 second
-          return;
-        }
-
+       
         // Check if the character has enough mana for the selected card
         if (selectedCard.value.mana_cost > currentMana) {
           toast(`Not enough Energy!`, {
@@ -702,9 +659,7 @@ export default {
     };
 
     return {
-
       card91,
-
       showCards,
       cards,
       dialog,
@@ -837,10 +792,14 @@ export default {
   font-size: 10px;
 
 }
-
+@media (max-width: 1300px) {
+.battleground{
+  background-image: url("../../assets/background/bg-md.gif");
+}
+}
 @media (max-width: 600px) {
   .skip {
-    top: -15.5rem;
+    top: -17.5rem;
     position: fixed;
     left: 7.2rem;
   }
@@ -1017,5 +976,14 @@ export default {
     max-height: 95vh;
   }
 }
+#player1 {
+  position: absolute;
+  left: 40rem;
+  top: 6rem;
+  font-size: 1.2rem;
+  z-index: 99999;
+  color: #151515;
+}
+
 
 </style>

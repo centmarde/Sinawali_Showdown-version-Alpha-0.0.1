@@ -3,17 +3,7 @@
   <div class="floating-card-container">
     <v-container v-if="showCards">
       <v-row class="d-flex justify-center">
-        <div class="container" id="container">
-          <div v-for="(card, index) in onHandCards" :key="card.id" class="card" tabindex="0"
-            :style="`--i: ${index - Math.floor(onHandCards.length / 2)}; background-image: url(${card.img}); background-size: cover; background-position: center;`"
-            @click="openDialog(card)">
-            <div id="card_title" >{{ card.name }}</div>
-            <div class="type">Type: {{ card.type }}</div>
-            <div class="power">Power: {{ card.power }}</div>
-            <div class="mana">Mana Cost: {{ card.mana_cost }}</div>
-            
-          </div>
-        </div>
+        <FloatingCards :cards="onHandCards" :openDialog="openDialog" />
       </v-row>
 
       <!-- Separate section for the card with id = 91 -->
@@ -72,6 +62,7 @@
             <player2mirror v-if="selectedCharacter === 2" ref="player_variant1Ref" />
           </div>
         </v-col>
+        <p id="player2">PLayer 2</p>
         <v-col cols="6">
           <div class="char2">
 
@@ -90,6 +81,7 @@
 </template>
 
 <script>
+import FloatingCards from "../battle_page/FloatingCards.vue";
 import Player1 from "../Characters/Player1.vue";
 import Player2 from "../Characters/Player2.vue";
 import player2mirror from "../Characters/player2mirror.vue";
@@ -106,6 +98,7 @@ import { useVideoStore } from '@/stores/videoStore';
 
 export default {
   components: {
+    FloatingCards,
     Player1,
     Player2,
     player2mirror,
@@ -277,26 +270,7 @@ export default {
 
           // Check if character's mana is sufficient
           const currentMana = EnergyChar.mana;
-          if (currentMana <= 0) {
-            toast(`You're out of energy!`, {
-              type: 'error',
-              position: 'top-right',
-              timeout: 3000,
-              closeOnClick: true,
-            });
-
-            toast(`You've missed your chance to make a move!`, {
-              type: 'warning',
-              position: 'top-right',
-              timeout: 3000,
-              closeOnClick: true,
-            });
-
-            setTimeout(() => {
-              router.push({ name: "battle_area" });
-            }, 1000); // 1000 milliseconds = 1 second
-            return;
-          }
+         
 
           // Check if the character has enough mana for the selected card
           if (selectedCard.value.mana_cost > currentMana) {
@@ -524,26 +498,7 @@ export default {
 
         // Check if character's mana is sufficient
         const currentMana = EnergyChar.mana;
-        if (currentMana <= 0) {
-          toast(`You're out of energy!`, {
-            type: 'error',
-            position: 'top-left',
-            timeout: 3000,
-            closeOnClick: true,
-          });
-
-          toast(`You've missed your chance to make a move!`, {
-            type: 'warning',
-            position: 'top-left',
-            timeout: 3000,
-            closeOnClick: true,
-          });
-
-          setTimeout(() => {
-            router.push({ name: "battle_area" });
-          }, 1000); // 1000 milliseconds = 1 second
-          return;
-        }
+       
 
         // Check if the character has enough mana for the selected card
         if (selectedCard.value.mana_cost > currentMana) {
@@ -803,10 +758,14 @@ export default {
   font-size: 10px;
 
 }
-
+@media (max-width: 1300px) {
+.battleground{
+  background-image: url("../../assets/background/bg-md.gif");
+}
+}
 @media (max-width: 600px) {
   .skip {
-    top: -15.5rem;
+    top: -17.5rem;
     position: fixed;
     left: 7.2rem;
   }
@@ -982,6 +941,14 @@ export default {
     max-width: 95vw;
     max-height: 95vh;
   }
+}
+#player2 {
+  position: absolute;
+  left: 40rem;
+  top: 6rem;
+  font-size: 1.2rem;
+  z-index: 99999;
+  color: #151515;
 }
 
 </style>

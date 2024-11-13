@@ -1,5 +1,5 @@
 <template>
-  <div class="main_wrapper bg-yellow-darken-1">
+  <div class="main_wrapper bg-color">
     <div class="main">
       <div class="antenna">
         <div class="antenna_shadow"></div>
@@ -526,5 +526,9 @@ export default {};
 }
 .text_4043 {
   transform: scaleY(24.5) scaleX(9);
+}
+
+.bg-color {
+  background-color: #e6d011;
 }
 </style>
