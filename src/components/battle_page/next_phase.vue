@@ -3,17 +3,7 @@
   <div class="floating-card-container">
     <v-container v-if="showCards">
       <v-row class="d-flex justify-center">
-        <div class="container" id="container">
-          <div v-for="(card, index) in onHandCards" :key="card.id" class="card" tabindex="0"
-            :style="`--i: ${index - Math.floor(onHandCards.length / 2)}; background-image: url(${card.img}); background-size: cover; background-position: center;`"
-            @click="openDialog(card)">
-            <div id="card_title" >{{ card.name }}</div>
-            <div class="type">Type: {{ card.type }}</div>
-            <div class="power">Power: {{ card.power }}</div>
-            <div class="mana">Mana Cost: {{ card.mana_cost }}</div>
-            
-          </div>
-        </div>
+        <FloatingCards :cards="onHandCards" :openDialog="openDialog" />
       </v-row>
 
       <!-- Separate section for the card with id = 91 -->
@@ -90,6 +80,7 @@
 </template>
 
 <script>
+import FloatingCards from "../battle_page/FloatingCards.vue";
 import Player1 from "../Characters/Player1.vue";
 import Player2 from "../Characters/Player2.vue";
 import player2mirror from "../Characters/player2mirror.vue";
@@ -106,6 +97,7 @@ import { useVideoStore } from '@/stores/videoStore';
 
 export default {
   components: {
+    FloatingCards,
     Player1,
     Player2,
     player2mirror,
