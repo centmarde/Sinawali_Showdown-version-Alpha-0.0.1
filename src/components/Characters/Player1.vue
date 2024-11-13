@@ -10,7 +10,7 @@
 </template>
 
 <script>
-import playerImageSrc from '@/assets/anim/man1.png';
+import playerImageSrc from "@/assets/anim/man1.png";
 
 export default {
   data() {
@@ -23,7 +23,7 @@ export default {
   },
   mounted() {
     const canvas = this.$refs.canvas1;
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext("2d");
     const CANVAS_WIDTH = (canvas.width = 600);
     const CANVAS_HEIGHT = (canvas.height = 600);
 
@@ -94,76 +94,73 @@ export default {
         }
       }
       gameFrame++;
-      this.animationFrame = requestAnimationFrame(() => hurtAnimation(animationFrameY));
+      this.animationFrame = requestAnimationFrame(() =>
+        hurtAnimation(animationFrameY)
+      );
     };
 
     const attack = () => {
-  if (!this.isattack) return;
+      if (!this.isattack) return;
 
-  frameY = 2;
-  drawPlayer();
-  if (gameFrame % staggerFrames === 0) frameX = frameX < 7 ? frameX + 1 : 0;
-  gameFrame++;
-  if (frameX < 7) {
-    this.animationFrame = requestAnimationFrame(attack);
-  } else {
-    frameX = 0;
-    this.isattack = false;
-    idle();
-  }
-};
+      frameY = 2;
+      drawPlayer();
+      if (gameFrame % staggerFrames === 0) frameX = frameX < 7 ? frameX + 1 : 0;
+      gameFrame++;
+      if (frameX < 7) {
+        this.animationFrame = requestAnimationFrame(attack);
+      } else {
+        frameX = 0;
+        this.isattack = false;
+        idle();
+      }
+    };
 
-const attack2 = () => {
-  if (!this.isattack) return;
+    const attack2 = () => {
+      if (!this.isattack) return;
 
-  frameY = 3;
-  drawPlayer();
-  if (gameFrame % staggerFrames === 0) frameX = frameX < 6 ? frameX + 1 : 0;
-  gameFrame++;
-  if (frameX < 6) {
-    this.animationFrame = requestAnimationFrame(attack2);
-  } else {
-    frameX = 0;
-    this.isattack = false;
-    idle();
-  }
-};
+      frameY = 3;
+      drawPlayer();
+      if (gameFrame % staggerFrames === 0) frameX = frameX < 6 ? frameX + 1 : 0;
+      gameFrame++;
+      if (frameX < 6) {
+        this.animationFrame = requestAnimationFrame(attack2);
+      } else {
+        frameX = 0;
+        this.isattack = false;
+        idle();
+      }
+    };
 
-const attack3 = () => {
-  if (!this.isattack) return;
+    const attack3 = () => {
+      if (!this.isattack) return;
 
-  frameY = 1; // Assume frameY 4 is the new attack3 animation row
-  drawPlayer();
-  if (gameFrame % staggerFrames === 0) frameX = frameX < 7 ? frameX + 1 : 0; // Example frame count for attack3
-  gameFrame++;
-  if (frameX < 7) {
-    this.animationFrame = requestAnimationFrame(attack3);
-  } else {
-    frameX = 0;
-    this.isattack = false;
-    idle();
-  }
-};
+      frameY = 1; // Assume frameY 4 is the new attack3 animation row
+      drawPlayer();
+      if (gameFrame % staggerFrames === 0) frameX = frameX < 7 ? frameX + 1 : 0; // Example frame count for attack3
+      gameFrame++;
+      if (frameX < 7) {
+        this.animationFrame = requestAnimationFrame(attack3);
+      } else {
+        frameX = 0;
+        this.isattack = false;
+        idle();
+      }
+    };
 
-this.toggleAttack = () => {
-  cancelAnimationFrame(this.animationFrame);
-  if (!this.isattack) {
-    this.isattack = true;
-    frameX = 0;
+    this.toggleAttack = () => {
+      cancelAnimationFrame(this.animationFrame);
+      if (!this.isattack) {
+        this.isattack = true;
+        frameX = 0;
 
-   
-    const randomAttack = Math.floor(Math.random() * 2);
-    if (randomAttack === 0) {
-      attack3();
-    } else if (randomAttack === 1) {
-      attack();
-    } 
-
-   
-  }
-};
-
-
+        const randomAttack = Math.floor(Math.random() * 2);
+        if (randomAttack === 0) {
+          attack3();
+        } else if (randomAttack === 1) {
+          attack();
+        }
+      }
+    };
 
     this.toggleHurt = () => {
       cancelAnimationFrame(this.animationFrame);
@@ -209,7 +206,6 @@ this.toggleAttack = () => {
 }
 
 #canvas {
-  margin-top: 12rem;
   width: 13rem;
   transition: transform 0.5s ease;
 }
@@ -218,11 +214,34 @@ this.toggleAttack = () => {
   transform: translateX(600px);
 }
 
+@media (max-width: 1920px) {
+  .moveLeft {
+    transform: translateX(810px);
+  }
+  #canvas {
+    margin-top: 20rem;
+    width: 20rem;
+  }
+}
+
+@media (max-width: 1366px) {
+  .moveLeft {
+    transform: translateX(600px);
+  }
+  #canvas {
+    margin-top: 12rem;
+    width: 13rem;
+  }
+}
+
 @media (max-width: 1024px) {
   .moveLeft {
     transform: translateX(400px);
   }
- 
+  #canvas {
+    margin-top: 11rem;
+    width: 13rem;
+  }
 }
 
 @media (max-width: 768px) {
