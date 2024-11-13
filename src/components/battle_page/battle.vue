@@ -1,19 +1,12 @@
 <template>
   <health_bar class="hp" />
+  
   <div class="floating-card-container">
+   
     <v-container v-if="showCards">
+      
       <v-row class="d-flex justify-center">
-        <div class="container" id="container">
-          <div v-for="(card, index) in onHandCards" :key="card.id" class="card" tabindex="0"
-            :style="`--i: ${index - Math.floor(onHandCards.length / 2)}; background-image: url(${card.img}); background-size: cover; background-position: center;`"
-            @click="openDialog(card)">
-            <div id="card_title" >{{ card.name }}</div>
-            <div class="type">Type: {{ card.type }}</div>
-            <div class="power">Power: {{ card.power }}</div>
-            <div class="mana">Mana Cost: {{ card.mana_cost }}</div>
-            
-          </div>
-        </div>
+        <FloatingCards :cards="onHandCards" :openDialog="openDialog" />
       </v-row>
 
 
@@ -68,13 +61,17 @@
 
   <div class="battleground">
     <div class="bg1">
+      <p id="player1" class="text-center">PLayer 1</p>
       <v-row class="fill-height">
+        
         <v-col cols="6">
           <div class="char1">
+           
             <Player1 v-if="selectedCharacter === 1" ref="player1Ref" />
             <player2mirror v-if="selectedCharacter === 2" ref="player_variant1Ref" />
           </div>
         </v-col>
+      
         <v-col cols="6">
           <div class="char2">
             <Player2 v-if="selectedCharacter === 1" ref="player2Ref" />
@@ -91,6 +88,7 @@
 </template>
 
 <script>
+import FloatingCards from './FloatingCards.vue';
 import Player1 from "../Characters/Player1.vue";
 import Player2 from "../Characters/Player2.vue";
 import player2mirror from "../Characters/player2mirror.vue";
@@ -106,9 +104,9 @@ import { useToast } from "vue-toastification";
 import { useVideoStore } from '@/stores/videoStore';
 
 
-
 export default {
   components: {
+    FloatingCards,
     Player1,
     Player2,
     player2mirror,
@@ -269,9 +267,7 @@ export default {
 
     // Stop the video after the delay
     videoStore.stopVideo();
-  } else {
-    console.error('No video URL found for the selected card');
-  }
+  } 
         try {
           // Fetch the character's mana
           const { data: EnergyChar, error: errorEnergy } = await supabase
@@ -663,9 +659,7 @@ export default {
     };
 
     return {
-
       card91,
-
       showCards,
       cards,
       dialog,
@@ -735,7 +729,7 @@ export default {
 
 .char1,
 .char2 {
-  margin-top: 5rem;
+  margin-top: -1.5rem;
 }
 
 .floating-card-container {
@@ -935,6 +929,14 @@ export default {
   .type{
     right: 8px;
   }
+  #player1 {
+  top: 1rem;
+  font-size: 1.2rem;
+  z-index: 99999;
+ 
+}
+
+  
 }
 
 .video-overlay {
@@ -982,5 +984,15 @@ export default {
     max-height: 95vh;
   }
 }
+#player1 {
+  margin-top: 70px;
+  color: #151515;
+  margin-right: 18px;
+}
 
+@media (max-width: 400px) {
+  #player2 {
+  margin-right: 0px;
+}
+}
 </style>

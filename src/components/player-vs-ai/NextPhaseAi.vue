@@ -65,6 +65,7 @@
 
   <div class="battleground">
     <div class="bg1">
+      <p id="player2" class="text-center">PLayer 2</p>
       <v-row class="fill-height">
         <v-col cols="6">
           <div class="char1">
@@ -72,6 +73,7 @@
             <player2mirror v-if="selectedCharacter === 2" ref="player_variant1Ref" />
           </div>
         </v-col>
+        
         <v-col cols="6">
   <p id="taunt-message" style="
     position: fixed; 
@@ -836,7 +838,7 @@ if (mana <= 20) {
 
 .char1,
 .char2 {
-  margin-top: 5rem;
+  margin-top: -1.5rem;
 }
 
 .floating-card-container {
@@ -1081,5 +1083,14 @@ if (mana <= 20) {
     max-height: 95vh;
   }
 }
-
+#player2 {
+  margin-top: 70px;
+  color: #151515;
+  margin-right: 18px;
+}
+@media (max-width: 400px) {
+  #player2 {
+  margin-right: 0px;
+}
+}
 </style>

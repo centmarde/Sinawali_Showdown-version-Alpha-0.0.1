@@ -283,7 +283,7 @@ export default {
       const player2Id = localStorage.getItem("player2");
 
       // Decide first attacker based on player IDs (customize this logic as needed)
-      const firstAttacker = player1Id ? "Player 1" : "Player 2"; 
+      const firstAttacker = Math.random() < 0.5 ? "Player 1" : "Player 2";
 
       // Show alert for who attacks first
       toast(`${firstAttacker} attacks first!`);

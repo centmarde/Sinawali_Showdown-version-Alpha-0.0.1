@@ -3,31 +3,7 @@
   <div class="floating-card-container">
     <v-container v-if="showCards">
       <v-row class="d-flex justify-center">
-  <div class="container" id="container">
-    <div
-      v-for="(card, index) in onHandCards"
-      :key="card.id"
-      class="card"
-      tabindex="0"
-      :style="`
-        --i: ${index - Math.floor(onHandCards.length / 2)};
-        background-image: url(${card.img});
-        background-size: cover;
-        background-position: center;
-        background-color: ${
-          card.is_burn ? 'rgba(255, 0, 0, 0.5)' :
-          card.is_poison ? 'rgba(0, 255, 0, 0.5)' : 'transparent'
-        };
-      `"
-      @click="openDialog(card)"
-      :ref="el => setCardGlow(el, card)"
-    >
-      <div id="card_title">{{ card.name }}</div>
-      <div class="type">Type: {{ card.type }}</div>
-      <div class="power">Power: {{ card.power }}</div>
-      <div class="mana">Mana Cost: {{ card.mana_cost }}</div>
-    </div>
-  </div>
+        <FloatingCards :cards="onHandCards" :openDialog="openDialog" />
 </v-row>
       <!-- Separate section for the card with id = 91 -->
       <v-row class="d-flex justify-center" v-if="card91">
@@ -114,6 +90,7 @@
 
   <div class="battleground">
     <div class="bg1">
+      <p id="player1" class="text-center">PLayer 1</p>
       <v-row class="fill-height">
         <v-col cols="6">
           <div class="char1">
@@ -121,6 +98,7 @@
             <player2mirror v-if="selectedCharacter === 2" ref="player_variant1Ref" />
           </div>
         </v-col>
+       
         <v-col cols="6">
           <div class="char2">
             <Player2 v-if="selectedCharacter === 1" ref="player2Ref" />
@@ -137,6 +115,7 @@
 </template>
 
 <script>
+import FloatingCards from "../battle_page/FloatingCards.vue";
 import Player1 from "../Characters/Player1.vue";
 import Player2 from "../Characters/Player2.vue";
 import player2mirror from "../Characters/player2mirror.vue";
@@ -155,6 +134,7 @@ import { useVideoStore } from '@/stores/videoStore';
 
 export default {
   components: {
+    FloatingCards,
     Player1,
     Player2,
     player2mirror,
@@ -328,9 +308,7 @@ export default {
 
           // Stop the video after the delay
           videoStore.stopVideo();
-        } else {
-          console.error('No video URL found for the selected card');
-        }
+        } 
         try {
           // Fetch the character's mana
           const { data: EnergyChar, error: errorEnergy } = await supabase
@@ -827,7 +805,7 @@ export default {
 
 .char1,
 .char2 {
-  margin-top: 5rem;
+  margin-top: -1.5rem;
 }
 
 .floating-card-container {
@@ -1086,6 +1064,15 @@ export default {
     max-height: 95vh;
   }
 }
-
+#player1 {
+  margin-top: 70px;
+  color: #151515;
+  margin-right: 18px;
+}
+@media (max-width: 400px) {
+  #player1 {
+  margin-right: 0px;
+}
+}
 </style>
 
