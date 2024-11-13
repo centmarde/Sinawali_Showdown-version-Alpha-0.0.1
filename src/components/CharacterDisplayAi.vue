@@ -276,30 +276,30 @@ export default {
     };
 
     const confirmChoice = async () => {
-      // Save the selected character to local storage
-      localStorage.setItem("selectedCharacter", selectedCharacter.value);
-      console.log(localStorage.getItem("selectedCharacter"));
+  // Save the selected character to local storage
+  localStorage.setItem("selectedCharacter", selectedCharacter.value);
+  console.log(localStorage.getItem("selectedCharacter"));
 
-      // Retrieve player IDs from local storage
-      const player1Id = localStorage.getItem("player1");
-      const player2Id = localStorage.getItem("player2");
+  // Retrieve player IDs from local storage
+  const player1Id = localStorage.getItem("player1");
+  const player2Id = localStorage.getItem("player2");
 
-      // Decide first attacker based on player IDs (customize this logic as needed)
-      const firstAttacker = player1Id ? "Player 1" : "Player 2"; 
+  // Randomly decide the first attacker
+  const firstAttacker = Math.random() < 0.5 ? "Player 1" : "Player 2";
 
-      // Show alert for who attacks first
-      toast(`${firstAttacker} attacks first!`);
+  // Show alert for who attacks first
+  toast(`${firstAttacker} attacks first!`);
 
-      // Close the dialog
-      dialog.value = false;
+  // Close the dialog
+  dialog.value = false;
 
-      // Navigate based on who attacks first
-      if (firstAttacker === "Player 1") {
-        navigateWithSound("/battle_area_ai"); // Navigate to /battle for Player 1
-      } else {
-        navigateWithSound("/next_phase_ai"); // Navigate to /nextphase for Player 2
-      }
-    };
+  // Navigate based on who attacks first
+  if (firstAttacker === "Player 1") {
+    navigateWithSound("/battle_area_ai"); // Navigate to /battle for Player 1
+  } else {
+    navigateWithSound("/next_phase_ai"); // Navigate to /nextphase for Player 2
+  }
+};
 
     const handleKeyDown = (event) => {
       if (event.key === "ArrowLeft") {

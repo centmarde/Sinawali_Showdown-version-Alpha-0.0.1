@@ -121,6 +121,7 @@
             <player2mirror v-if="selectedCharacter === 2" ref="player_variant1Ref" />
           </div>
         </v-col>
+        <p id="player1">PLayer 1</p>
         <v-col cols="6">
           <div class="char2">
             <Player2 v-if="selectedCharacter === 1" ref="player2Ref" />
@@ -1086,6 +1087,13 @@ export default {
     max-height: 95vh;
   }
 }
-
+#player1 {
+  position: absolute;
+  left: 40rem;
+  top: 6rem;
+  font-size: 1.2rem;
+  z-index: 99999;
+  color: #151515;
+}
 </style>
 
