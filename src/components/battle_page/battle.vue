@@ -102,7 +102,7 @@ import { useCharacterStatusStore } from "../../stores/characterStatus";
 import { useAudioStore } from '@/stores/audioStore';
 import { useToast } from "vue-toastification";
 import { useVideoStore } from '@/stores/videoStore';
-
+import { useAudioEffectsStore } from "@/stores/audioEffects";
 
 export default {
   components: {
@@ -115,12 +115,13 @@ export default {
   setup() {
     const toast = useToast();
     const characterStatusStore = useCharacterStatusStore();
+    const audioEffectsStore = useAudioEffectsStore();
     const audioStore = useAudioStore();
     const videoStore = useVideoStore();
     const showCards = ref(true);
     const cardStore = useCardStore1();
     const { onHandCards, addCard, removeCardAndAddNew } = cardStore;
-
+    const handlePlay = ref(false);
     const selectedCharacter = ref(
       Number(localStorage.getItem("selectedCharacter"))
     );
@@ -257,17 +258,21 @@ export default {
   }
 
   if (dataVideo && dataVideo.video_src) {
-    const videoUrl = dataVideo.video_src;
+        const videoUrl = dataVideo.video_src;
 
-    // Play the video preview before the attack animation
-    videoStore.playVideo(videoUrl);
+        // Play the video preview before the attack animation
+        videoStore.playVideo(videoUrl);
 
-    // Wait for the video to finish (e.g., 5 seconds), then proceed
-    await new Promise(resolve => setTimeout(resolve, 5000));
+        // Play a random sound effect while the video is playing
+        audioEffectsStore.playRandomEffect();
 
-    // Stop the video after the delay
-    videoStore.stopVideo();
-  } 
+        // Wait for the video to finish (e.g., 5 seconds), then proceed
+        await new Promise(resolve => setTimeout(resolve, 5000));
+
+        // Stop the video and any playing sound effect after the delay
+        videoStore.stopVideo();
+        audioEffectsStore.stopEffect();
+      }
         try {
           // Fetch the character's mana
           const { data: EnergyChar, error: errorEnergy } = await supabase
@@ -651,7 +656,10 @@ export default {
         }
       }
 
-
+      async function handlePlay() {
+      const dataVideo = { video_src: "path_to_your_video.mp4" }; // Replace with your video source data
+      await playVideoWithEffect(dataVideo);
+    }
       // Always navigate to the next phase
       closeDialog();
       await new Promise((resolve) => setTimeout(resolve, 200));
@@ -682,6 +690,7 @@ export default {
       filteredOnHandCards,
       audioStore,
       videoStore,
+      handlePlay,
 
     };
 
