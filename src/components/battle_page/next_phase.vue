@@ -96,6 +96,8 @@ import { useCharacterStatusStore2 } from "../../stores/characterStatus2";
 import { useAudioStore } from '@/stores/audioStore';
 import { useToast } from "vue-toastification";
 import { useVideoStore } from '@/stores/videoStore';
+import { useAudioEffectsStore } from "@/stores/audioEffects";
+
 
 export default {
   components: {
@@ -107,7 +109,10 @@ export default {
   },
   setup() {
     const characterStatusStore2 = useCharacterStatusStore2();
+    const audioEffectsStore = useAudioEffectsStore();
+
     const toast = useToast();
+    const handlePlay = ref(false);
     const videoStore = useVideoStore();
     const showCards = ref(true);
     const cardStore = useCardStore2();
@@ -243,17 +248,21 @@ export default {
   }
 
   if (dataVideo && dataVideo.video_src) {
-    const videoUrl = dataVideo.video_src;
+        const videoUrl = dataVideo.video_src;
 
-    // Play the video preview before the attack animation
-    videoStore.playVideo(videoUrl);
+        // Play the video preview before the attack animation
+        videoStore.playVideo(videoUrl);
 
-    // Wait for the video to finish (e.g., 5 seconds), then proceed
-    await new Promise(resolve => setTimeout(resolve, 5000));
+        // Play a random sound effect while the video is playing
+        audioEffectsStore.playRandomEffect();
 
-    // Stop the video after the delay
-    videoStore.stopVideo();
-  } 
+        // Wait for the video to finish (e.g., 5 seconds), then proceed
+        await new Promise(resolve => setTimeout(resolve, 5000));
+
+        // Stop the video and any playing sound effect after the delay
+        videoStore.stopVideo();
+        audioEffectsStore.stopEffect();
+      }
         try {
           // Fetch the character's mana
           const { data: EnergyChar, error: errorEnergy } = await supabase
@@ -623,7 +632,10 @@ export default {
 
         }
       }
-
+      async function handlePlay() {
+      const dataVideo = { video_src: "path_to_your_video.mp4" }; // Replace with your video source data
+      await playVideoWithEffect(dataVideo);
+    }
       closeDialog();
       await new Promise((resolve) => setTimeout(resolve, 200));
       router.push({ name: "battle_area" });
@@ -653,7 +665,7 @@ export default {
       filteredOnHandCards,
       audioStore,
       videoStore,
-
+      handlePlay,
     };
   }, methods: {
     setActiveCard(index) {
