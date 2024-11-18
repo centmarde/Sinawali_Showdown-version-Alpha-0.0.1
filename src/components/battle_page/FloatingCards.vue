@@ -11,6 +11,7 @@
         card.img
       }); background-size: cover; background-position: center;`"
       @click="() => openDialog(card)"
+      @mouseenter="() => handleCardHover(card.id)"
     >
       <div class="card-title balsamiq-sans-bold" :style="getTitleStyle(card)">
         <svg width="200" height="50">
@@ -54,7 +55,12 @@
   </div>
 </template>
 
+
 <script setup>
+import { useAudioStore } from "@/stores/audioStore";
+
+const audioStore = useAudioStore();
+
 const props = defineProps({
   cards: {
     type: Array,
@@ -130,7 +136,12 @@ const getTitleStyle = (card) => {
   }
   return { top: topValue };
 };
+
+const handleCardHover = (cardId) => {
+  audioStore.playCardSound(); 
+};
 </script>
+
 
 <style scoped>
 @import url("https://fonts.googleapis.com/css2?family=Balsamiq+Sans:ital,wght@0,400;0,700;1,400;1,700&family=Rock+Salt&display=swap");

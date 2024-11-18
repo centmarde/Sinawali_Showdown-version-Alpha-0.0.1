@@ -180,7 +180,7 @@ export default {
 
 
 onMounted(() => {
-  tauntStore.getTauntMessage();
+ tauntStore.getTauntMessage(); 
 });
     onMounted(() => {
       audioStore.playAudio();
