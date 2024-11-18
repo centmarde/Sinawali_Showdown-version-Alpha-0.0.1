@@ -31,8 +31,8 @@
       </v-col>
       <v-col cols="2" lg="2">
         <!-- Conditionally render Timer component based on route -->
-        <Timer v-if="isStandardBattleRoute" />
-        <TimerAi v-else-if="isAiBattleRoute" />
+        <!-- <Timer v-if="isStandardBattleRoute" />
+        <TimerAi v-else-if="isAiBattleRoute" /> -->
       </v-col>
       <!-- Player 2 Health Bar -->
       <v-col cols="5">

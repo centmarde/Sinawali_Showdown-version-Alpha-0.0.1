@@ -20,6 +20,7 @@ export const useAudioEffectsStore = defineStore("audioEffects", () => {
 
   // Play the background audio
   function onPlayBattle() {
+    battleAudio.currentTime = 0; // Reset playback to the start
     battleAudio.play();
     isPlaying.value.battle = true;
   }
@@ -39,7 +40,8 @@ export const useAudioEffectsStore = defineStore("audioEffects", () => {
     const randomIndex = Math.floor(Math.random() * effects.length);
     const randomEffect = effects[randomIndex];
 
-    // Play the selected effect
+    // Reset playback to the start and play the selected effect
+    randomEffect.currentTime = 0;
     randomEffect.play();
     isPlaying.value.effect = true;
 
@@ -51,7 +53,10 @@ export const useAudioEffectsStore = defineStore("audioEffects", () => {
 
   // Stop any playing effect
   function stopEffect() {
-    effects.forEach((effect) => effect.pause());
+    effects.forEach((effect) => {
+      effect.pause();
+      effect.currentTime = 0; // Reset playback to the start
+    });
     isPlaying.value.effect = false;
   }
 
