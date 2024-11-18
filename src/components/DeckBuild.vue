@@ -61,8 +61,8 @@
         md="6"
       >
         <v-card class="pa-2">
-          <v-img :src="card.image_url" :alt="card.name"></v-img>
-          <v-card-title>{{ card.name }}</v-card-title>
+          <v-img :src="card.img" :alt="card.name"> <v-card-title>{{ card.name }}</v-card-title></v-img>
+         
           <v-btn icon @click="removeCard(index)">
             <v-icon>mdi-delete</v-icon>
           </v-btn>
@@ -120,13 +120,28 @@ export default {
 
     // Fetch cards from the Supabase `cards` table
     onMounted(async () => {
-      const { data, error } = await supabase.from("cards").select("*");
-      if (error) {
-        console.error("Error fetching cards:", error);
-      } else {
-        cards.value = data;
-      }
-    });
+  const { data, error } = await supabase
+    .from("cards")
+    .select("*")
+    .neq("id", 91); // Fetch data without randomizing in the query
+
+  if (error) {
+    console.error("Error fetching cards:", error);
+  } else if (data) {
+    // Shuffle the data using Fisher-Yates Shuffle
+    cards.value = shuffleArray(data);
+  }
+});
+
+// Fisher-Yates Shuffle Function
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]]; // Swap elements
+  }
+  return array;
+}
+
 
     // Handle card selection manually
     const selectCard = (card) => {
