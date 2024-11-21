@@ -512,24 +512,20 @@ export default {
 
 
 
-        // Ensure critical_rate does not exceed 100%
-const effectiveCriticalRate = Math.min(critical_rate, 100);
+       
+        const isCriticalHit = Math.random() * 100 < critical_rate;
+        const finalDamage = isCriticalHit
+          ? damageAfterDefense * 2
+          : damageAfterDefense;
 
-// Check if the attack is a critical hit based on the effective critical_rate
-const isCriticalHit = Math.random() * 100 < effectiveCriticalRate;
+        if (isCriticalHit) {
+          showMessage(`Critical Hit! You dealt ${finalDamage} damage!`);
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+        } else {
 
-// Final damage calculation
-const finalDamage = isCriticalHit
-  ? damageAfterDefense * 2  // Double damage on a critical hit
-  : damageAfterDefense;
-
-// Show message for the damage dealt
-if (isCriticalHit) {
-  showMessage(`Critical Hit! You dealt ${finalDamage} damage!`);
-} else {
-  showMessage(`You dealt ${finalDamage} damage.`);
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-}
+          showMessage(`You dealt ${finalDamage} damage.`);
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+        }
 
         closeDialog();
         // Wait before moving to the next phase

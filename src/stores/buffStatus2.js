@@ -4,7 +4,7 @@ import { useToast } from "vue-toastification"; // Import toast
 
 const toast = useToast(); // Initialize toast
 
-export const usebuffStatusStore = defineStore("buffStatus", {
+export const usebuffStatusStore2 = defineStore("buffStatus2", {
   state: () => ({
     effects: [], // Array to hold active effects (buffs only)
     appliedEffects: {}, // Object to track applied effects per turn

@@ -103,6 +103,7 @@ import { useAudioStore } from '@/stores/audioStore';
 import { useToast } from "vue-toastification";
 import { useVideoStore } from '@/stores/videoStore';
 import { useAudioEffectsStore } from "@/stores/audioEffects";
+import { usebuffStatusStore } from "@/stores/buffStatus";
 
 export default {
   components: {
@@ -115,6 +116,7 @@ export default {
   setup() {
     const toast = useToast();
     const characterStatusStore = useCharacterStatusStore();
+    const buffStatusStore = usebuffStatusStore();
     const audioEffectsStore = useAudioEffectsStore();
     const audioStore = useAudioStore();
     const videoStore = useVideoStore();
@@ -475,6 +477,7 @@ export default {
         // Show message for the damage dealt
         if (isCriticalHit) {
           showMessage(`Critical Hit! You dealt ${finalDamage} damage!`);
+          await new Promise((resolve) => setTimeout(resolve, 1000));
         } else {
 
           showMessage(`You dealt ${finalDamage} damage.`);
@@ -501,13 +504,13 @@ export default {
       }
 
       if (selectedCard.value && selectedCard.value.type === "buff") {
-        const { data: EnergyChar, error: errorEnergy } = await supabase
+        const { data: EnergyChar1, error: errorEnergy } = await supabase
           .from("characters")
           .select("mana")
           .eq("id", selectedCharacter.value)
           .single();
-          console.log(selectedCharacter.value);
-          console.log(revertedCharacter.value);
+        console.log(selectedCharacter.value); //caster
+        console.log(revertedCharacter.value); //enemy
         if (errorEnergy) {
           console.error("Error fetching character mana details:", errorEnergy);
           return;
@@ -515,16 +518,16 @@ export default {
 
         // Assuming card91 is the card being used and has an is_mana property
         if (card91.value && card91.value.is_mana) {
-         
+
           // Calculate the new mana value
-          const newMana = EnergyChar.mana + card91.value.is_mana;
-         
+          const newMana = EnergyChar1.mana + card91.value.is_mana;
+
           // Update the character's mana in the database
           const { data: updateData, error: updateError } = await supabase
             .from("characters")
             .update({ mana: newMana })
             .eq("id", selectedCharacter.value);
-            
+
           if (updateError) {
             console.error("Error updating character mana:", updateError);
             return;
@@ -535,8 +538,9 @@ export default {
 
 
         // Check if character's mana is sufficient
-        const currentMana = EnergyChar.mana;
-       
+        const currentMana = EnergyChar1.mana;
+
+
         // Check if the character has enough mana for the selected card
         if (selectedCard.value.mana_cost > currentMana) {
           toast(`Not enough Energy!`, {
@@ -573,7 +577,7 @@ export default {
           if (errorEnergyMinus) {
             console.error("Error updating character mana:", errorEnergyMinus);
           }
-        } 
+        }
 
 
         // Check if a character has won the battle
@@ -611,42 +615,34 @@ export default {
         if (dataChar && dataChar.length > 0) {
           // Convert the first result row into an array
           const cardEffectsArray = [
-            dataChar[0].is_poison,
-            dataChar[0].is_burn,
-            dataChar[0].is_def_debuff,
-            dataChar[0].is_agil_debuff,
-            dataChar[0].turn_count,
-            dataChar[0].is_stunned,
+        
             dataChar[0].is_def_amp,
             dataChar[0].is_agil_amp,
             dataChar[0].is_crit_amp,
           ];
 
           // Add effects to the character status store
-          const characterStatusStore = useCharacterStatusStore();
-          characterStatusStore.addEffect({
-            is_poison: cardEffectsArray[0],
-            is_burn: cardEffectsArray[1],
-            is_def_debuff: cardEffectsArray[2],
-            is_agil_debuff: cardEffectsArray[3],
-            turn_count: cardEffectsArray[4],
-            is_stunned: cardEffectsArray[5],
-            is_def_amp: cardEffectsArray[6],
-            is_agil_amp: cardEffectsArray[7],
-            is_crit_amp: cardEffectsArray[8],
+          const buffStatus = usebuffStatusStore();
+         buffStatus.addEffect({
+        
+            is_def_amp: cardEffectsArray[0],
+            is_agil_amp: cardEffectsArray[1],
+            is_crit_amp: cardEffectsArray[2],
+           
           });
 
           // Constant character ID
-          const characterId = revertedCharacter.value;
+          const characterId = selectedCharacter.value;
 
           // Function to process game turn for the character
           async function gameTurn() {
-            await characterStatusStore.applyEffects(characterId);
+            await buffStatus.applyEffects(characterId);
 
             // Log the updated character stats
-            const updatedCharacter = await characterStatusStore.fetchCharacter(characterId);
+            const updatedCharacter = await buffStatus.fetchCharacter(characterId);
+            buffStatus.decrementTurnCounts();
           }
-
+         
           // Call gameTurn
           await gameTurn();
 
@@ -655,6 +651,7 @@ export default {
           store.setCardEffects(cardEffectsArray);
         }
       }
+
 
       async function handlePlay() {
       const dataVideo = { video_src: "path_to_your_video.mp4" }; // Replace with your video source data
