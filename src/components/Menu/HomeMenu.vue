@@ -1,7 +1,7 @@
 <template>
   <div id="ygar" @keydown="handleKeydown" tabindex="0">
     <v-container fluid class="centered-container">
-      <v-row justify="center">
+      <v-row justify="center mt-4">
         <v-col cols="auto"></v-col>
         <v-col
           cols="12"
@@ -14,35 +14,43 @@
         </v-col>
         <v-col cols="auto"></v-col>
       </v-row>
-      <v-row justify="center">
+      <v-row justify="center m-0 p-0">
         <v-col cols="auto"></v-col>
         <v-col
           cols="12"
           lg="4"
           md="4"
           sm="6"
-          class="d-flex justify-center align-center py-0 px-3"
+          class="d-flex justify-center align-center"
         >
           <!-- MENU  -->
-          <v-card class="bg-card mx-6" elevation="24" style="width: 100%">
-            <v-card-actions class="d-flex flex-column">
-              <v-btn
-                :class="{ 'selected-menu': selectedMenu === 0 }"
-                @click="handleNavigation('/select_character_ai')"
-                class="font-weight-bold my-1"
-                block
-              >
-                Player vs. Computer
-              </v-btn>
-              <v-btn
-                :class="{ 'selected-menu': selectedMenu === 1 }"
-                @click="handleNavigation('/select_character')"
-                class="font-weight-bold my-1"
-                block
-              >
-                Local Competitive
-              </v-btn>
-              <!--  <v-btn
+          <v-card variant="text" class="text-center">
+            <v-img
+              class="align-center"
+              height="300"
+              width="400"
+              src="../../assets/background/main-menu.png"
+              cover
+            >
+              <div class="pa-8">
+                <v-card-actions class="d-flex flex-column pa-16">
+                  <v-btn
+                    :class="{ 'selected-menu': selectedMenu === 0 }"
+                    @click="handleNavigation('/select_character_ai')"
+                    class="font-weight-bold menu-text"
+                    block
+                  >
+                    Player vs. Computer
+                  </v-btn>
+                  <v-btn
+                    :class="{ 'selected-menu': selectedMenu === 1 }"
+                    @click="handleNavigation('/select_character')"
+                    class="font-weight-bold menu-text"
+                    block
+                  >
+                    Local Competitive
+                  </v-btn>
+                  <!--  <v-btn
                 :class="{ 'selected-menu': selectedMenu === 2 }"
                 @click="handleNavigation('/multiplayer')"
                 class="font-weight-bold"
@@ -50,15 +58,15 @@
               >
                 Online
               </v-btn> -->
-              <v-btn
-                :class="{ 'selected-menu': selectedMenu === 2 }"
-                @click="handleNavigation('/cards')"
-                class="font-weight-bold my-1"
-                block
-              >
-                Cards
-              </v-btn>
-              <!-- <v-btn
+                  <v-btn
+                    :class="{ 'selected-menu': selectedMenu === 2 }"
+                    @click="handleNavigation('/cards')"
+                    class="font-weight-bold menu-text"
+                    block
+                  >
+                    Cards
+                  </v-btn>
+                  <!-- <v-btn
                 :class="{ 'selected-menu': selectedMenu === 4 }"
                 @click="doLogout()"
                 class="font-weight-bold"
@@ -66,7 +74,9 @@
               >
                 Logout
               </v-btn> -->
-            </v-card-actions>
+                </v-card-actions>
+              </div>
+            </v-img>
           </v-card>
         </v-col>
         <v-col cols="auto"></v-col>
@@ -187,12 +197,16 @@ const handleKeydown = (event) => {
   text-decoration: none;
 }
 
+.menu-text {
+  color: #6f3433;
+}
+
 .custom-card {
   background-color: rgba(0, 0, 0, 0.591);
 }
 
 .selected-menu {
-  background-color: rgba(255, 255, 255, 0.2);
+  background-color: #6f34332b;
 }
 
 .centered-container {
@@ -201,14 +215,5 @@ const handleKeydown = (event) => {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-}
-
-.bg-card {
-  background-color: rgba(0, 0, 0, 0.591);
-
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(3px);
-  -webkit-backdrop-filter: blur(3.4px);
-  border: 1px solid rgba(0, 0, 0, 0.06);
 }
 </style>
