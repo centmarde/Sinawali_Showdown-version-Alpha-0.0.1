@@ -32,13 +32,13 @@
               src="../../assets/background/main-menu.png"
               cover
             >
-              <div class="pa-8">
-                <v-card-actions class="d-flex flex-column pa-16">
+              <div class="">
+                <v-card-actions class="d-flex flex-column">
                   <v-btn
                     :class="{ 'selected-menu': selectedMenu === 0 }"
                     @click="handleNavigation('/select_character_ai')"
                     class="font-weight-bold menu-text"
-                    block
+                    width="200"
                   >
                     Player vs. Computer
                   </v-btn>
@@ -46,7 +46,7 @@
                     :class="{ 'selected-menu': selectedMenu === 1 }"
                     @click="handleNavigation('/select_character')"
                     class="font-weight-bold menu-text"
-                    block
+                    width="200"
                   >
                     Local Competitive
                   </v-btn>
@@ -54,7 +54,7 @@
                 :class="{ 'selected-menu': selectedMenu === 2 }"
                 @click="handleNavigation('/multiplayer')"
                 class="font-weight-bold"
-                block
+
               >
                 Online
               </v-btn> -->
@@ -62,7 +62,7 @@
                     :class="{ 'selected-menu': selectedMenu === 2 }"
                     @click="handleNavigation('/cards')"
                     class="font-weight-bold menu-text"
-                    block
+                    width="200"
                   >
                     Cards
                   </v-btn>
@@ -70,7 +70,7 @@
                 :class="{ 'selected-menu': selectedMenu === 4 }"
                 @click="doLogout()"
                 class="font-weight-bold"
-                block
+
               >
                 Logout
               </v-btn> -->
