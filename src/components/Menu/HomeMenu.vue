@@ -136,7 +136,7 @@ const resetCharacters = async () => {
       mana: 100,
       agility: 10,
       defense: 0,
-      critical_rate: 50,
+      critical_rate: 30,
     })
     .eq("id", 1);
 
@@ -150,7 +150,7 @@ const resetCharacters = async () => {
     .update({
       health: 100,
       mana: 100,
-      agility: 50,
+      agility: 30,
       defense: 0,
       critical_rate: 10,
     })
