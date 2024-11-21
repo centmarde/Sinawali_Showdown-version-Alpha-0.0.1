@@ -154,7 +154,7 @@ export default {
     const handlePlay = ref(false);
     const toast = useToast();
     const videoStore = useVideoStore();
-    const showCards = ref(true);
+    const showCards = ref(false);
     const cardStore = useCardStore2();
     const { onHandCards, addCard, removeCardAndAddNew } = cardStore;
     const audioStore = useAudioStore();
@@ -208,7 +208,7 @@ export default {
 
         const { mana } = character;
         // Check if mana is 20 or less to auto-select card with ID 91
-        if (mana <= 20) {
+        if (mana <= 50) {
           // Fetch the card with ID 91
           const { data: cardData, error: cardError } = await supabase
             .from("cards")

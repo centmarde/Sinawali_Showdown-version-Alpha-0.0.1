@@ -558,7 +558,7 @@ export default {
           });
 
           setTimeout(() => {
-            router.push({ name: "next_phase_ai" });
+            router.push({ name: "next_phase" });
           }, 1000); // 1000 milliseconds = 1 second
           return;
         }

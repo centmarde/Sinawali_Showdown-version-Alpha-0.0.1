@@ -529,7 +529,7 @@ export default {
 
         closeDialog();
         // Wait before moving to the next phase
-        router.push({ name: "next_phase" });
+        router.push({ name: "next_phase_ai" });
 
         // Subtract final damage from target's health
         const newHealth = Math.max(0, health - finalDamage);

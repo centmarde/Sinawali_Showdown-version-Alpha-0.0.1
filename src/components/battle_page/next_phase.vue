@@ -525,7 +525,7 @@ export default {
           });
 
           setTimeout(() => {
-            router.push({ name: "battle_area_ai" });
+            router.push({ name: "battle_area" });
           }, 1000); // 1000 milliseconds = 1 second
           return;
         }
