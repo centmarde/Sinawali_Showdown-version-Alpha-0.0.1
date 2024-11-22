@@ -50,14 +50,14 @@
                   >
                     Local Competitive
                   </v-btn>
-                  <!--  <v-btn
+                   <v-btn
                 :class="{ 'selected-menu': selectedMenu === 2 }"
-                @click="handleNavigation('/multiplayer')"
-                class="font-weight-bold"
+                @click="handleNavigation('/story')"
+                class="font-weight-bold menu-text"
 
               >
-                Online
-              </v-btn> -->
+                Adventure
+              </v-btn>
                   <v-btn
                     :class="{ 'selected-menu': selectedMenu === 2 }"
                     @click="handleNavigation('/cards')"
