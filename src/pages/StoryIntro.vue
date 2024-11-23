@@ -37,6 +37,7 @@ import StoryDialog from "@/components/StoryMode/StoryDialog.vue";
 import Introduction from "@/components/StoryMode/Introduction.vue";
 import { supabase } from "@/lib/supabase";
 import { useRouter } from 'vue-router';  // Import useRouter
+import router from "@/router";
 
 export default {
   name: "StoryBase",
@@ -82,7 +83,8 @@ export default {
     // Method to close the dialog and navigate to /story_base
     closeDialog() {
       this.dialogVisibleIntro = false;  // Close the dialog
-      window.location.href = '/story_base';
+      /* window.location.href = '/story_base'; */
+      this.$router.push('/story_base');
     },
   },
 };

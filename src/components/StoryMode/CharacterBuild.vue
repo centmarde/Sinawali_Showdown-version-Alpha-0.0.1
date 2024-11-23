@@ -287,13 +287,15 @@ export default {
                 // Insert into characters table
                 const characterData = {
                     name: characterName, // Use the name generated from Groq
-                    health: (this.traitValues.Constitution / 100) * 100, // Adjust calculation as needed
-                    mana: (this.traitValues.Intelligence / 100) * 100,
-                    agility: (this.traitValues.Dexterity / 100) * 50,
-                    critical_rate: (this.traitValues.Wisdom / 100) * 50,
+                    health: Math.round((this.traitValues.Constitution / 100) * 100), // Ensure integer
+                    mana: Math.round((this.traitValues.Intelligence / 100) * 100),
+                    agility: Math.round((this.traitValues.Dexterity / 100) * 50),
+                    critical_rate: Math.round((this.traitValues.Strength / 100) * 50),
+                    wisdom: this.traitValues.Wisdom,
                     adventure_id: adventureData[0].id,
                     user_id: userId,
                 };
+
 
                 const { data: characterDataRes, error: characterError } = await supabase
                     .from('characters')

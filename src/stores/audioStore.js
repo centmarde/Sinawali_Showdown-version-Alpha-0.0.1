@@ -25,7 +25,7 @@ export const useAudioStore = defineStore("audio", () => {
       adalPlayer.value = new Audio(adal);
       adalPlayer.value.loop = true;
       adalPlayer.value.volume = 0.5;
-      adalPlayer.value.play().catch((error) => {});
+      adalPlayer.value.play().catch(() => {}); // Suppress error
     }
 
     if (!cardPlayer.value) {
@@ -36,7 +36,7 @@ export const useAudioStore = defineStore("audio", () => {
 
   const playAudio = () => {
     if (audioPlayer.value) {
-      audioPlayer.value.play();
+      audioPlayer.value.play().catch(() => {}); // Suppress error
     }
   };
 
@@ -49,7 +49,7 @@ export const useAudioStore = defineStore("audio", () => {
 
   const playAdal = () => {
     if (adalPlayer.value) {
-      adalPlayer.value.play();
+      adalPlayer.value.play().catch(() => {}); // Suppress error
     }
   };
 
@@ -58,7 +58,7 @@ export const useAudioStore = defineStore("audio", () => {
       punchSounds[Math.floor(Math.random() * punchSounds.length)];
     punchPlayer.value = new Audio(randomPunch);
     punchPlayer.value.volume = 0.7;
-    punchPlayer.value.play();
+    punchPlayer.value.play().catch(() => {}); // Suppress error
   };
 
   const pausePunch = () => {
@@ -73,7 +73,7 @@ export const useAudioStore = defineStore("audio", () => {
       cardPlayer.value.pause(); // Stop any ongoing playback
       cardPlayer.value.currentTime = 0; // Reset to the start
       cardPlayer.value.volume = 1.0; // Ensure maximum volume
-      cardPlayer.value.play();
+      cardPlayer.value.play().catch(() => {}); // Suppress error
     }
   };
 
