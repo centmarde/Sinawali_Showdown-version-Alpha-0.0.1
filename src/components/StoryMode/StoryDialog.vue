@@ -50,7 +50,7 @@
   onMounted(async () => {
     try {
       // Ensure you pass the necessary area (replace 'defaultArea' with the actual area you want)
-      await gameScenarioStore.startScenario("defaultArea"); // Start the scenario with an area
+      await gameScenarioStore.startScenario("the player being disrupted while traveling."); // Start the scenario with an area
       const savedAnswer = localStorage.getItem('selectedAnswer');
       if (savedAnswer) {
         selectedAnswer.value = savedAnswer;

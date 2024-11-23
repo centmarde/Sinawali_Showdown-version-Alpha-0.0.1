@@ -82,7 +82,7 @@ export default {
     // Method to close the dialog and navigate to /story_base
     closeDialog() {
       this.dialogVisibleIntro = false;  // Close the dialog
-      this.$router.push("/story_base");  // Navigate to /story_base
+      window.location.href = '/story_base';
     },
   },
 };
