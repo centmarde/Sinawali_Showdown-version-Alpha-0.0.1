@@ -50,16 +50,16 @@
                   >
                     Local Competitive
                   </v-btn>
-                  <!--  <v-btn
+                   <v-btn
                 :class="{ 'selected-menu': selectedMenu === 2 }"
-                @click="handleNavigation('/multiplayer')"
-                class="font-weight-bold"
+                @click="handleNavigation('/story_character')"
+                class="font-weight-bold menu-text"
 
               >
-                Online
-              </v-btn> -->
+                Adventure
+              </v-btn>
                   <v-btn
-                    :class="{ 'selected-menu': selectedMenu === 2 }"
+                    :class="{ 'selected-menu': selectedMenu === 3 }"
                     @click="handleNavigation('/cards')"
                     class="font-weight-bold menu-text"
                     width="200"
@@ -174,6 +174,7 @@ const handleKeydown = (event) => {
     else if (selectedMenu.value === 1) handleNavigation("/select_character");
     // else if (selectedMenu.value === 2) handleNavigation("/multiplayer");
     else if (selectedMenu.value === 2) handleNavigation("/cards");
+    else if (selectedMenu.value === 3) handleNavigation("/story_character");
     /*    else if (selectedMenu.value === 4) doLogout(); */
   }
 };
