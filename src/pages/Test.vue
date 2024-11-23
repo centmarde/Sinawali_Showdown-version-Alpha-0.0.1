@@ -2,26 +2,26 @@
   <div>
     <v-btn class="my-2" color="dark" block to="/"> Back </v-btn>
     <v-row>
-     <!--  <v-col>
-        <Player2mirror/>
+      <v-col>
+       <!--  <Player1/> -->
       <ConnectionState/>
       </v-col>
         <v-col>
-      <Player1mirror/>
+          <Enemy1/>
         </v-col>
     </v-row>
     <v-row>
       <v-col>
-        <Player1/>
+       
       <ConnectionState/>
       </v-col>
         <v-col>
       <Player2/>
-        </v-col> -->
-        <v-container fluid> </v-container>
+        </v-col>
+        
        
     </v-row>
-
+   <!--  <v-container fluid> </v-container> -->
    
   </div>
 </template>
@@ -36,6 +36,7 @@ import DeckBuild from "@/components/DeckBuild.vue";
 import StoryDialog from "@/components/StoryMode/StoryDialog.vue";
 import Map from "@/components/StoryMode/Map.vue";
 import CharacterBuild from "@/components/StoryMode/CharacterBuild.vue";
+import Enemy1 from "@/components/Characters/Enemy1.vue";
 
 
 </script>
