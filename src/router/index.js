@@ -25,6 +25,9 @@ import Landing from "@/pages/Landing.vue";
 import MultiPlayer from "@/pages/MultiPlayer.vue";
 import OnlineBase from "@/pages/OnlineBase.vue";
 import DeckBuild from "@/components/DeckBuild.vue";
+import StoryBase from "@/pages/StoryBase.vue";
+import StoryIntro from "@/pages/StoryIntro.vue";
+import StoryCharacter from "@/pages/StoryCharacter.vue";
 
 const toast = useToast();
 
@@ -97,6 +100,24 @@ const routes = setupLayouts([
     component: DeckBuild,
     meta: { requiresAuth: true },
   },
+  {
+    path: "/story_base",
+    component: StoryBase,
+    meta: { requiresAuth: true },
+    name: "story_base",
+  },
+  {
+    path: "/story_intro",
+    component: StoryIntro,
+    meta: { requiresAuth: true },
+    name: "story_intro",
+  },
+  {
+    path: "/story_character",
+    component: StoryCharacter,
+    meta: { requiresAuth: true },
+    name: "story_character",
+  },
 ]);
 
 const router = createRouter({
@@ -123,6 +144,9 @@ router.beforeEach((to, from, next) => {
     "/next_phase_ai",
     "/battle_area_ai",
     "/deck_build",
+    "/story_base",
+    "/story_character",
+    "/story_intro",
   ];
   /* const nestedProtectedGroup = ["/online_character_select"]; */
 

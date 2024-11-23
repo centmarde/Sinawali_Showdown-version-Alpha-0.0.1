@@ -1,15 +1,17 @@
 import { defineStore } from "pinia";
 import { Groq } from "groq-sdk";
 
-export const useGameScenarioStore = defineStore("gameScenario", {
+export const useIntroDay = defineStore("introDay", {
   state: () => ({
     groq: null,
     scenario: "",
     loading: false,
     error: null,
+    characterName: "", // Add a new state property to store the extracted name
   }),
 
   actions: {
+    // Initializes the Groq SDK with the provided API key
     initializeGroq(apiKey) {
       this.groq = new Groq({
         apiKey,
@@ -17,22 +19,30 @@ export const useGameScenarioStore = defineStore("gameScenario", {
       });
     },
 
-    async startScenario(area) {
+    // Starts the character background scenario generation process
+    async startScenario({ intro }) {
+      if (!this.groq) {
+        throw new Error(
+          "Groq is not initialized. Call 'initializeGroq' first."
+        );
+      }
+
       this.loading = true;
       this.error = null;
       this.scenario = "";
 
       try {
+        // API call to generate the scenario using Groq
         const chatCompletion = await this.groq.chat.completions.create({
           messages: [
             {
               role: "system",
-              content: `You are the game master. Create a random scenario in the classical era timeline in the perspective of a native warrior
-                        living in the Philippines skilled in arnis-stick martial arts. The scenario occurs in the area '${area}'.
-                        dont make a character introduction just the scenario.
-                        Provide four shuffled choices: A (neutral), B (aggressive), C (neglect), D (help).`,
+              content: `Make an introduction story/first day scenario in the classical era in the Philippines based on the provided content.`,
             },
-            { role: "user", content: "start" },
+            {
+              role: "user",
+              content: intro, // Pass the raw intro content directly
+            },
           ],
           model: "llama3-8b-8192",
           temperature: 1,
@@ -42,9 +52,10 @@ export const useGameScenarioStore = defineStore("gameScenario", {
           stop: null,
         });
 
+        // Collect and format the response
         for await (const chunk of chatCompletion) {
           const content = chunk.choices[0]?.delta?.content || "";
-          this.scenario += content.replace(/\n/g, "<br>");
+          this.scenario += content.replace(/\n/g, "<br>"); // Format line breaks for HTML
         }
       } catch (error) {
         this.error =

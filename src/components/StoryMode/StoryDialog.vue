@@ -38,14 +38,19 @@
   import { ref, onMounted } from "vue";
   import { useGameScenarioStore } from "@/stores/useGameScenarioStore"; 
   
+  // Initialize the store
   const gameScenarioStore = useGameScenarioStore();
+  
+  // Ref to store the selected answer
   const selectedAnswer = ref(null);
   
+  // Initialize Groq with the API key when the component is set up
   gameScenarioStore.initializeGroq("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");
   
   onMounted(async () => {
     try {
-      await gameScenarioStore.startScenario(); // Trigger the start of the scenario when the component mounts
+      // Ensure you pass the necessary area (replace 'defaultArea' with the actual area you want)
+      await gameScenarioStore.startScenario("defaultArea"); // Start the scenario with an area
       const savedAnswer = localStorage.getItem('selectedAnswer');
       if (savedAnswer) {
         selectedAnswer.value = savedAnswer;
@@ -58,6 +63,7 @@
   // Handle button click to store and style the selected option
   const handleButtonClick = (option) => {
     selectedAnswer.value = option;
+    localStorage.setItem('selectedAnswer', option); // Save the selection to localStorage
   };
   
   // Confirm the user's choice
@@ -71,11 +77,13 @@
   
       // Reset after confirmation
       selectedAnswer.value = null;
+      localStorage.removeItem('selectedAnswer'); // Clear the saved answer
     } else {
       alert("Please select an option before confirming.");
     }
   };
   </script>
+  
   
   <style scoped>
   /* Optional Styling */

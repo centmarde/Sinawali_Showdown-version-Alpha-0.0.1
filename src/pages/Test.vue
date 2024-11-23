@@ -18,7 +18,7 @@
         <v-col>
       <Player2/>
         </v-col> -->
-        <v-container> <StoryDialog /></v-container>
+        <v-container fluid> </v-container>
        
     </v-row>
 
@@ -34,6 +34,9 @@ import player2mirror from "@/components/Characters/player2mirror.vue";
 import ConnectionState from "@/components/ConnectionState.vue";
 import DeckBuild from "@/components/DeckBuild.vue";
 import StoryDialog from "@/components/StoryMode/StoryDialog.vue";
+import Map from "@/components/StoryMode/Map.vue";
+import CharacterBuild from "@/components/StoryMode/CharacterBuild.vue";
+
 
 </script>
 
