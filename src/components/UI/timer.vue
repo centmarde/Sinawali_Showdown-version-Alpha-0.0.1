@@ -94,10 +94,10 @@ export default {
     },
     proceedToNextPhase() {
       this.timeUpDialog = false;
-      if (this.$route.path === "/next_phase_ai") {
-        this.$router.push("/battle_area_ai");
+      if (this.$route.path === "/next_phase") {
+        this.$router.push("/battle_area");
       } else {
-        this.$router.push("/next_phase_ai");
+        this.$router.push("/next_phase");
       }
     },
   },

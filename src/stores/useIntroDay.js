@@ -37,7 +37,8 @@ export const useIntroDay = defineStore("introDay", {
           messages: [
             {
               role: "system",
-              content: `Make an introduction story/first day scenario in the classical era in the Philippines based on the provided content.`,
+              content: `Make an introduction story/first day scenario in the classical era in the Philippines based on the provided content.
+              limit your response in 1 paragraph 50 words`,
             },
             {
               role: "user",

@@ -30,6 +30,7 @@ import StoryIntro from "@/pages/StoryIntro.vue";
 import StoryCharacter from "@/pages/StoryCharacter.vue";
 import AdBattle from "@/pages/AdBattle.vue";
 import NextPhaseAd from "@/components/AdBattlePage/NextPhaseAd.vue";
+import ResultBase from "@/pages/ResultBase.vue";
 const toast = useToast();
 
 // Setup routes
@@ -131,6 +132,12 @@ const routes = setupLayouts([
     meta: { requiresAuth: true },
     name: "next_phase_ad",
   },
+  {
+    path: "/result_base",
+    component: ResultBase,
+    meta: { requiresAuth: true },
+    name: "result_base",
+  },
 ]);
 
 const router = createRouter({
@@ -162,6 +169,7 @@ router.beforeEach((to, from, next) => {
     "/story_intro",
     "/ad_battle",
     "/next_phase_ad",
+    "/result_base",
   ];
   /* const nestedProtectedGroup = ["/online_character_select"]; */
 
