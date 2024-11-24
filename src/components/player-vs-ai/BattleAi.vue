@@ -90,7 +90,7 @@
 
   <div class="battleground">
     <div class="bg1">
-      <p id="player1" class="text-center">PLayer 1</p>
+      <p id="player1">.</p>
       <v-row class="fill-height">
         <v-col cols="6">
           <div class="char1">

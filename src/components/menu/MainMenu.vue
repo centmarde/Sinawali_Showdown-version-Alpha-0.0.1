@@ -50,14 +50,14 @@
                   >
                     Local Competitive
                   </v-btn>
-                   <v-btn
-                :class="{ 'selected-menu': selectedMenu === 2 }"
-                @click="handleNavigation('/story_character')"
-                class="font-weight-bold menu-text"
-
-              >
-                Adventure
-              </v-btn>
+                  <v-btn
+                    :class="{ 'selected-menu': selectedMenu === 2 }"
+                    @click="handleNavigation('/story_character')"
+                    class="font-weight-bold menu-text"
+                    width="200"
+                  >
+                    Adventure
+                  </v-btn>
                   <v-btn
                     :class="{ 'selected-menu': selectedMenu === 3 }"
                     @click="handleNavigation('/cards')"
@@ -70,7 +70,6 @@
                 :class="{ 'selected-menu': selectedMenu === 4 }"
                 @click="doLogout()"
                 class="font-weight-bold"
-
               >
                 Logout
               </v-btn> -->
@@ -164,7 +163,7 @@ const resetCharacters = async () => {
 
 // Method to handle keyboard navigation
 const handleKeydown = (event) => {
-  const menuItems = 3; // Update this to the number of menu items
+  const menuItems = 4; // Update this to the number of menu items
   if (event.key === "ArrowDown") {
     selectedMenu.value = (selectedMenu.value + 1) % menuItems;
   } else if (event.key === "ArrowUp") {
@@ -173,8 +172,8 @@ const handleKeydown = (event) => {
     if (selectedMenu.value === 0) handleNavigation("/select_character_ai");
     else if (selectedMenu.value === 1) handleNavigation("/select_character");
     // else if (selectedMenu.value === 2) handleNavigation("/multiplayer");
-    else if (selectedMenu.value === 2) handleNavigation("/cards");
-    else if (selectedMenu.value === 3) handleNavigation("/story_character");
+    else if (selectedMenu.value === 2) handleNavigation("/story_character");
+    else if (selectedMenu.value === 3) handleNavigation("/cards");
     /*    else if (selectedMenu.value === 4) doLogout(); */
   }
 };
