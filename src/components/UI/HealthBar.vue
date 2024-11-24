@@ -125,7 +125,9 @@ export default {
         localStorage.setItem("winner", player2.name);
 
         setTimeout(() => {
+
           router.push("/defeated");
+
         }, 1500);
       } else if (player2.health <= 0) {
         localStorage.setItem("winner", player1.name);

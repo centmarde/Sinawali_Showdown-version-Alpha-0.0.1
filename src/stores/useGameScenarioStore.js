@@ -28,8 +28,10 @@ export const useGameScenarioStore = defineStore("gameScenario", {
             {
               role: "system",
               content: `You are the game master. Create a random scenario in the classical era timeline (Philippines). in the perspective of a native warrior
+
                         skilled in arnis-stick martial arts.The scenario occurs in the area '${area}'. The scenario must have choices pattern. a= neutral, b=aggressive that its starts a fight, c=neglect.
                         dont make a character intro, just the scenario. 
+
                         `,
             },
             { role: "user", content: "start" },

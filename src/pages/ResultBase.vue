@@ -78,7 +78,6 @@
         this.showResult = false;
       },
   
-    
     }
   };
   </script>

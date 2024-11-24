@@ -116,6 +116,7 @@ onMounted(async () => {
   const savedAnswer = localStorage.getItem("selectedAnswer");
   if (savedAnswer) {
     selectedAnswer.value = savedAnswer;
+
   }
 });
 

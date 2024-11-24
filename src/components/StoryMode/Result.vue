@@ -1,4 +1,5 @@
 <template>
+
     <v-dialog v-model="dialogVisible" persistent max-width="600px">
       <template v-slot:default>
         <!-- Dialog Content -->
@@ -45,11 +46,13 @@
     try {
       // Fetch the latest scenarios row from the Supabase database
       const { data, error } = await supabase
+
         .from("scenarios")
         .select("scene")
         .order("id", { ascending: false }) // Order by latest
         .limit(1) // Get only the latest row
         .single();
+
   
       if (error) throw error;
   
@@ -105,6 +108,7 @@
   };
   </script>
   
+
 
 <style scoped>
 .scenario-content {
