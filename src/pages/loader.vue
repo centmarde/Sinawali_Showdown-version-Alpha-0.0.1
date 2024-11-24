@@ -6,8 +6,8 @@
         v-if="showLogo"
         class="logo fade"
         :class="{ 'fade-out': !showLogo }"
-        src="../assets/images/flogo.png"
-        width="1000"
+        src="../assets/logo.png"
+        width="500"
         alt="Logo"
       >
     </v-img>

@@ -25,7 +25,11 @@ import Landing from "@/pages/Landing.vue";
 import MultiPlayer from "@/pages/MultiPlayer.vue";
 import OnlineBase from "@/pages/OnlineBase.vue";
 import DeckBuild from "@/components/DeckBuild.vue";
-
+import StoryBase from "@/pages/StoryBase.vue";
+import StoryIntro from "@/pages/StoryIntro.vue";
+import StoryCharacter from "@/pages/StoryCharacter.vue";
+import AdBattle from "@/pages/AdBattle.vue";
+import NextPhaseAd from "@/components/AdBattlePage/NextPhaseAd.vue";
 const toast = useToast();
 
 // Setup routes
@@ -97,6 +101,36 @@ const routes = setupLayouts([
     component: DeckBuild,
     meta: { requiresAuth: true },
   },
+  {
+    path: "/story_base",
+    component: StoryBase,
+    meta: { requiresAuth: true },
+    name: "story_base",
+  },
+  {
+    path: "/story_intro",
+    component: StoryIntro,
+    meta: { requiresAuth: true },
+    name: "story_intro",
+  },
+  {
+    path: "/story_character",
+    component: StoryCharacter,
+    meta: { requiresAuth: true },
+    name: "story_character",
+  },
+  {
+    path: "/ad_battle",
+    component: AdBattle,
+    meta: { requiresAuth: true },
+    name: "ad_battle",
+  },
+  {
+    path: "/next_phase_ad",
+    component: NextPhaseAd,
+    meta: { requiresAuth: true },
+    name: "next_phase_ad",
+  },
 ]);
 
 const router = createRouter({
@@ -123,6 +157,11 @@ router.beforeEach((to, from, next) => {
     "/next_phase_ai",
     "/battle_area_ai",
     "/deck_build",
+    "/story_base",
+    "/story_character",
+    "/story_intro",
+    "/ad_battle",
+    "/next_phase_ad",
   ];
   /* const nestedProtectedGroup = ["/online_character_select"]; */
 

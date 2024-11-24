@@ -90,6 +90,7 @@
 
   <div class="battleground">
     <div class="bg1">
+      <p id="player1" class="text-center">PLayer 1</p>
       <v-row class="fill-height">
         <v-col cols="6">
           <div class="char1">
@@ -97,7 +98,7 @@
             <player2mirror v-if="selectedCharacter === 2" ref="player_variant1Ref" />
           </div>
         </v-col>
-        <p id="player1">PLayer 1</p>
+       
         <v-col cols="6">
           <div class="char2">
             <Player2 v-if="selectedCharacter === 1" ref="player2Ref" />
@@ -128,6 +129,9 @@ import { useCharacterStatusStore } from "../../stores/characterStatus";
 import { useAudioStore } from '@/stores/audioStore';
 import { useToast } from "vue-toastification";
 import { useVideoStore } from '@/stores/videoStore';
+import { useAudioEffectsStore } from "@/stores/audioEffects";
+import { usebuffStatusStore } from "@/stores/buffStatus";
+
 
 
 
@@ -141,6 +145,8 @@ export default {
   },
   setup() {
     const toast = useToast();
+    const audioEffectsStore = useAudioEffectsStore();
+    const buffStatusStore = usebuffStatusStore();
     const characterStatusStore = useCharacterStatusStore();
     const audioStore = useAudioStore();
     const videoStore = useVideoStore();
@@ -162,6 +168,7 @@ export default {
     const messageText = ref("");
     const selectedCard = ref(null);
     const cards = ref([]);
+    const handlePlay = ref(false);
 
     const card91 = ref(null);
 
@@ -297,19 +304,21 @@ export default {
         }
 
         if (dataVideo && dataVideo.video_src) {
-          const videoUrl = dataVideo.video_src;
+        const videoUrl = dataVideo.video_src;
 
-          // Play the video preview before the attack animation
-          videoStore.playVideo(videoUrl);
+        // Play the video preview before the attack animation
+        videoStore.playVideo(videoUrl);
 
-          // Wait for the video to finish (e.g., 5 seconds), then proceed
-          await new Promise(resolve => setTimeout(resolve, 5000));
+        // Play a random sound effect while the video is playing
+        audioEffectsStore.playRandomEffect();
 
-          // Stop the video after the delay
-          videoStore.stopVideo();
-        } else {
-          console.error('No video URL found for the selected card');
-        }
+        // Wait for the video to finish (e.g., 5 seconds), then proceed
+        await new Promise(resolve => setTimeout(resolve, 5000));
+
+        // Stop the video and any playing sound effect after the delay
+        videoStore.stopVideo();
+        audioEffectsStore.stopEffect();
+      }
         try {
           // Fetch the character's mana
           const { data: EnergyChar, error: errorEnergy } = await supabase
@@ -503,15 +512,15 @@ export default {
 
 
 
-        // Check if the attack is a critical hit based on critical_rate
-        const isCriticalHit = Math.random() * 100 < critical_rate; // Check if critical rate is 100% or more
+       
+        const isCriticalHit = Math.random() * 100 < critical_rate;
         const finalDamage = isCriticalHit
           ? damageAfterDefense * 2
-          : damageAfterDefense; // Double damage if critical hit
+          : damageAfterDefense;
 
-        // Show message for the damage dealt
         if (isCriticalHit) {
           showMessage(`Critical Hit! You dealt ${finalDamage} damage!`);
+          await new Promise((resolve) => setTimeout(resolve, 1000));
         } else {
 
           showMessage(`You dealt ${finalDamage} damage.`);
@@ -543,8 +552,8 @@ export default {
           .select("mana")
           .eq("id", selectedCharacter.value)
           .single();
-        console.log(selectedCharacter.value);
-        console.log(revertedCharacter.value);
+        console.log(selectedCharacter.value); //caster
+        console.log(revertedCharacter.value); //enemy
         if (errorEnergy) {
           console.error("Error fetching character mana details:", errorEnergy);
           return;
@@ -649,42 +658,34 @@ export default {
         if (dataChar && dataChar.length > 0) {
           // Convert the first result row into an array
           const cardEffectsArray = [
-            dataChar[0].is_poison,
-            dataChar[0].is_burn,
-            dataChar[0].is_def_debuff,
-            dataChar[0].is_agil_debuff,
-            dataChar[0].turn_count,
-            dataChar[0].is_stunned,
+        
             dataChar[0].is_def_amp,
             dataChar[0].is_agil_amp,
             dataChar[0].is_crit_amp,
           ];
 
           // Add effects to the character status store
-          const characterStatusStore = useCharacterStatusStore();
-          characterStatusStore.addEffect({
-            is_poison: cardEffectsArray[0],
-            is_burn: cardEffectsArray[1],
-            is_def_debuff: cardEffectsArray[2],
-            is_agil_debuff: cardEffectsArray[3],
-            turn_count: cardEffectsArray[4],
-            is_stunned: cardEffectsArray[5],
-            is_def_amp: cardEffectsArray[6],
-            is_agil_amp: cardEffectsArray[7],
-            is_crit_amp: cardEffectsArray[8],
+          const buffStatus = usebuffStatusStore();
+         buffStatus.addEffect({
+        
+            is_def_amp: cardEffectsArray[0],
+            is_agil_amp: cardEffectsArray[1],
+            is_crit_amp: cardEffectsArray[2],
+           
           });
 
           // Constant character ID
-          const characterId = revertedCharacter.value;
+          const characterId = selectedCharacter.value;
 
           // Function to process game turn for the character
           async function gameTurn() {
-            await characterStatusStore.applyEffects(characterId);
+            await buffStatus.applyEffects(characterId);
 
             // Log the updated character stats
-            const updatedCharacter = await characterStatusStore.fetchCharacter(characterId);
+            const updatedCharacter = await buffStatus.fetchCharacter(characterId);
+            buffStatus.decrementTurnCounts();
           }
-
+         
           // Call gameTurn
           await gameTurn();
 
@@ -694,7 +695,10 @@ export default {
         }
       }
 
-
+      async function handlePlay() {
+      const dataVideo = { video_src: "path_to_your_video.mp4" }; // Replace with your video source data
+      await playVideoWithEffect(dataVideo);
+    }
       // Always navigate to the next phase
       closeDialog();
 
@@ -727,10 +731,12 @@ export default {
       filteredOnHandCards,
       audioStore,
       videoStore,
-
+      handlePlay,
+    
     };
 
   },methods: {
+    
   setActiveCard(index) {
     this.activeCard = index;
   },
@@ -768,6 +774,7 @@ export default {
   resetCards() {
     this.activeCard = null;
   },
+  
 }
 
 };
@@ -806,7 +813,7 @@ export default {
 
 .char1,
 .char2 {
-  margin-top: 5rem;
+  margin-top: -1.5rem;
 }
 
 .floating-card-container {
@@ -1066,12 +1073,14 @@ export default {
   }
 }
 #player1 {
-  position: absolute;
-  left: 40rem;
-  top: 6rem;
-  font-size: 1.2rem;
-  z-index: 99999;
+  margin-top: 70px;
   color: #151515;
+  margin-right: 18px;
+}
+@media (max-width: 400px) {
+  #player1 {
+  margin-right: 0px;
+}
 }
 </style>
 
