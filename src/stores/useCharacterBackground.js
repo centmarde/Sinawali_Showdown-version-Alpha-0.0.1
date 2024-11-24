@@ -46,7 +46,7 @@ export const useCharacterBackground = defineStore("characterBackground", {
               role: "system",
               content: `Provide a character background based on the job and personality choices male only.
                    Note that this is from the classical era in the Philippines. relate it the story to arnis-stick martial arts. Give a summary only; limit 200 words.
-                   Format is **Name** <value> a.k.a Kidlat, Occupation: <value>, Age: <value>, Challenges: <value>, Bio: <value>.`,
+                   Format is **Name** <value> a.k.a Kidlat, Occupation: <value>, Age: <value>, Challenges: <value>, Bio: <value>. limit your response in 1 paragraph 50 words`,
             },
             {
               role: "user",

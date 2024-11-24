@@ -7,13 +7,11 @@
       size="100"
       width="15"
     >
-      <span>{{ timeLeft }}s</span>
+      <span>{{ timeLeft }}</span>
     </v-progress-circular>
 
     <!-- Pause Button -->
-    <v-btn @click="pauseTimer"  class="pause_btn">
-      Menu
-    </v-btn>
+    <v-btn @click="pauseTimer" class="pause_btn"> Menu </v-btn>
 
     <!-- Dialog for Pause -->
     <v-dialog
@@ -96,10 +94,10 @@ export default {
     },
     proceedToNextPhase() {
       this.timeUpDialog = false;
-      if (this.$route.path === "/next_phase_ai") {
-        this.$router.push("/battle_area_ai");
+      if (this.$route.path === "/next_phase") {
+        this.$router.push("/battle_area");
       } else {
-        this.$router.push("/next_phase_ai");
+        this.$router.push("/next_phase");
       }
     },
   },
@@ -143,14 +141,14 @@ export default {
 .stroke-green {
   border: 2px solid darkgreen; /* Darker stroke for green */
 }
-.pause_btn{
+.pause_btn {
   position: absolute;
   top: 75px; /* Adjust this value to position the timer slightly away from the top */
   left: 50%;
   transform: translateX(-50%);
   z-index: 1000;
   background: transparent !important;
-  box-shadow: none !important; 
+  box-shadow: none !important;
   color: inherit;
 }
 </style>
