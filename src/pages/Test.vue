@@ -10,12 +10,12 @@
       <ConnectionState/>
       </v-col>
         <v-col>
-      <Player1mirror/>
+          <Enemy1/>
         </v-col>
     </v-row>
     <v-row>
       <v-col>
-        <Player1/>
+       
       <ConnectionState/>
       </v-col>
         <v-col>
