@@ -29,5 +29,6 @@ app.use(Toast, {
   // Add any custom options here if desired, e.g., timeout, position, etc.
 });
 
+app.config.warnHandler = () => {};
 
 app.mount("#app");
