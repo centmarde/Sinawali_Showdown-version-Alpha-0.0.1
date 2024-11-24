@@ -27,10 +27,10 @@ export const useGameScenarioStore = defineStore("gameScenario", {
           messages: [
             {
               role: "system",
-              content: `You are the game master. Create a random scenario in the classical era timeline in the perspective of a native warrior
-                        living in the Philippines skilled in arnis-stick martial arts. The scenario occurs in the area '${area}'.
-                        dont make a character introduction just the scenario.
-                        Provide four shuffled choices: A (neutral), B (aggressive), C (neglect), D (help).`,
+              content: `You are the game master. Create a random scenario in the classical era timeline (Philippines). in the perspective of a native warrior
+                        skilled in arnis-stick martial arts.The scenario occurs in the area '${area}'. The scenario must have choices pattern. a= neutral, b=aggressive that its starts a fight, c=neglect and d=help
+                        dont make a character intro, just the scenario.
+                        `,
             },
             { role: "user", content: "start" },
           ],

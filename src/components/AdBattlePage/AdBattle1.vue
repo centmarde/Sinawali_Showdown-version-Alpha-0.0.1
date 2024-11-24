@@ -145,6 +145,7 @@ export default {
 
   },
   setup() {
+    
     const toast = useToast();
     const audioEffectsStore = useAudioEffectsStore();
     const buffStatusStore = usebuffStatusStore();
@@ -175,7 +176,7 @@ export default {
     const player2Ref = ref(null);
     const player1Ref = ref(null);
 
- 
+   
 
     const fetchRandomCards = async () => {
       const { data: characterData, error: characterError } = await supabase
@@ -738,7 +739,7 @@ export default {
       confirmSelection,
       selectedCharacter,
       player2Ref,
-      randomChoice: parseInt(localStorage.getItem("randomChoice"), 10),
+      randomChoice: parseInt(localStorage.getItem("randomChoice"), 2),
       messageDialog,
       messageText,
       player1Ref,

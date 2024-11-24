@@ -68,6 +68,7 @@
   import { supabase } from "../../lib/supabase";
   import { usePlayerStore } from "../../stores/healthBarAd";
   import { useRoute } from "vue-router";
+  import router from "@/router";
 
   import TimerAd from "./timerAd.vue";
   
@@ -124,7 +125,23 @@
           console.error("Error fetching character data:", error);
         }
       };
-  
+      
+      const checkVictoryCondition = () => {
+  if (player1.health <= 0) {
+    localStorage.setItem("winner", player2.name);
+
+    setTimeout(() => {
+      router.push('/game_over');
+    }, 3000); // 3-second delay
+
+  } else if (player2.health <= 0) {
+    localStorage.setItem("winner", player1.name);
+
+    setTimeout(() => {
+      router.push('/result');
+    }, 3000); // 3-second delay
+  }
+};
       // Separate subscription for player 1 (characters)
       const setupPlayer1RealtimeSubscription = () => {
         const player1Channel = supabase
@@ -167,6 +184,7 @@
   
       onMounted(() => {
         fetchCharacterData();
+        checkVictoryCondition();
         setupPlayer1RealtimeSubscription();
         setupPlayer2RealtimeSubscription();
         triggerSoftUpdate();  // Start the soft reload when the component mounts
@@ -185,6 +203,7 @@
         currentPlayerMana,
         currentPlayer2Mana,
         isStandardBattleRoute,
+        checkVictoryCondition,
       };
     },
   };

@@ -48,8 +48,7 @@ gameScenarioStore.initializeGroq("gsk_SItk3ODBWwVScAabUYJ4WGdyb3FY0ZPTjRA3qhu0Y5
 
 onMounted(async () => {
   try {
-    // Ensure you pass the necessary area (replace 'defaultArea' with the actual area you want)
-    await gameScenarioStore.startScenario("the player being disrupted while traveling."); // Start the scenario with an area
+   
     const savedAnswer = localStorage.getItem("selectedAnswer");
     if (savedAnswer) {
       selectedAnswer.value = savedAnswer;
@@ -132,6 +131,7 @@ const confirmAnswer = async () => {
 // Generate a random choice (1 or 2) and save it to localStorage
 const randomChoice = Math.random() < 0.5 ? 1 : 2;
 localStorage.setItem("randomChoice", randomChoice);
+console.log("Random Choice:", randomChoice);
 </script>
 
 
