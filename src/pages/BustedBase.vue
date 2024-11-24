@@ -12,7 +12,7 @@
       <Map @pinClicked="handlePinClicked" />
   
       <!-- Result Component -->
-      <Result
+      <Defeated
         v-if="showResult"
         style="display: block; z-index: 5;"
         @closeDialog="handleResultClose"
@@ -22,12 +22,12 @@
   
   <script>
   import Map from "@/components/StoryMode/Map.vue";
-  import Result from "@/components/StoryMode/Result.vue";
+  import Defeated from "@/components/StoryMode/Defeated.vue";
   import { supabase } from "@/lib/supabase";
   
   export default {
     name: "StoryBase",
-    components: { Map, Result },
+    components: { Map, Defeated },
     data() {
       return {
         dialogVisibleIntro: true, // Intro dialog visibility

@@ -37,9 +37,9 @@ export const useResultStatus = defineStore("resultStatus", {
           messages: [
             {
               role: "system",
-              content: `The User choose B(dont include this in your response). Create a aftermath tale regarding the previous situation. 
-                   in which an opponent strikes. assume that kidlat wins. 
-                   Make your narrative fascinating and relevant.
+              content: `The User choose B(dont include this in your response). Create a continuing tale regarding the previous situation. 
+                   in which Kidlat loses the battle and thrown somewhere else and heavily wounded.
+                   Make your narrative fascinating and relevant in perspective of Kidlat.
                    limit your response in 1 paragraph 50 words.
                 `,
             },

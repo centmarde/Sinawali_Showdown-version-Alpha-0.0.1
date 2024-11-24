@@ -29,7 +29,7 @@
   <script setup>
   import { ref, onMounted } from "vue";
   import { useRouter } from "vue-router";
-  import { useResultStatus } from "@/stores/useResultStatus";
+  import { useResultStatus } from "@/stores/useBusted";
   import { supabase } from "@/lib/supabase";
   
   const ResultStatus = useResultStatus();

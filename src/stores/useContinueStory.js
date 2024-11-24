@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import { Groq } from "groq-sdk";
 
-export const useResultStatus = defineStore("resultStatus", {
+export const useContinueStatus = defineStore("continueStatus", {
   state: () => ({
     groq: null,
     scenario: "",
@@ -37,10 +37,11 @@ export const useResultStatus = defineStore("resultStatus", {
           messages: [
             {
               role: "system",
-              content: `The User choose B(dont include this in your response). Create a aftermath tale regarding the previous situation. 
-                   in which an opponent strikes. assume that kidlat wins. 
-                   Make your narrative fascinating and relevant.
-                   limit your response in 1 paragraph 50 words.
+              content: `Create a continuing tale regarding the previous situation. 
+                   dont display the user choice in you response.
+                   Make your narrative fascinating and relevant in perspective of Kidlat.
+                   you must provide a option for the user to choose base on the situation. a=help, b=attack, c=ignore.
+                 
                 `,
             },
             {
