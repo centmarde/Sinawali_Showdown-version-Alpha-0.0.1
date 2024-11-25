@@ -36,6 +36,7 @@
   const ResultStatus = useResultStatus();
   const dialogVisible = ref(true); // Dialog initially visible
   const router = useRouter();
+  const characterId = localStorage.getItem("character_id");
   
   // Ensure Groq is initialized
   if (!ResultStatus.groq) {
@@ -70,12 +71,33 @@
   // Function to close the dialog and reset enemy stats
   const closeDialog = async () => {
     try {
+      // Retrieve character data from localStorage
+      const savedCharacterData = localStorage.getItem("characterData");
+      if (savedCharacterData) {
+        const character = JSON.parse(savedCharacterData);
+  
+        // Update the characters table
+        const { error: characterUpdateError } = await supabase
+          .from("characters")
+          .update({
+            mana: character.mana,
+            health: character.health,
+          })
+          .eq("id", characterId); // Use the appropriate character ID from localStorage
+  
+        if (characterUpdateError) {
+          console.error("Error updating character:", characterUpdateError.message);
+        } else {
+          console.log("Character updated successfully.");
+        }
+      } else {
+        console.warn("No character data found in localStorage.");
+      }
+  
       console.log("Resetting enemy stats...");
       // Reset enemy stats in the database
       const updates = [
-        { id: 4, health: 60, mana: 60, agility: 5, defense: 0, critical_rate: 5 },
-        { id: 5, health: 40, mana: 100, agility: 20, defense: 0, critical_rate: 5 },
-        { id: 6, health: 50, mana: 50, agility: 10, defense: 50, critical_rate: 5 },
+        { id: characterId, health: 40, mana: 40, agility: 5, defense: 0, critical_rate: 5 },
       ];
   
       // Perform updates for each enemy ID
@@ -100,6 +122,38 @@
       console.log("Enemy stats reset successfully.");
     } catch (error) {
       console.error("Error during closeDialog execution:", error.message);
+    }
+  
+    try {
+      console.log("Resetting additional enemy stats...");
+      // Reset additional enemy stats in the database
+      const updates = [
+        { id: 4, health: 60, mana: 60, agility: 5, defense: 0, critical_rate: 5 },
+        { id: 5, health: 40, mana: 100, agility: 20, defense: 0, critical_rate: 5 },
+        { id: 6, health: 50, mana: 50, agility: 10, defense: 50, critical_rate: 5 },
+      ];
+  
+      for (const update of updates) {
+        const { error } = await supabase
+          .from("enemies")
+          .update({
+            health: update.health,
+            mana: update.mana,
+            agility: update.agility,
+            defense: update.defense,
+            critical_rate: update.critical_rate,
+          })
+          .eq("id", update.id);
+  
+        if (error) {
+          console.error(`Error updating enemy with ID ${update.id}:`, error.message);
+          continue;
+        }
+      }
+  
+      console.log("Additional enemy stats reset successfully.");
+    } catch (error) {
+      console.error("Error during additional enemy reset:", error.message);
     }
   
     // Close dialog and navigate to /story_base

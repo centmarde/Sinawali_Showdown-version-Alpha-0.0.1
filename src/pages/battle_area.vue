@@ -1,11 +1,11 @@
 <template>
-    <div>
-        <battle/>
+    <div @click="playAudioOnInteraction">
+        <battle />
     </div>
 </template>
 
 <script>
-import { onMounted } from 'vue';
+import { ref } from 'vue';
 import { useAudioStore } from '@/stores/audioStore';
 import battle from '@/components/battle_page/battle.vue';
 
@@ -15,13 +15,17 @@ export default {
     },
     setup() {
         const audioStore = useAudioStore();
+        const hasInteracted = ref(false);
 
-        onMounted(() => {
-            audioStore.playAudio();
-        });
+        const playAudioOnInteraction = () => {
+            if (!hasInteracted.value) {
+                audioStore.playAudio();
+                hasInteracted.value = true; // Ensure audio only plays once per page load
+            }
+        };
 
         return {
-            audioStore,
+            playAudioOnInteraction,
         };
     },
 };

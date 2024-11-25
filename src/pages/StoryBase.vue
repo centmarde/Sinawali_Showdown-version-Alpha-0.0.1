@@ -20,10 +20,11 @@
   </div>
 </template>
 
-  
 <script>
 import Map from "@/components/StoryMode/Map.vue";
 import StoryDialog from "@/components/StoryMode/StoryDialog.vue";
+import router from "@/router";
+import { supabase } from "@/lib/supabase";
 import { useGameScenarioStore } from "@/stores/useGameScenarioStore";
 
 export default {
@@ -37,20 +38,23 @@ export default {
     };
   },
   methods: {
-    handlePinClicked(area) {
+    async handlePinClicked(area) {
       const gameScenarioStore = useGameScenarioStore();
       gameScenarioStore.initializeGroq("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");
 
       gameScenarioStore.startScenario(area); // Pass the area to startScenario
       this.dialogVisible = true; // Open the StoryDialog
+
+      // Fetch character data and save to localStorage
+      await this.fetchAndSaveCharacterData();
+
       this.reloadStoryDialog();
     },
     invokeChildOneMethod() {
-      console.log('invokeChildOneMethod triggered');
-      this.reloadMap();
+      router.push("/deck_build");
     },
     invokeChildTwoMethod() {
-      console.log('invokeChildTwoMethod triggered');
+      console.log("invokeChildTwoMethod triggered");
     },
     reloadMap() {
       this.mapKey += 1; // Update the key to trigger remount of Map
@@ -58,9 +62,37 @@ export default {
     reloadStoryDialog() {
       this.storyDialogKey += 1; // Update the key to trigger remount of StoryDialog
     },
+    async fetchAndSaveCharacterData() {
+      try {
+        const characterId = localStorage.getItem("character_id");
+        if (!characterId) {
+          console.warn("No character ID found in localStorage.");
+          return;
+        }
+
+        // Fetch character data from the database
+        const { data: characterData, error } = await supabase
+          .from("characters")
+          .select("*")
+          .eq("id", characterId)
+          .single();
+
+        if (error) {
+          console.error("Error fetching character data:", error.message);
+          return;
+        }
+
+        // Save character data to `localStorage` as a JSON string
+        localStorage.setItem("characterData", JSON.stringify(characterData));
+        console.log("Character data saved to localStorage:", characterData);
+      } catch (error) {
+        console.error("Error in fetchAndSaveCharacterData:", error.message);
+      }
+    },
   },
 };
 </script>
+
 
 
   
