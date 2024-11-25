@@ -52,7 +52,7 @@
                   </v-btn>
                   <v-btn
                     :class="{ 'selected-menu': selectedMenu === 2 }"
-                    @click="handleNavigation('/story_character')"
+                    @click="handleNavigation('/save')"
                     class="font-weight-bold menu-text"
                     width="200"
                   >
@@ -172,7 +172,7 @@ const handleKeydown = (event) => {
     if (selectedMenu.value === 0) handleNavigation("/select_character_ai");
     else if (selectedMenu.value === 1) handleNavigation("/select_character");
     // else if (selectedMenu.value === 2) handleNavigation("/multiplayer");
-    else if (selectedMenu.value === 2) handleNavigation("/story_character");
+    else if (selectedMenu.value === 2) handleNavigation("/save");
     else if (selectedMenu.value === 3) handleNavigation("/cards");
     /*    else if (selectedMenu.value === 4) doLogout(); */
   }
