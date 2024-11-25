@@ -122,16 +122,14 @@ export default {
     const checkVictoryCondition = () => {
       console.log("Checking victory condition");
       if (player1.health <= 0) {
-        localStorage.setItem("winner", player2.name);
-
+       
         setTimeout(() => {
 
           router.push("/defeated");
 
         }, 1500);
       } else if (player2.health <= 0) {
-        localStorage.setItem("winner", player1.name);
-
+      
         setTimeout(() => {
           router.push("/result_base");
         }, 1500);
