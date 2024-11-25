@@ -59,9 +59,9 @@
               <div
                 id="card_rarity"
                 class="card-rarity merienda text-capitalize"
-                :style="{ bottom: cardRarityBottom }"
+                :style="{ bottom: cardTypeBottom }"
               >
-                <span>{{ activeCard.rarity }} Card</span>
+                <span>{{ activeCard.type }} Card</span>
               </div>
 
               <div
@@ -83,6 +83,7 @@
             :cardTypeClass="cardTypeClass"
             :rarityColor="rarityColor"
             :rarityStyles="rarityStyles"
+            :typeColor="typeColor"
           />
         </v-col>
       </v-row>
@@ -146,6 +147,8 @@ const cardTypeClass = computed(() => {
       return "defense_bg";
     case "buff":
       return "buff_bg";
+    case "energy":
+      return "energy_bg";
     default:
       return "";
   }
@@ -168,7 +171,7 @@ const cardRarityClass = computed(() => {
 
 // Computed property to get the color based on the card rarity
 const rarityColor = computed(() => {
-  if (!activeCard.value) return "#ffd82b"; // Default color
+  if (!activeCard.value || !activeCard.value.rarity) return ""; // Return empty if rarity is not defined
   switch (activeCard.value.rarity) {
     case "common":
       return "#307605";
@@ -177,7 +180,22 @@ const rarityColor = computed(() => {
     case "special":
       return "#936529";
     default:
-      return "#ffd82b";
+      return "";
+  }
+});
+
+// Computed property to get the color based on the card type
+const typeColor = computed(() => {
+  if (!activeCard.value) return ""; // Return empty if activeCard is not defined
+  switch (activeCard.value.type) {
+    case "defense":
+      return "#0a5980";
+    case "buff":
+      return "#0a5980";
+    case "energy":
+      return "#880c39";
+    default:
+      return "";
   }
 });
 
@@ -213,17 +231,21 @@ const avatarImage = computed(() => {
       return new URL("./../assets/icon/defense.png", import.meta.url).href;
     case "buff":
       return new URL("./../assets/icon/buff.png", import.meta.url).href;
+    case "energy":
+      return new URL("./../assets/icon/energy.png", import.meta.url).href;
     default:
       return "";
   }
 });
 
-// Computed property to get the top value for the card name based on the card rarity
+// Computed property to get the top value for the card name based on the card rarity and type
 const cardNameTop = computed(() => {
   if (!activeCard.value) return "5px"; // Default top value
+  if (activeCard.value.type === "energy") return "15px"; // Top value for energy type
+  if (["buff", "defense"].includes(activeCard.value.type)) return "14px"; // Top value for buff and defense types
   const topValue = activeCard.value.rarity === "special" ? "16px" : "5px";
   console.log(
-    `Card rarity: ${activeCard.value.rarity}, Top value: ${topValue}`
+    `Card rarity: ${activeCard.value.rarity}, Card type: ${activeCard.value.type}, Top value: ${topValue}`
   );
   return topValue;
 });
@@ -256,18 +278,27 @@ const textShadowStyle = computed(() => {
   }
 });
 
-// Computed property to get the bottom value for the card rarity based on the card rarity
-const cardRarityBottom = computed(() => {
+// Computed property to get the bottom value for the card rarity based on the card rarity and type
+const cardTypeBottom = computed(() => {
   if (!activeCard.value) return "156px"; // Default bottom value
   if (activeCard.value.rarity === "rare") return "149px";
   if (activeCard.value.rarity === "special") return "158px";
+  if (activeCard.value.type === "energy") return "145px";
 
   return "156px";
 });
 
-// Computed property to get the top value and color for the card description based on the card rarity
+// Computed property to get the top value and color for the card description based on the card rarity and type
 const cardDescriptionStyle = computed(() => {
   if (!activeCard.value) return { top: "362px", color: "#34782e" }; // Default styles
+  switch (activeCard.value.type) {
+    case "energy":
+      return { top: "370px", color: "#307605" }; // Example top value and color for energy type
+    case "buff":
+      return { top: "362px", color: "#0e4059" }; // Example top value and color for buff type
+    case "defense":
+      return { top: "362px", color: "#0e4059" }; // Example top value and color for defense type
+  }
   switch (activeCard.value.rarity) {
     case "common":
       return { top: "362px", color: "#307605" };

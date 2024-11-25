@@ -38,7 +38,7 @@
         class="mt-2 mb-4 text-button font-weight-bold animated-progress"
         :model-value="activeCard.power"
         max="30"
-        :color="rarityColor"
+        :color="progressColor"
         height="18"
         rounded
         :style="[
@@ -57,7 +57,7 @@
         class="mt-2 mb-4 text-button font-weight-bold animated-progress"
         :model-value="activeCard.mana_cost"
         max="50"
-        :color="rarityColor"
+        :color="progressColor"
         height="18"
         rounded
         :style="[
@@ -76,7 +76,7 @@
         class="mt-2 mb-4 text-button font-weight-bold animated-progress"
         :model-value="activeCard.draw_chance"
         max="100"
-        :color="rarityColor"
+        :color="progressColor"
         height="18"
         rounded
         :style="[
@@ -103,21 +103,30 @@ const props = defineProps({
   cardTypeClass: String,
   rarityColor: String,
   rarityStyles: Object,
+  typeColor: String,
+});
+
+const progressColor = computed(() => {
+  return props.typeColor || props.rarityColor;
 });
 </script>
 
 <style scoped>
 /* Add styles for card type classes */
 .attack_bg {
-  background-color: #464646;
+  background-color: #121212;
 }
 
 .defense_bg {
-  background-color: #263238;
+  background-color: #550981;
 }
 
 .buff_bg {
-  background-color: #3e2723;
+  background-color: #0e4059;
+}
+
+.energy_bg {
+  background-color: #880c39;
 }
 
 /* Add styles for card rarity classes */
@@ -151,42 +160,42 @@ const props = defineProps({
 }
 
 @media (max-width: 1300px) {
-  #cards{
+  #cards {
     position: relative;
     top: 10rem;
   }
-  
-  #info{
+
+  #info {
     position: relative;
-   margin-top:10rem;
-   left: 2.5rem;
+    margin-top: 10rem;
+    left: 2.5rem;
   }
-  #info2{
+  #info2 {
     position: relative;
     left: 5rem;
   }
-  .display{
+  .display {
     height: 100%;
   }
 }
 @media (max-width: 360px) {
   #cards {
-   top: 4rem;
+    top: 4rem;
     max-width: 100%; /* Adjust further if needed for smaller screens */
   }
   .mySwiper {
     width: 100%;
   }
- 
-  #info{
+
+  #info {
     position: relative;
-   margin-top:0;
+    margin-top: 0;
     left: 0;
   }
-  .display{
+  .display {
     height: 100%;
   }
-  #back_btn{
+  #back_btn {
     position: absolute;
     left: 8.5rem;
   }
