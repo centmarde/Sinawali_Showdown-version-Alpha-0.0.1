@@ -108,7 +108,8 @@ main {
 .wind {
   width: 100%;
   z-index: 8;
-  top: 0; /* Make sure it's positioned correctly */
+  left: 50%;
+  top: 50%; /* Make sure it's positioned correctly */
 }
 
 /* Beta Tag */

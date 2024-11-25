@@ -1,6 +1,5 @@
 <template>
-
-    <v-dialog v-model="dialogVisible" persistent max-width="600px">
+  <v-container> <v-dialog v-model="dialogVisible" persistent max-width="600px">
       <template v-slot:default>
         <!-- Dialog Content -->
         <v-card>
@@ -25,6 +24,8 @@
         </v-card>
       </template>
     </v-dialog>
+   </v-container>
+   
   </template>
   
   <script setup>
@@ -72,28 +73,7 @@
   const closeDialog = async () => {
     try {
       // Retrieve character data from localStorage
-      const savedCharacterData = localStorage.getItem("characterData");
-      if (savedCharacterData) {
-        const character = JSON.parse(savedCharacterData);
-  
-        // Update the characters table
-        const { error: characterUpdateError } = await supabase
-          .from("characters")
-          .update({
-            mana: character.mana,
-            health: character.health,
-          })
-          .eq("id", characterId); // Use the appropriate character ID from localStorage
-  
-        if (characterUpdateError) {
-          console.error("Error updating character:", characterUpdateError.message);
-        } else {
-          console.log("Character updated successfully.");
-        }
-      } else {
-        console.warn("No character data found in localStorage.");
-      }
-  
+    
       console.log("Resetting enemy stats...");
       // Reset enemy stats in the database
       const updates = [
@@ -158,7 +138,7 @@
   
     // Close dialog and navigate to /story_base
     dialogVisible.value = false;
-    router.push("/story_base");
+    router.push("/reward");
   };
   </script>
   
