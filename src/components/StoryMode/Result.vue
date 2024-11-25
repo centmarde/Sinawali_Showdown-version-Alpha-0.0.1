@@ -1,6 +1,5 @@
 <template>
-
-    <v-dialog v-model="dialogVisible" persistent max-width="600px">
+  <v-container> <v-dialog v-model="dialogVisible" persistent max-width="600px">
       <template v-slot:default>
         <!-- Dialog Content -->
         <v-card>
@@ -25,6 +24,8 @@
         </v-card>
       </template>
     </v-dialog>
+   </v-container>
+   
   </template>
   
   <script setup>
@@ -32,17 +33,20 @@
   import { useRouter } from "vue-router";
   import { useResultStatus } from "@/stores/useResultStatus";
   import { supabase } from "@/lib/supabase";
-  
+  import { useAudioAdventure } from "@/stores/adventureAudio";
+
   const ResultStatus = useResultStatus();
   const dialogVisible = ref(true); // Dialog initially visible
   const router = useRouter();
-  
+  const characterId = localStorage.getItem("character_id");
+  const audioStore = useAudioAdventure();
   // Ensure Groq is initialized
   if (!ResultStatus.groq) {
     ResultStatus.initializeGroq("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");
   }
   
   onMounted(async () => {
+    audioStore.playVictory();
     try {
       // Fetch the latest scenarios row from the Supabase database
       const { data, error } = await supabase
@@ -70,12 +74,12 @@
   // Function to close the dialog and reset enemy stats
   const closeDialog = async () => {
     try {
+      // Retrieve character data from localStorage
+    
       console.log("Resetting enemy stats...");
       // Reset enemy stats in the database
       const updates = [
-        { id: 4, health: 60, mana: 60, agility: 5, defense: 0, critical_rate: 5 },
-        { id: 5, health: 40, mana: 100, agility: 20, defense: 0, critical_rate: 5 },
-        { id: 6, health: 50, mana: 50, agility: 10, defense: 50, critical_rate: 5 },
+        { id: characterId, health: 40, mana: 40, agility: 5, defense: 0, critical_rate: 5 },
       ];
   
       // Perform updates for each enemy ID
@@ -102,9 +106,41 @@
       console.error("Error during closeDialog execution:", error.message);
     }
   
+    try {
+      console.log("Resetting additional enemy stats...");
+      // Reset additional enemy stats in the database
+      const updates = [
+        { id: 4, health: 60, mana: 60, agility: 5, defense: 0, critical_rate: 5 },
+        { id: 5, health: 40, mana: 100, agility: 20, defense: 0, critical_rate: 5 },
+        { id: 6, health: 50, mana: 50, agility: 10, defense: 50, critical_rate: 5 },
+      ];
+  
+      for (const update of updates) {
+        const { error } = await supabase
+          .from("enemies")
+          .update({
+            health: update.health,
+            mana: update.mana,
+            agility: update.agility,
+            defense: update.defense,
+            critical_rate: update.critical_rate,
+          })
+          .eq("id", update.id);
+  
+        if (error) {
+          console.error(`Error updating enemy with ID ${update.id}:`, error.message);
+          continue;
+        }
+      }
+  
+      console.log("Additional enemy stats reset successfully.");
+    } catch (error) {
+      console.error("Error during additional enemy reset:", error.message);
+    }
+  
     // Close dialog and navigate to /story_base
     dialogVisible.value = false;
-    router.push("/story_base");
+    router.push("/reward");
   };
   </script>
   

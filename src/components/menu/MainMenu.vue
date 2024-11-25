@@ -10,11 +10,11 @@
           sm="6"
           class="d-flex justify-center align-center"
         >
-          <v-img cover src="@/assets/logo.png"></v-img>
+          <v-img cover src="@/assets/logo.png " ></v-img>
         </v-col>
         <v-col cols="auto"></v-col>
       </v-row>
-      <v-row justify="center m-0 p-0">
+      <v-row justify="center m-2 p-0">
         <v-col cols="auto"></v-col>
         <v-col
           cols="12"
@@ -32,8 +32,8 @@
               src="../../assets/background/main-menu.png"
               cover
             >
-              <div class="">
-                <v-card-actions class="d-flex flex-column">
+              <div class="main-menu-btn">
+                <v-card-actions class="d-flex flex-column pt-4">
                   <v-btn
                     :class="{ 'selected-menu': selectedMenu === 0 }"
                     @click="handleNavigation('/select_character_ai')"
@@ -52,7 +52,7 @@
                   </v-btn>
                   <v-btn
                     :class="{ 'selected-menu': selectedMenu === 2 }"
-                    @click="handleNavigation('/story_character')"
+                    @click="handleNavigation('/save')"
                     class="font-weight-bold menu-text"
                     width="200"
                   >
@@ -172,7 +172,7 @@ const handleKeydown = (event) => {
     if (selectedMenu.value === 0) handleNavigation("/select_character_ai");
     else if (selectedMenu.value === 1) handleNavigation("/select_character");
     // else if (selectedMenu.value === 2) handleNavigation("/multiplayer");
-    else if (selectedMenu.value === 2) handleNavigation("/story_character");
+    else if (selectedMenu.value === 2) handleNavigation("/save");
     else if (selectedMenu.value === 3) handleNavigation("/cards");
     /*    else if (selectedMenu.value === 4) doLogout(); */
   }
@@ -180,14 +180,6 @@ const handleKeydown = (event) => {
 </script>
 
 <style scoped>
-@import url("https://fonts.googleapis.com/css2?family=Rock+Salt&display=swap");
-
-.rock-salt-regular {
-  font-family: "Rock Salt", cursive;
-  font-weight: 900;
-  font-style: normal;
-}
-
 .v-card {
   max-width: 400px;
   object-fit: cover;
@@ -207,6 +199,11 @@ const handleKeydown = (event) => {
 
 .selected-menu {
   background-color: #6f34332b;
+}
+
+.main-menu-btn .v-btn {
+  font-weight: 800 !important;
+  font-family: "Merienda", cursive;
 }
 
 .centered-container {

@@ -72,9 +72,9 @@ export const useCharacterBackground = defineStore("characterBackground", {
 
         if (nameMatch) {
           this.characterName = nameMatch[1].trim(); // Store the extracted name
-        } else {
+        } /* else {
           console.warn("Name not found in the scenario response.");
-        }
+        } */
       } catch (error) {
         // Handle API errors and set the error state
         this.error =

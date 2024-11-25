@@ -60,7 +60,7 @@
             </v-row>
           </v-card>
         </v-col>
-     
+
         <!-- Character Viewer -->
         <v-col
           cols="12"
@@ -89,13 +89,16 @@
           class="details p-lg-0 p-md-0 p-sm-5"
         >
           <div>
-            <h2 class="text-uppercase text-center">{{ character.name }}</h2>
-            <h6 class="text-center text-medium-emphasis font-weight-regular">
+            <h2 class="text-uppercase text-center merienda">
+              {{ character.name }}
+            </h2>
+            <h6
+              class="text-center text-medium-emphasis font-weight-regular merienda"
+            >
               {{ character.tagline }}
             </h6>
 
             <div>
-
               <small class="text-uppercase font-weight-medium">Energy</small>
               <v-progress-linear
                 class="mt-2 mb-4 text-overline font-weight-bold animated-progress"
@@ -153,7 +156,6 @@
                 });`"
               >
               </v-progress-linear>
-
             </div>
 
             <div class="mt-5">
@@ -165,28 +167,45 @@
         <!-- Confirmation Dialog -->
         <v-dialog
           v-model="dialog"
-          max-width="400"
+          max-width="600"
           aria-labelledby="dialog-title"
           aria-describedby="dialog-description"
         >
-          <v-card class="game-dialog">
-            <!-- <v-card-title class="headline game-dialog-title" id="dialog-title">
-                Confirm Your Choice
-              </v-card-title> -->
-            <v-card-text class="game-dialog-text" id="dialog-description">
-              Are you sure you want to proceed with
-              <strong>{{ character.name }}</strong
-              >?
-            </v-card-text>
-            <v-card-actions class="game-dialog-actions">
-              <v-btn color="red darken-2" text @click="dialog = false"
-                >Cancel</v-btn
-              >
-              <v-btn color="yellow darken-4" text @click="confirmChoice"
-                >Sure</v-btn
-              >
-            </v-card-actions>
-          </v-card>
+          <v-img
+            class="align-end text-white"
+            src="../assets/background/dialog-bg.png"
+            cover
+          >
+            <v-container
+              class="d-flex game-dialog"
+              style="position: absolute; top: 0; left: 0; right: 0; bottom: 0"
+            >
+              <v-row justify="center" align="center">
+                <v-col cols="12" class="text-center">
+                  <h5 class="text-h5 text-black pb-8">
+                    Are you sure you want to proceed with
+                    <strong>{{ character.name }}</strong
+                    >?
+                  </h5>
+
+                  <v-btn
+                    color="red darken-4 merienda-btn"
+                    size="large"
+                    variant="text"
+                    @click="dialog = false"
+                    >Cancel</v-btn
+                  >
+                  <v-btn
+                    color="blue darken-4 merienda-btn"
+                    size="large"
+                    variant="text"
+                    @click="confirmChoice"
+                    >Sure</v-btn
+                  >
+                </v-col>
+              </v-row>
+            </v-container>
+          </v-img>
         </v-dialog>
       </v-row>
 
@@ -225,20 +244,22 @@ export default {
     const router = useRouter();
     const toast = useToast();
     const speechStore = useSpeechStore();
-    
-    const selectedCharacter = ref(Number(localStorage.getItem("selectedCharacter")) || 1);
+
+    const selectedCharacter = ref(
+      Number(localStorage.getItem("selectedCharacter")) || 1
+    );
     const dialog = ref(false);
     const character = ref({});
     const audioSrc = new URL("@/assets/audio/click.mp3", import.meta.url).href;
     const audioPlayerRef = ref(null);
     const userId = localStorage.getItem("user_id");
-    
+
     const playAudio = () => {
       if (audioPlayerRef.value) {
         audioPlayerRef.value.playAudio();
       }
     };
-    
+
     const navigateWithSound = (route) => {
       playAudio();
       setTimeout(() => {
@@ -250,7 +271,11 @@ export default {
       selectedCharacter.value = characterId;
 
       // Ensure speechStore is initialized and methods exist
-      if (speechStore && typeof speechStore.stopAlon === 'function' && typeof speechStore.stopKidlat === 'function') {
+      if (
+        speechStore &&
+        typeof speechStore.stopAlon === "function" &&
+        typeof speechStore.stopKidlat === "function"
+      ) {
         // Stop Alon audio if character 1 is selected
         if (characterId === 1) {
           speechStore.stopAlon();
@@ -276,30 +301,30 @@ export default {
     };
 
     const confirmChoice = async () => {
-  // Save the selected character to local storage
-  localStorage.setItem("selectedCharacter", selectedCharacter.value);
-  console.log(localStorage.getItem("selectedCharacter"));
+      // Save the selected character to local storage
+      localStorage.setItem("selectedCharacter", selectedCharacter.value);
+      console.log(localStorage.getItem("selectedCharacter"));
 
-  // Retrieve player IDs from local storage
-  const player1Id = localStorage.getItem("player1");
-  const player2Id = localStorage.getItem("player2");
+      // Retrieve player IDs from local storage
+      const player1Id = localStorage.getItem("player1");
+      const player2Id = localStorage.getItem("player2");
 
-  // Randomly decide the first attacker
-  const firstAttacker = Math.random() < 0.5 ? "Player 1" : "Player 2";
+      // Randomly decide the first attacker
+      const firstAttacker = Math.random() < 0.5 ? "Player 1" : "Player 2";
 
-  // Show alert for who attacks first
-  toast(`${firstAttacker} attacks first!`);
+      // Show alert for who attacks first
+      toast(`${firstAttacker} attacks first!`);
 
-  // Close the dialog
-  dialog.value = false;
+      // Close the dialog
+      dialog.value = false;
 
-  // Navigate based on who attacks first
-  if (firstAttacker === "Player 1") {
-    navigateWithSound("/battle_area_ai"); // Navigate to /battle for Player 1
-  } else {
-    navigateWithSound("/next_phase_ai"); // Navigate to /nextphase for Player 2
-  }
-};
+      // Navigate based on who attacks first
+      if (firstAttacker === "Player 1") {
+        navigateWithSound("/battle_area_ai"); // Navigate to /battle for Player 1
+      } else {
+        navigateWithSound("/next_phase_ai"); // Navigate to /nextphase for Player 2
+      }
+    };
 
     const handleKeyDown = (event) => {
       if (event.key === "ArrowLeft") {
@@ -361,8 +386,16 @@ export default {
 };
 </script>
 
-
 <style scoped>
+@import url("https://fonts.googleapis.com/css2?family=Merienda:wght@300..900&family=Rock+Salt&display=swap");
+
+.merienda-btn {
+  font-family: "Merienda", cursive;
+  font-weight: 700;
+  font-style: normal;
+  animation: fadeIn 2s ease-out;
+}
+
 .display {
   display: flex;
   justify-content: center;
@@ -410,14 +443,24 @@ export default {
 }
 
 .game-dialog {
-  /* background-image: url("/path/to/your/background-image.png"); */
-  background-size: cover;
-  border-radius: 10px;
-  color: #fff;
+  width: 300px;
 }
 
-.game-dialog-actions {
-  justify-content: center;
+.game-dialog h5 {
+  font-family: "Merienda", cursive;
+  font-optical-sizing: auto;
+  font-weight: 600;
+  font-style: normal;
+  animation: fadeIn 2s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .custom-canvas :deep(#canvas) {
@@ -473,16 +516,15 @@ export default {
 }
 
 @media (max-width: 768px) {
- 
   .character-viewer {
     position: relative;
     gap: 0;
     left: 2.5rem;
     padding: 0;
-    background-position:50%;
+    background-position: 50%;
     width: 100%;
   }
-  .display{
+  .display {
     height: 100%;
     background-image: url("./../assets/background/small_screen.png");
   }

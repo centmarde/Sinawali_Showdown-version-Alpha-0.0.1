@@ -32,63 +32,114 @@
   
   
   <script>
-import Map from "@/components/StoryMode/Map.vue";
-import StoryDialog from "@/components/StoryMode/StoryDialog.vue";
-import Introduction from "@/components/StoryMode/Introduction.vue";
-import { supabase } from "@/lib/supabase";
-import { useRouter } from 'vue-router';  // Import useRouter
-import router from "@/router";
-
-export default {
-  name: "StoryBase",
-  components: { Map, StoryDialog, Introduction },
-  data() {
-    return {
-      dialogVisible: false,         // Control visibility of the StoryDialog
-      dialogVisibleIntro: true,     // Control visibility of the Introduction dialog
-      characterName: '',           // Character name defined here
-    };
-  },
-
-  mounted() {
-    // Fetch character data when the component is mounted
-    this.fetchCharacterData();
-  },
-
-  methods: {
-    async fetchCharacterData() {
-      try {
-        const adventureId = localStorage.getItem("adventure_id");
-        const { data, error } = await supabase
-          .from("characters")
-          .select("name")
-          .eq("adventure_id", adventureId) // Assuming you want to fetch the character by the user_id
-          .single();
-
-        if (error) {
+  import Map from "@/components/StoryMode/Map.vue";
+  import StoryDialog from "@/components/StoryMode/StoryDialog.vue";
+  import Introduction from "@/components/StoryMode/Introduction.vue";
+  import { supabase } from "@/lib/supabase";
+  import { useRouter } from 'vue-router';
+  import { useAudioAdventure } from "@/stores/adventureAudio";
+  import { useToast } from "vue-toastification";
+  
+  export default {
+    name: "StoryBase",
+    components: { Map, StoryDialog, Introduction },
+    data() {
+      return {
+        dialogVisible: false,         // Control visibility of the StoryDialog
+        dialogVisibleIntro: true,     // Control visibility of the Introduction dialog
+        characterName: '',           // Character name defined here
+      };
+    },
+  
+    mounted() {
+      // Fetch character data when the component is mounted
+      this.fetchCharacterData();
+    },
+  
+    methods: {
+      
+      async fetchCharacterData() {
+        try {
+          const adventureId = localStorage.getItem("adventure_id");
+          const { data, error } = await supabase
+            .from("characters")
+            .select("name")
+            .eq("adventure_id", adventureId) // Assuming you want to fetch the character by the user_id
+            .single();
+  
+          if (error) {
+            console.error("Error fetching character data:", error.message);
+            this.characterName = "Kidlat";  // Default name if fetch fails
+            return;
+          }
+  
+          // Store the character's name or fallback to "Kidlat"
+          this.characterName = data.name || "Kidlat";
+          console.log("Character Name:", this.characterName);
+        } catch (error) {
           console.error("Error fetching character data:", error.message);
-          this.characterName = "Kidlat";  // Default name if fetch fails
-          return;
+          this.characterName = "Kidlat";  // Default name on error
         }
-
-        // Store the character's name or fallback to "Kidlat"
-        this.characterName = data.name || "Kidlat";
-        console.log("Character Name:", this.characterName);
-      } catch (error) {
-        console.error("Error fetching character data:", error.message);
-        this.characterName = "Kidlat";  // Default name on error
-      }
+      },
+  
+      // Method to close the dialog and navigate to /deck_build
+      async closeDialog() {
+        const toast = useToast();
+        useAudioAdventure().playClick();
+        const userId = localStorage.getItem("user_id");
+        const characterId = localStorage.getItem("character_id");
+        
+        try {
+          // Check if the card already exists
+          const { data: existingCard, error: checkError } = await supabase
+            .from("cards_owned")
+            .select("*")
+            .eq("user_id", userId)
+            .eq("card_id", 73);
+  
+          if (checkError) throw checkError;
+  
+          if (existingCard.length > 0) {
+            toast("You already own this card!");
+            this.$router.push("/deck_build");
+            return;
+          }
+  
+          // Fetch card details
+          const { data: cardData, error: fetchError } = await supabase
+            .from("cards")
+            .select("*")
+            .eq("id", 73)
+            .single();
+  
+          if (fetchError) throw fetchError;
+          console.log(characterId);
+  
+          // Insert the new card into `cards_owned`
+          const { error: insertError } = await supabase.from("cards_owned").insert([
+            {
+              character_id: characterId,
+              user_id: userId,
+              card_id: 73,
+            },
+          ]);
+  
+          if (insertError) throw insertError;
+  
+          console.log("Card inserted into 'cards_owned' successfully!");
+  
+          // Close the introduction dialog and navigate to /deck_build
+          this.dialogVisibleIntro = false;
+          this.$router.push('/deck_build');
+          
+        } catch (error) {
+          console.error("Error in closeDialog:", error.message);
+        }
+      },
     },
-
-    // Method to close the dialog and navigate to /story_base
-    closeDialog() {
-      this.dialogVisibleIntro = false;  // Close the dialog
-      /* window.location.href = '/story_base'; */
-      this.$router.push('/story_base');
-    },
-  },
-};
-</script>
+  };
+  </script>
+  
 
 <style scoped>
 .close-btn {

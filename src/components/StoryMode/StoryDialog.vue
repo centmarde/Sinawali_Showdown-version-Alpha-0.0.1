@@ -92,12 +92,12 @@ import { useContinueStatus } from "@/stores/useContinueStory";
 import { useRouter } from "vue-router";
 import { supabase } from "@/lib/supabase.js";
 import { useToast } from "vue-toastification";
-
+import { useAudioAdventure } from "@/stores/adventureAudio";
 
 const router = useRouter();
 const toast = useToast();
 const isScenarioVisible = ref(true);
-
+const audioAdventure = useAudioAdventure();
 // Initialize the main game scenario store
 const gameScenarioStore = useGameScenarioStore();
 
@@ -122,17 +122,21 @@ onMounted(async () => {
 
 // Handle main option button click
 const handleButtonClick = (option) => {
+  audioAdventure.playClick();
   selectedAnswer.value = option;
   localStorage.setItem("selectedAnswer", option);
 };
 
 // Handle the help scenario option click
 const handleHelpOptionClick = (option) => {
+  audioAdventure.playClick();
   selectedHelpAnswer.value = option;
 };
 
 // Confirm the main answer
 const confirmAnswer = async () => {
+  audioAdventure.playClick();
+
   // Check if either selectedAnswer or selectedHelpAnswer is set
   if (selectedAnswer.value || selectedHelpAnswer.value) {
     const userId = localStorage.getItem("user_id");
@@ -142,35 +146,41 @@ const confirmAnswer = async () => {
     }
 
     try {
-      // Fetch the previous scene from the 'adventures' table
+      // Fetch the adventure ID from localStorage
       const adventureId = localStorage.getItem("adventure_id");
-
       if (!adventureId) {
         throw new Error("Adventure ID not found in localStorage.");
       }
 
+      // Fetch the previous scene from the 'adventures' table
       const { data: adventures, error: fetchError } = await supabase
         .from("adventures")
-        .select("intro")
+        .select("*")
         .eq("id", adventureId)
         .single();
 
       if (fetchError) throw fetchError;
 
-      const prevScene = adventures?.intro;
-
-      // Merge the scenario, selected answer, and help answer into one string
+      const prevScene = adventures?.prev_scene;
       const selectedChoice = `${gameScenarioStore.scenario} ${selectedAnswer.value || selectedHelpAnswer.value}`;
 
-      const { error: insertError } = await supabase
-        .from("scenarios")
-        .insert({
-          scene: selectedChoice,  // Insert the merged selected choice into 'scene'
-          prev_scene: prevScene,
-          user_id: userId,
-          choice: selectedAnswer.value || selectedHelpAnswer.value,  // Ensure we use the right selected choice for the 'choice' field
-          adventure_id: adventureId,
-        });
+      // Ensure selectedChoice is only used once
+      const sceneToInsert = localStorage.getItem("usedSelectedChoice")
+        ? continueStatusStore.scenario
+        : selectedChoice;
+
+      // Insert into the scenarios table
+      const { error: insertError } = await supabase.from("scenarios").insert({
+        scene: sceneToInsert,
+        prev_scene: prevScene,
+        user_id: userId,
+        choice: selectedAnswer.value || selectedHelpAnswer.value,
+        adventure_id: adventureId,
+      });
+
+      if (!localStorage.getItem("usedSelectedChoice")) {
+        localStorage.setItem("usedSelectedChoice", "true");
+      }
 
       if (insertError) throw insertError;
 
@@ -180,86 +190,56 @@ const confirmAnswer = async () => {
       const selectedOption = selectedAnswer.value || selectedHelpAnswer.value;
 
       if (selectedOption.toUpperCase() === "A") {
-        // Initialize Groq for the continue status store
-        continueStatusStore.initializeGroq("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");
-
-        // Close the current scenario
+        audioAdventure.playNotif();
+        continueStatusStore.initializeGroq(
+          "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"
+        );
         isScenarioVisible.value = false;
-
-        // Load the help scenario
         await loadHelpScenario();
-
-        // Open the help dialog
         isHelpDialogOpen.value = true;
-
       } else if (selectedOption.toUpperCase() === "B") {
-        const randomNumber = Math.floor(Math.random() * (6 - 4 + 1)) + 4; // Random number between 4 and 6
-        console.log("Random Enemy ID:", randomNumber);
+        audioAdventure.playBattle();
+        const randomEnemyId = Math.floor(Math.random() * 3) + 4; // Random number between 4 and 6
+        console.log("Random Enemy ID:", randomEnemyId);
+        localStorage.setItem("enemy_id", randomEnemyId);
 
-        // Set enemy_id in localStorage
-        localStorage.setItem("enemy_id", randomNumber);
-
-        // 30% chance to preview a new scenario or show a toast message
-        const chance = Math.random(); // Generates a random number between 0 and 1
-
-        if (chance < 0.3) { // 30% chance
-          // Initialize Groq for the continue status store
-          continueStatusStore.initializeGroq("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");
-
-          // Close any active scenario dialog and prepare for the new preview
+        if (Math.random() < 0.3) {
+          continueStatusStore.initializeGroq(
+            "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"
+          );
           isScenarioVisible.value = false;
-
-          // Open the help dialog to preview the new scenario
           isHelpDialogOpen.value = true;
-
-          // Optionally, you can load the new scenario here if needed
           await loadHelpScenario();
-
         } else {
           toast("To battle!");
           router.push("/ad_battle");
         }
-
       } else if (selectedOption.toUpperCase() === "C") {
-        // 50% chance for default behavior or alternative action
-        const chance = Math.random(); // Generates a random number between 0 and 1
-
-        if (chance < 0.8) { // 50% chance for default behavior
-          // Default case behavior
+        if (Math.random() < 0.8) {
           isHelpDialogOpen.value = false;
           isScenarioVisible.value = false;
-
-          // Optionally, display a toast message or perform other actions
           toast("You decided to take a break and reflect.");
           setTimeout(() => {
             window.location.reload();
           }, 3000);
-
         } else {
-          // 50% chance to perform some alternate action
           toast("The locals seem uncomfortable with your presence.");
-          continueStatusStore.initializeGroq("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");
-
-          // Close any active scenario dialog and prepare for the new preview
+          continueStatusStore.initializeGroq(
+            "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"
+          );
           isScenarioVisible.value = false;
-
-          // Open the help dialog to preview the new scenario
           isHelpDialogOpen.value = true;
-
-          // Optionally, you can load the new scenario here if needed
           await loadHelpScenario();
         }
-
       } else {
         alert("Please select a valid option.");
       }
 
       // Reset after confirmation
       selectedAnswer.value = null;
-      selectedHelpAnswer.value = null; // Reset help answer as well
+      selectedHelpAnswer.value = null;
       localStorage.removeItem("selectedAnswer");
       localStorage.removeItem("selectedHelpAnswer");
-
     } catch (error) {
       console.error("Failed to insert data or fetch adventures:", error);
       alert("An error occurred. Please try again later.");
@@ -271,12 +251,13 @@ const confirmAnswer = async () => {
 
 
 
+
 // Load the help scenario
 const loadHelpScenario = async () => {
   try {
     isHelpDialogOpen.value = true;
     const previousContent = gameScenarioStore.scenario;
-
+    
     await continueStatusStore.resultVictory({ cont: previousContent });
   } catch (error) {
     console.error("Error loading help scenario:", error);
