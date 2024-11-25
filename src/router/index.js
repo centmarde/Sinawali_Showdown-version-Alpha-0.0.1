@@ -34,6 +34,9 @@ import ResultBase from "@/pages/ResultBase.vue";
 import Save from "@/pages/Save.vue";
 import BustedBase from "@/pages/BustedBase.vue";
 
+import Reward from "@/pages/AdventurePages/Reward.vue";
+import Jail from "@/pages/AdventurePages/Jail.vue";
+
 const toast = useToast();
 
 // Setup routes
@@ -154,6 +157,18 @@ const routes = setupLayouts([
     meta: { requiresAuth: true },
     name: "save",
   },
+  {
+    path: "/reward",
+    component: Reward,
+    meta: { requiresAuth: true },
+    name: "reward",
+  },
+  {
+    path: "/jail",
+    component: Jail,
+    meta: { requiresAuth: true },
+    name: "jail",
+  },
 ]);
 
 const router = createRouter({
@@ -188,6 +203,8 @@ router.beforeEach((to, from, next) => {
     "/result_base",
     "/save",
     "/defeated",
+    "/reward",
+    "/jail",
   ];
   /* const nestedProtectedGroup = ["/online_character_select"]; */
 

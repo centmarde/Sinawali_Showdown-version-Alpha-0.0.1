@@ -1,4 +1,5 @@
 <template>
+  <v-container>
     <v-dialog v-model="dialogVisible" persistent max-width="600px">
       <template v-slot:default>
         <!-- Dialog Content -->
@@ -24,6 +25,8 @@
         </v-card>
       </template>
     </v-dialog>
+  </v-container>
+    
   </template>
   
   <script setup>
@@ -157,7 +160,7 @@
   
     // Close dialog and navigate to /story_base
     dialogVisible.value = false;
-    router.push("/story_base");
+    router.push("/jail");
   };
   </script>
   

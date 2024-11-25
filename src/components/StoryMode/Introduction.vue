@@ -85,49 +85,7 @@ const handleConfirm = async () => {
 };
 
 const updateOrInsertCard = async () => {
-  const characterId = localStorage.getItem("character_id");
-  
-  try {
-    // Check if the card already exists
-    const { data: existingCard, error: checkError } = await supabase
-      .from("cards_owned")
-      .select("*")
-      .eq("user_id", userId)
-      .eq("card_id", 73);
-
-    if (checkError) throw checkError;
-
-    if (existingCard.length > 0) {
-      toast("You already own this card!");
-      router.push("/deck_build");
-      return;
-    }
-
-    // Fetch card details
-    const { data: cardData, error: fetchError } = await supabase
-      .from("cards")
-      .select("*")
-      .eq("id", 73)
-      .single();
-
-    if (fetchError) throw fetchError;
-    console.log(characterId);
-    // Insert the new card into `cards_owned`
-    const { error: insertError } = await supabase.from("cards_owned").insert([
-      {
-        character_id: characterId,
-        user_id: userId,
-        card_id: 73,
-      },
-    ]);
-
-    if (insertError) throw insertError;
-
-    console.log("Card inserted into 'cards_owned' successfully!");
-    
-  } catch (error) {
-    throw new Error("Error updating or inserting card: " + error.message);
-  }
+ console.log("CSU game Dev");
 };
 </script>
 
