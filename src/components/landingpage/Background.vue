@@ -1,51 +1,81 @@
 <template>
-    <p class="beta mt-2 ms-2">Beta Version 0.0.1</p>
-    <main>
-      <!-- Sky -->
-      <img src="../../assets/parallax/bbg new.png" class="parallax layer-main-bg" data-speedx="0.03" data-speedy="0.065" alt="Background" />
-  
-      <!-- Clouds -->
-      <img src="../../assets/parallax/front cloud.png" class="parallax layer-front-cloud" data-speedx="0.065" data-speedy="0.28" alt="Front Cloud" />
-      <img src="../../assets/parallax/lcloud.png" class="parallax layer-clouds-left" data-speedx="0.065" data-speedy="0.118" alt="Left Cloud" />
-      <img src="../../assets/parallax/rcloud.png" class="parallax layer-clouds-right" data-speedx="0.1" data-speedy="0.118" alt="Right Cloud" />
-    
-    
-    
+  <p class="beta mt-2 ms-2">Beta Version 0.0.1</p>
+  <main>
+    <!-- Sky -->
+    <img
+      src="../../assets/parallax/bbg new.png"
+      class="parallax layer-main-bg"
+      data-speedx="0.03"
+      data-speedy="0.065"
+      alt="Background"
+    />
 
-      <!-- Wind -->
-      <img src="../../assets/parallax/wind.gif" class="parallax wind" data-speedx="0.1" data-speedy="0.38" alt="Wind" />
-    </main>
-  </template>
-  
-  <script>
-  export default {
-  
-  mounted() {
-    const parallaxElements = document.querySelectorAll(".parallax");
+    <!-- Clouds -->
+    <img
+      src="../../assets/parallax/front cloud.png"
+      class="parallax layer-front-cloud"
+      data-speedx="0.065"
+      data-speedy="0.28"
+      alt="Front Cloud"
+    />
+    <img
+      src="../../assets/parallax/lcloud.png"
+      class="parallax layer-clouds-left"
+      data-speedx="0.065"
+      data-speedy="0.118"
+      alt="Left Cloud"
+    />
+    <img
+      src="../../assets/parallax/rcloud.png"
+      class="parallax layer-clouds-right"
+      data-speedx="0.1"
+      data-speedy="0.118"
+      alt="Right Cloud"
+    />
 
-    window.addEventListener("mousemove", (e) => {
-      const xValue = e.clientX - window.innerWidth / 2;
-      const yValue = e.clientY - window.innerHeight / 2;
+    <!-- Wind -->
+    <img
+      src="../../assets/parallax/wind.gif"
+      class="parallax wind"
+      data-speedx="0.1"
+      data-speedy="0.38"
+      alt="Wind"
+    />
+  </main>
+</template>
 
-      parallaxElements.forEach((el) => {
-        // Parse speed values to floats for consistent calculations
-        const speedx = parseFloat(el.dataset.speedx);
-        const speedy = parseFloat(el.dataset.speedy);
+<script setup>
+import { onMounted } from "vue";
 
-        // Apply parallax transform based on mouse position and speed
-        el.style.transform = `
-          translateX(calc(-50% + ${-xValue * speedx}px)) 
-          translateY(calc(-50% + ${-yValue * speedy}px))
-        `;
-      });
+onMounted(() => {
+  const parallaxElements = document.querySelectorAll(".parallax");
+
+  const applyParallaxTransform = (xValue, yValue) => {
+    parallaxElements.forEach((el) => {
+      const speedx = parseFloat(el.dataset.speedx);
+      const speedy = parseFloat(el.dataset.speedy);
+
+      el.style.transform = `
+        translateX(calc(-50% + ${-xValue * speedx}px)) 
+        translateY(calc(-50% + ${-yValue * speedy}px))
+      `;
     });
-  },
-};
+  };
 
-  </script>
-  
-  <style scoped>
- /* Reset and Body Styling */
+  const initialXValue = window.innerWidth / 2;
+  const initialYValue = window.innerHeight / 2;
+  applyParallaxTransform(initialXValue, initialYValue);
+
+  window.addEventListener("mousemove", (e) => {
+    const xValue = e.clientX - window.innerWidth / 2;
+    const yValue = e.clientY - window.innerHeight / 2;
+    applyParallaxTransform(xValue, yValue);
+  });
+});
+</script>
+
+<style scoped>
+/* Reset and Body Styling */
 * {
   margin: 0;
   padding: 0;
@@ -72,7 +102,6 @@ main {
   height: auto;
   top: 0;
   object-fit: cover;
- 
 }
 
 /* Individual Layer Styles */
@@ -93,9 +122,8 @@ main {
 .layer-clouds-left {
   width: 1200px;
   top: calc(72% - 370px);
-  left: 40%;/* Position clouds on the left */
+  left: 40%; /* Position clouds on the left */
   z-index: 1;
-
 }
 
 .layer-clouds-right {
@@ -108,7 +136,8 @@ main {
 .wind {
   width: 100%;
   z-index: 8;
-  top: 0; /* Make sure it's positioned correctly */
+  left: 50%;
+  top: 50%; /* Make sure it's positioned correctly */
 }
 
 /* Beta Tag */
@@ -132,13 +161,30 @@ main {
 /* Media Queries for Responsiveness */
 @media (max-width: 768px) {
   .layer-main-bg {
-    width: 1200px; /* Scale down for smaller screens */
+    width: 2060px; /* Scale down for smaller screens */
+    top: calc(60% - 150px);
+    left: 50%;
   }
 
   .layer-front-cloud,
   .layer-clouds-left,
   .layer-clouds-right {
-    width: 800px;
+    width: 600px;
+  }
+
+  .layer-front-cloud {
+    top: calc(90% - 300px);
+    left: 50%;
+  }
+
+  .layer-clouds-left {
+    top: calc(72% - 250px);
+    left: 30%;
+  }
+
+  .layer-clouds-right {
+    top: calc(65% - 200px);
+    left: 70%;
   }
 
   .beta {
@@ -146,4 +192,4 @@ main {
     padding: 1px 3px;
   }
 }
-  </style>
+</style>
