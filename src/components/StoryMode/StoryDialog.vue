@@ -92,12 +92,12 @@ import { useContinueStatus } from "@/stores/useContinueStory";
 import { useRouter } from "vue-router";
 import { supabase } from "@/lib/supabase.js";
 import { useToast } from "vue-toastification";
-
+import { useAudioAdventure } from "@/stores/adventureAudio";
 
 const router = useRouter();
 const toast = useToast();
 const isScenarioVisible = ref(true);
-
+const audioAdventure = useAudioAdventure();
 // Initialize the main game scenario store
 const gameScenarioStore = useGameScenarioStore();
 
@@ -122,17 +122,20 @@ onMounted(async () => {
 
 // Handle main option button click
 const handleButtonClick = (option) => {
+  audioAdventure.playClick();
   selectedAnswer.value = option;
   localStorage.setItem("selectedAnswer", option);
 };
 
 // Handle the help scenario option click
 const handleHelpOptionClick = (option) => {
+  audioAdventure.playClick();
   selectedHelpAnswer.value = option;
 };
 
 // Confirm the main answer
 const confirmAnswer = async () => {
+  audioAdventure.playClick();
   // Check if either selectedAnswer or selectedHelpAnswer is set
   if (selectedAnswer.value || selectedHelpAnswer.value) {
     const userId = localStorage.getItem("user_id");
@@ -180,6 +183,7 @@ const confirmAnswer = async () => {
       const selectedOption = selectedAnswer.value || selectedHelpAnswer.value;
 
       if (selectedOption.toUpperCase() === "A") {
+        audioAdventure.playNotif();
         // Initialize Groq for the continue status store
         continueStatusStore.initializeGroq("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");
 
@@ -193,6 +197,7 @@ const confirmAnswer = async () => {
         isHelpDialogOpen.value = true;
 
       } else if (selectedOption.toUpperCase() === "B") {
+        audioAdventure.playBattle();
         const randomNumber = Math.floor(Math.random() * (6 - 4 + 1)) + 4; // Random number between 4 and 6
         console.log("Random Enemy ID:", randomNumber);
 

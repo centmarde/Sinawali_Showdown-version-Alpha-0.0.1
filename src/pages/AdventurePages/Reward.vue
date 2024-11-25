@@ -78,6 +78,8 @@
   import Map from "@/components/StoryMode/Map.vue";
   import { supabase } from "@/lib/supabase";
   import router from "@/router";
+  import { useAudioAdventure } from "@/stores/adventureAudio";
+
   
   export default {
     name: "StoryBase",
@@ -129,6 +131,8 @@
         }
       },
       async proceedAdventure() {
+        const audioAdventure = useAudioAdventure();
+        audioAdventure.playClick();
         const savedCharacterData = localStorage.getItem("characterData");
         const characterId = localStorage.getItem("character_id");
         const userId = localStorage.getItem("user_id");
