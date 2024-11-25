@@ -10,11 +10,11 @@
           sm="6"
           class="d-flex justify-center align-center"
         >
-          <v-img cover src="@/assets/logo.png"></v-img>
+          <v-img cover src="@/assets/logo.png " ></v-img>
         </v-col>
         <v-col cols="auto"></v-col>
       </v-row>
-      <v-row justify="center m-0 p-0">
+      <v-row justify="center m-2 p-0">
         <v-col cols="auto"></v-col>
         <v-col
           cols="12"
