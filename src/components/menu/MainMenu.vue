@@ -32,8 +32,8 @@
               src="../../assets/background/main-menu.png"
               cover
             >
-              <div class="">
-                <v-card-actions class="d-flex flex-column">
+              <div class="main-menu-btn">
+                <v-card-actions class="d-flex flex-column pt-4">
                   <v-btn
                     :class="{ 'selected-menu': selectedMenu === 0 }"
                     @click="handleNavigation('/select_character_ai')"
@@ -180,14 +180,6 @@ const handleKeydown = (event) => {
 </script>
 
 <style scoped>
-@import url("https://fonts.googleapis.com/css2?family=Rock+Salt&display=swap");
-
-.rock-salt-regular {
-  font-family: "Rock Salt", cursive;
-  font-weight: 900;
-  font-style: normal;
-}
-
 .v-card {
   max-width: 400px;
   object-fit: cover;
@@ -207,6 +199,11 @@ const handleKeydown = (event) => {
 
 .selected-menu {
   background-color: #6f34332b;
+}
+
+.main-menu-btn .v-btn {
+  font-weight: 800 !important;
+  font-family: "Merienda", cursive;
 }
 
 .centered-container {

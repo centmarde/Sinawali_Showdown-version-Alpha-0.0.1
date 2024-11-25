@@ -1,7 +1,7 @@
 <template>
   <v-container fluid fill-height class="d-flex align-center justify-center">
     <v-row class="d-flex justify-content-center">
-      <v-col cols="5" lg="4">
+      <v-col cols="4" lg="4" md="4">
         <!-- Player 1 Health Bar -->
         <div
           :class="[
@@ -19,7 +19,7 @@
           </v-progress-linear>
         </div>
         <!-- Player 1 Mana Bar -->
-        <div class="player1-mana-border me-lg-8">
+        <div class="player1-mana-border me-lg-8 me-md-8 me-sm-6">
           <v-progress-linear
             class="slanted-mana-player1"
             v-model="currentPlayerMana"
@@ -30,13 +30,13 @@
           </v-progress-linear>
         </div>
       </v-col>
-      <v-col cols="1" lg="1">
+      <v-col cols="1">
         <!-- Conditionally render Timer component based on route -->
         <Timer v-if="isStandardBattleRoute" />
         <TimerAi v-else-if="isAiBattleRoute" />
       </v-col>
       <!-- Player 2 Health Bar -->
-      <v-col cols="5" lg="4">
+      <v-col cols="4" lg="4" md="4">
         <div
           :class="[
             'player2-health-border',
@@ -55,7 +55,7 @@
         </div>
 
         <!-- Player 2 Mana Bar -->
-        <div class="player2-mana-border ms-lg-8">
+        <div class="player2-mana-border ms-lg-8 ms-md-8 ms-sm-6">
           <v-progress-linear
             class="slanted-mana-player2"
             v-model="currentPlayer2Mana"
@@ -256,6 +256,7 @@ onMounted(() => {
 
 <style scoped>
 @import url("https://fonts.googleapis.com/css2?family=Rock+Salt&display=swap");
+
 /* Common styles for both health bars */
 .v-progress-linear {
   transition: width 0.5s ease; /* Smooth transition for health and mana changes */
@@ -306,10 +307,9 @@ onMounted(() => {
   /* Clip-path to create slanted border */
   clip-path: polygon(0 0, 95% 0, 100% 100%, 5% 100%);
   display: flex;
-  justify-content: flex-end; /* Align content to the end */
+  justify-content: flex-start; /* Align content to the start */
   align-items: center; /* Center vertically */
   width: 200px; /* Set the width to match slanted-mana-player1 */
-  margin-left: auto; /* Push the element to the end */
 }
 
 .slanted-health-player2 {
@@ -367,6 +367,11 @@ onMounted(() => {
   animation: fadeInOutBorder 1.5s infinite ease-in-out;
 }
 
+.hp {
+  position: fixed; /* Fixed positioning */
+  z-index: 9999; /* Ensure it appears on top */
+}
+
 @keyframes fadeInOutBorder {
   0%,
   100% {
@@ -379,8 +384,141 @@ onMounted(() => {
   }
 }
 
-.hp {
-  position: fixed; /* Fixed positioning */
-  z-index: 9999; /* Ensure it appears on top */
+/* Media queries for large */
+@media (max-width: 1124px) {
+  .player1-img,
+  .player2-img {
+    width: 110px;
+  }
+
+  .player1-name,
+  .player2-name {
+    font-size: 22px;
+  }
+
+  .player1-name {
+    top: 55px;
+    left: 180px;
+  }
+
+  .player2-name {
+    top: 55px;
+    right: 180px;
+  }
+}
+
+/* Media queries for medium */
+@media (max-width: 992px) {
+  .player1-img,
+  .player2-img {
+    width: 100px;
+  }
+
+  .player1-img {
+    top: -10px;
+    left: 50px;
+  }
+
+  .player2-img {
+    top: -10px;
+    right: 50px;
+  }
+
+  .player1-name,
+  .player2-name {
+    font-size: 18px;
+  }
+
+  .player1-name {
+    top: 55px;
+    left: 130px;
+  }
+
+  .player2-name {
+    top: 55px;
+    right: 130px;
+  }
+}
+
+/* Media queries for small */
+@media (max-width: 768px) {
+  .player1-mana-border {
+    width: 100px;
+  }
+
+  .player2-mana-border {
+    width: 100px;
+  }
+
+  .player1-img,
+  .player2-img {
+    width: 80px;
+  }
+
+  .player1-img {
+    top: -10px;
+    left: 30px;
+  }
+
+  .player2-img {
+    top: -10px;
+    right: 30px;
+  }
+
+  .player1-name,
+  .player2-name {
+    font-size: 14px;
+  }
+
+  .player1-name {
+    top: 55px;
+    left: 100px;
+  }
+
+  .player2-name {
+    top: 55px;
+    right: 100px;
+  }
+}
+
+/* Media queries for extra small */
+@media (max-width: 576px) {
+  .player1-mana-border {
+    width: 60px;
+  }
+
+  .player2-mana-border {
+    width: 60px;
+  }
+
+  .player1-img,
+  .player2-img {
+    width: 70px;
+  }
+
+  .player1-img {
+    top: -10px;
+    left: 10px;
+  }
+
+  .player2-img {
+    top: -10px;
+    right: 10px;
+  }
+
+  .player1-name,
+  .player2-name {
+    font-size: 10px;
+  }
+
+  .player1-name {
+    top: 55px;
+    left: 60px;
+  }
+
+  .player2-name {
+    top: 55px;
+    right: 60px;
+  }
 }
 </style>
