@@ -1,5 +1,4 @@
 <template>
-
     <v-dialog v-model="dialogVisible" persistent max-width="600px">
       <template v-slot:default>
         <!-- Dialog Content -->
@@ -30,7 +29,7 @@
   <script setup>
   import { ref, onMounted } from "vue";
   import { useRouter } from "vue-router";
-  import { useResultStatus } from "@/stores/useResultStatus";
+  import { useResultStatus } from "@/stores/useBusted";
   import { supabase } from "@/lib/supabase";
   
   const ResultStatus = useResultStatus();
@@ -46,13 +45,11 @@
     try {
       // Fetch the latest scenarios row from the Supabase database
       const { data, error } = await supabase
-
         .from("scenarios")
         .select("scene")
         .order("id", { ascending: false }) // Order by latest
         .limit(1) // Get only the latest row
         .single();
-
   
       if (error) throw error;
   
@@ -108,7 +105,6 @@
   };
   </script>
   
-
 
 <style scoped>
 .scenario-content {
