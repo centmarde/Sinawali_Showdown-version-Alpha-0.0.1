@@ -67,99 +67,114 @@
   </template>
   
   <script>
-  import { ref, onMounted } from "vue";
+  import { ref, onMounted, onBeforeUnmount } from "vue";
   import { useRouter } from "vue-router";
   import { supabase } from "@/lib/supabase";
+  import { useAudioAdventure } from "@/stores/adventureAudio";
   
   export default {
     name: "AdventureSelector",
     setup() {
+      const audioStore = useAudioAdventure();
       const router = useRouter();
       const adventures = ref([]);
       const characters = ref({});
-      const dialogVisible = ref(false);  // Controls the visibility of the dialog
-      const adventureToDelete = ref(null);  // Stores the ID of the adventure to be deleted
+      const dialogVisible = ref(false);
+      const adventureToDelete = ref(null);
   
       // Fetch adventures
       const fetchAdventures = async () => {
-        const { data, error } = await supabase.from("adventures").select("*");
-        if (error) {
-          console.error("Error fetching adventures:", error);
-        } else {
+        try {
+          const { data, error } = await supabase.from("adventures").select("*");
+          if (error) throw error;
           adventures.value = data;
+        } catch (error) {
+          console.error("Error fetching adventures:", error);
         }
       };
   
       // Fetch characters associated with adventures
       const fetchCharacters = async () => {
-        const { data, error } = await supabase
-          .from("characters")
-          .select("id, adventure_id"); // Assuming `adventure_id` links characters to adventures
+        try {
+          const { data, error } = await supabase
+            .from("characters")
+            .select("id, adventure_id");
+          if (error) throw error;
   
-        if (error) {
-          console.error("Error fetching characters:", error);
-        } else {
-          // Map characters to their respective adventure IDs
           data.forEach((char) => {
             characters.value[char.adventure_id] = char.id;
           });
+        } catch (error) {
+          console.error("Error fetching characters:", error);
         }
       };
   
       // Continue adventure action
       const continueAdventure = (adventure) => {
-        const characterId = characters.value[adventure.id];
-        if (!characterId) return;
+        try {
+          audioStore.playClick();
+          const characterId = characters.value[adventure.id];
+          if (!characterId) return;
   
-        const userId = localStorage.getItem("user_id");
-        if (!userId) {
-          console.error("No user_id found in localStorage");
-          return;
+          const userId = localStorage.getItem("user_id");
+          if (!userId) {
+            console.error("No user_id found in localStorage");
+            return;
+          }
+  
+          // Save data to localStorage
+          localStorage.setItem("user_id", userId);
+          localStorage.setItem("adventure_id", adventure.id);
+          localStorage.setItem("character_id", characterId);
+  
+          router.push("/story_base");
+        } catch (error) {
+          console.error("Error continuing adventure:", error);
         }
-  
-        // Save data to localStorage manually as separate entries
-        localStorage.setItem("user_id", userId);
-        localStorage.setItem("adventure_id", adventure.id);
-        localStorage.setItem("character_id", characterId);
-  
-        // Navigate to story base
-        router.push("/story_base");
       };
   
-      // Open the delete confirmation dialog
+      // Open delete confirmation dialog
       const openDeleteDialog = (adventureId) => {
+        audioStore.playClick();
         adventureToDelete.value = adventureId;
         dialogVisible.value = true;
       };
   
-      // Confirm deletion action
+      // Confirm deletion
       const confirmDelete = async () => {
-        if (!adventureToDelete.value) return;
+        try {
+          if (!adventureToDelete.value) return;
+          audioStore.playClick();
   
-        const { error } = await supabase
-          .from("adventures")
-          .delete()
-          .eq("id", adventureToDelete.value);
+          const { error } = await supabase
+            .from("adventures")
+            .delete()
+            .eq("id", adventureToDelete.value);
+          if (error) throw error;
   
-        if (error) {
-          console.error("Error deleting adventure:", error);
-        } else {
-          // Remove the deleted adventure from the list
           adventures.value = adventures.value.filter(
             (adventure) => adventure.id !== adventureToDelete.value
           );
-          dialogVisible.value = false;  // Close the dialog after deletion
+          dialogVisible.value = false;
+        } catch (error) {
+          console.error("Error deleting adventure:", error);
         }
       };
   
-      // Navigate to create new adventure
+      // Create new adventure
       const createNewAdventure = () => {
+        audioStore.playClick();
         router.push("/story_character");
       };
   
       onMounted(() => {
         fetchAdventures();
         fetchCharacters();
+        audioStore.playAdBg();
+      });
+  
+      onBeforeUnmount(() => {
+        audioStore.pauseAdBg();
       });
   
       return {
@@ -174,6 +189,7 @@
     },
   };
   </script>
+  
   
   
   

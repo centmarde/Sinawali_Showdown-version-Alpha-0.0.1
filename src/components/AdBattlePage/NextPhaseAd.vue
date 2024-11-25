@@ -65,7 +65,7 @@
   
     <div class="battleground">
       <div class="bg1">
-        <p id="player2" class="text-center">PLayer 2</p>
+        <p id="player2" class="text-center">.</p>
         <v-row class="fill-height">
           <v-col cols="6">
             <div class="char1">
@@ -293,6 +293,7 @@
       onMounted(async () => {
         await fetchRandomCards();
         await fetchCard91(); // Fetch card 91 separately
+        audioStore.allPause();
       });
   
   

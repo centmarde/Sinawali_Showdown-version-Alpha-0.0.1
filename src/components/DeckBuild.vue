@@ -116,13 +116,16 @@ import { ref, computed, onMounted } from "vue";
 import { supabase } from "@/lib/supabase"; // Make sure to set up supabase client
 import { useToast } from "vue-toastification";
 import { useRouter } from "vue-router";
+import { useAudioStore } from "@/stores/audioStore";
+import { useAudioAdventure } from "@/stores/adventureAudio";
 
 const cards = ref([]);
 const deck = ref([]);
 const toast = useToast();
 const router = useRouter();
 const loading = ref(false);
-
+const audioStore = useAudioStore();
+const audioAdventure = useAudioAdventure();
 // Pagination state
 const currentPage = ref(1);
 const cardsPerPage = 8;
@@ -176,6 +179,7 @@ function shuffleArray(array) {
 
 // Handle card selection manually
 const selectCard = (card) => {
+  audioStore.playCardSound();
   if (deck.value.length < 7 && !deck.value.includes(card)) {
     deck.value.push(card); // Add card to deck if less than 7 cards
   } else if (deck.value.length >= 7) {
@@ -197,6 +201,7 @@ const openDialog = (card) => {
 
 // Confirm the deck and insert into `deck_builds` table
 const confirmDeck = async () => {
+  audioAdventure.playClick();
   const userId = localStorage.getItem("user_id");
 
   if (!userId) {

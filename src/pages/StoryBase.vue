@@ -26,6 +26,8 @@ import StoryDialog from "@/components/StoryMode/StoryDialog.vue";
 import router from "@/router";
 import { supabase } from "@/lib/supabase";
 import { useGameScenarioStore } from "@/stores/useGameScenarioStore";
+import { useAudioAdventure } from "@/stores/adventureAudio";
+import { onMounted } from "vue";
 
 export default {
   name: "StoryBase",
@@ -37,8 +39,22 @@ export default {
       storyDialogKey: 0, // Unique key for the StoryDialog component
     };
   },
+  setup() {
+    const audioStore = useAudioAdventure();
+
+    // Play "village" audio when the component is mounted
+    onMounted(() => {
+      audioStore.playVillage();
+      audioStore.playAdBg();
+    });
+
+    return {
+      audioStore,
+    };
+  },
   methods: {
     async handlePinClicked(area) {
+      this.audioStore.playClick(); // Play click sound
       const gameScenarioStore = useGameScenarioStore();
       gameScenarioStore.initializeGroq("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");
 
@@ -92,6 +108,7 @@ export default {
   },
 };
 </script>
+
 
 
 

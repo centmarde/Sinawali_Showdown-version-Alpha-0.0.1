@@ -33,18 +33,20 @@
   import { useRouter } from "vue-router";
   import { useResultStatus } from "@/stores/useResultStatus";
   import { supabase } from "@/lib/supabase";
-  
+  import { useAudioAdventure } from "@/stores/adventureAudio";
+
   const ResultStatus = useResultStatus();
   const dialogVisible = ref(true); // Dialog initially visible
   const router = useRouter();
   const characterId = localStorage.getItem("character_id");
-  
+  const audioStore = useAudioAdventure();
   // Ensure Groq is initialized
   if (!ResultStatus.groq) {
     ResultStatus.initializeGroq("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");
   }
   
   onMounted(async () => {
+    audioStore.playVictory();
     try {
       // Fetch the latest scenarios row from the Supabase database
       const { data, error } = await supabase
