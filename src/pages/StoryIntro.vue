@@ -84,7 +84,7 @@ export default {
     closeDialog() {
       this.dialogVisibleIntro = false;  // Close the dialog
       /* window.location.href = '/story_base'; */
-      this.$router.push('/story_base');
+      this.$router.push('/deck_build');
     },
   },
 };
