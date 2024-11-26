@@ -53,59 +53,80 @@ export default {
     };
   },
   methods: {
-    async handlePinClicked(area) {
-      this.audioStore.playClick(); // Play click sound
-      const gameScenarioStore = useGameScenarioStore();
-      gameScenarioStore.initializeGroq("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");
+  async handlePinClicked(area) {
+    this.audioStore.playClick(); // Play click sound
+    const gameScenarioStore = useGameScenarioStore();
+    gameScenarioStore.initializeGroq("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");
 
-      gameScenarioStore.startScenario(area); // Pass the area to startScenario
-      this.dialogVisible = true; // Open the StoryDialog
+    // Fetch adventure intro and pass it as bio parameter
+    const bio = await this.fetchAdventureIntro();
 
-      // Fetch character data and save to localStorage
-      await this.fetchAndSaveCharacterData();
+    gameScenarioStore.startScenario(area, bio); // Pass the area and bio to startScenario
+    this.dialogVisible = true; // Open the StoryDialog
 
-      this.reloadStoryDialog();
-    },
-    invokeChildOneMethod() {
-      router.push("/deck_build");
-    },
-    invokeChildTwoMethod() {
-      console.log("invokeChildTwoMethod triggered");
-    },
-    reloadMap() {
-      this.mapKey += 1; // Update the key to trigger remount of Map
-    },
-    reloadStoryDialog() {
-      this.storyDialogKey += 1; // Update the key to trigger remount of StoryDialog
-    },
-    async fetchAndSaveCharacterData() {
-      try {
-        const characterId = localStorage.getItem("character_id");
-        if (!characterId) {
-          console.warn("No character ID found in localStorage.");
-          return;
-        }
+    // Fetch character data and save to localStorage
+    await this.fetchAndSaveCharacterData();
 
-        // Fetch character data from the database
-        const { data: characterData, error } = await supabase
-          .from("characters")
-          .select("*")
-          .eq("id", characterId)
-          .single();
-
-        if (error) {
-          console.error("Error fetching character data:", error.message);
-          return;
-        }
-
-        // Save character data to `localStorage` as a JSON string
-        localStorage.setItem("characterData", JSON.stringify(characterData));
-        console.log("Character data saved to localStorage:", characterData);
-      } catch (error) {
-        console.error("Error in fetchAndSaveCharacterData:", error.message);
-      }
-    },
+    this.reloadStoryDialog();
   },
+
+  async fetchAdventureIntro() {
+    try {
+      const adventureId = localStorage.getItem("adventure_id"); // Get adventure ID from localStorage
+      if (!adventureId) {
+        console.warn("No adventure ID found in localStorage.");
+        return null;
+      }
+
+      // Fetch adventure data from the database
+      const { data: adventureData, error } = await supabase
+        .from("adventures")
+        .select("intro")
+        .eq("id", adventureId)
+        .single();
+
+      if (error) {
+        console.error("Error fetching adventure data:", error.message);
+        return null;
+      }
+
+      // Return the intro as the bio parameter
+      return adventureData.intro;
+    } catch (error) {
+      console.error("Error in fetchAdventureIntro:", error.message);
+      return null;
+    }
+  },
+  
+  async fetchAndSaveCharacterData() {
+    try {
+      const characterId = localStorage.getItem("character_id");
+      if (!characterId) {
+        console.warn("No character ID found in localStorage.");
+        return;
+      }
+
+      // Fetch character data from the database
+      const { data: characterData, error } = await supabase
+        .from("characters")
+        .select("*")
+        .eq("id", characterId)
+        .single();
+
+      if (error) {
+        console.error("Error fetching character data:", error.message);
+        return;
+      }
+
+      // Save character data to `localStorage` as a JSON string
+      localStorage.setItem("characterData", JSON.stringify(characterData));
+      console.log("Character data saved to localStorage:", characterData);
+    } catch (error) {
+      console.error("Error in fetchAndSaveCharacterData:", error.message);
+    }
+  },
+}
+
 };
 </script>
 
