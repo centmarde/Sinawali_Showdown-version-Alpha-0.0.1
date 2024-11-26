@@ -84,6 +84,7 @@
             <v-btn color="secondary" @click="goBack" style="position: fixed; left: 20px; bottom: 20px; z-index: 20">
               Back
             </v-btn>
+           <!--  <v-btn style="position: fixed; left: 7rem; bottom: 20px; z-index: 20" color="danger" @click="resetDeck">Reset Deck</v-btn> -->
             <!-- Floating Confirmation button -->
             <v-btn v-if="deck.length > 0" color="primary" @click="confirmDeck"
               :disabled="loading || deck.length < 1 || deck.length > 10"
@@ -136,6 +137,7 @@ const selectedCard = ref({});
 const userId = localStorage.getItem("user_id");
 // Fetch cards from the Supabase `cards` table
 onMounted(async () => {
+  resetDeck();
   console.log(userId);
   const { data: deckBuilds, error: deckBuildsError } = await supabase
   .from("cards_owned")
@@ -212,43 +214,61 @@ const confirmDeck = async () => {
 
   loading.value = true;
   try {
-    for (const card of deck.value) {
-      // Check if the card already exists in the table for the given user
-      const { data: existingCards, error: fetchError } = await supabase
-        .from("deck_builds")
-        .select("id")
-        .eq("user_id", userId)
-        .eq("card_id", card.id);
+  // First, check if the user already has 7 cards in their deck
+  const { data: existingDeck, error: fetchDeckError } = await supabase
+    .from("deck_builds")
+    .select("id")
+    .eq("user_id", userId);
 
-      if (fetchError) {
-        console.error("Error checking for duplicate:", fetchError);
-        continue; // Skip this card and move to the next one
-      }
+  if (fetchDeckError) {
+    console.error("Error fetching existing deck:", fetchDeckError);
+    return; // Stop if there's an error fetching the user's deck
+  }
 
-      // Insert only if the card does not already exist (check if existingCards has no results)
-      if (existingCards.length === 0) {
-        const adventureId = localStorage.getItem("adventure_id");
-        const { error: insertError } = await supabase.from("deck_builds").insert([
-          {
-            user_id: userId,
-            card_id: card.id,
-            adventure_id: adventureId,
-          },
-        ]);
+  // If there are 7 cards, prevent further inserts
+  if (existingDeck.length >= 7) {
+    console.log("A user can only have up to 7 cards in their deck.");
+    toast("You can only have 7 cards in your deck.");
+    return; // Abort the insert operation if the limit is reached
+  }
 
-        if (insertError) {
-          console.error("Error inserting card into deck:", insertError);
-        } else {
-          toast("Inserted successfully!");
-        }
-      }
+  // Insert new cards only if the user has fewer than 7
+  for (const card of deck.value) {
+    // Check if the card already exists in the table for the given user
+    const { data: existingCards, error: fetchError } = await supabase
+      .from("deck_builds")
+      .select("id")
+      .eq("user_id", userId)
+      .eq("card_id", card.id);
+
+    if (fetchError) {
+      console.error("Error checking for duplicate:", fetchError);
+      continue; // Skip this card and move to the next one
     }
 
-    toast("Deck has been confirmed!");
-    router.push("/story_base");
-  } finally {
-    loading.value = false; // Set loading to false once done
+    // Insert only if the card does not already exist (check if existingCards has no results)
+    if (existingCards.length === 0) {
+      const adventureId = localStorage.getItem("adventure_id");
+      const { error: insertError } = await supabase.from("deck_builds").insert([
+        {
+          user_id: userId,
+          card_id: card.id,
+          adventure_id: adventureId,
+        },
+      ]);
+
+      if (insertError) {
+        console.error("Error inserting card into deck:", insertError);
+      } 
+    }
   }
+
+  toast("Deck has been confirmed!");
+  router.push("/story_base");
+} finally {
+  loading.value = false; // Set loading to false once done
+}
+
 };
 
 
@@ -335,6 +355,33 @@ const getTextShadowStyle = (card) => {
   }
 };
 
+const resetDeck = async () => {
+  try {
+    // Show a confirmation before resetting the deck
+  
+    // Delete all the cards in the deck for the current user
+    const { error } = await supabase
+      .from("deck_builds")
+      .delete()
+      .eq("user_id", userId);
+
+    if (error) {
+      console.error("Error resetting deck:", error);
+      toast.left("An error occurred while resetting your deck.", {
+  position: "top-left",  
+});
+    } else {
+      console.log("Deck has been successfully reset.");
+      toast("Your deck has been reset.", {
+  position: "top-left",  
+});
+
+    }
+  } catch (err) {
+    console.error("Unexpected error during deck reset:", err);
+    toast("An unexpected error occurred.");
+  }
+};
 
 </script>
 

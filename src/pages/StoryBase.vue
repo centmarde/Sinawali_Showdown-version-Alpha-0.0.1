@@ -87,7 +87,6 @@
     <div class="circle-circle"></div>
   </div>
 </template>
-
 <script>
 import Map from "@/components/StoryMode/Map.vue";
 import StoryDialog from "@/components/StoryMode/StoryDialog.vue";
@@ -97,6 +96,7 @@ import { useGameScenarioStore } from "@/stores/useGameScenarioStore";
 import { useAudioAdventure } from "@/stores/adventureAudio";
 import { onMounted } from "vue";
 import { useAudioStore } from "@/stores/audioStore";
+
 export default {
   name: "StoryBase",
   components: { Map, StoryDialog },
@@ -112,6 +112,38 @@ export default {
   setup() {
     const audioStore = useAudioAdventure();
     const audioStore2 = useAudioStore();
+
+    const fetchAndSaveCharacterData = async () => {
+      try {
+        const characterId = localStorage.getItem("character_id");
+        if (!characterId) {
+          console.warn("No character ID found in localStorage.");
+          return;
+        }
+
+        // Fetch character data from the database
+        const { data: characterData, error } = await supabase
+          .from("characters")
+          .select("*")
+          .eq("id", characterId)
+          .single();
+
+        if (error) {
+          console.error("Error fetching character data:", error.message);
+          return;
+        }
+
+        // Save character data to `localStorage` as a JSON string
+        localStorage.setItem("characterData", JSON.stringify(characterData));
+        console.log("Character data saved to localStorage:", characterData);
+      } catch (error) {
+        console.error("Error in fetchAndSaveCharacterData:", error.message);
+      }
+    };
+
+    // Call the method during the `onMounted` lifecycle
+    onMounted(fetchAndSaveCharacterData);
+
     // Play "village" audio when the component is mounted
     onMounted(() => {
       audioStore.playVillage();
@@ -125,7 +157,6 @@ export default {
   },
   methods: {
     async handlePinClicked(area) {
-    
       this.audioStore.playClick(); // Play click sound
       const gameScenarioStore = useGameScenarioStore();
       gameScenarioStore.initializeGroq(
@@ -266,6 +297,7 @@ export default {
   },
 };
 </script>
+
 
 <style scoped>
 .top-right-icon1 {

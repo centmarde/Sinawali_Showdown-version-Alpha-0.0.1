@@ -42,7 +42,7 @@
               <v-card-subtitle class="text-center">
                 Value: {{ potion.value }} Energy
               </v-card-subtitle>
-              <v-card-subtitle class="text-center card-price">
+              <v-card-subtitle class="text-center card-price-po">
                 Price: ${{ potion.price }}
               </v-card-subtitle>
               <v-btn color="secondary" @click="purchasePotion(potion)">
@@ -324,12 +324,24 @@ export default {
   .card-title {
     font-size: 18px;
     font-weight: bold;
+    -webkit-text-stroke: 1px #333333; /* Dark stroke effect */
   }
   
   .card-price {
-    font-family: "Merienda", cursive;
-    font-size: 1rem;
-  }
+  font-family: "Merienda", cursive;
+  font-size: 2rem;
+  font-weight: bold;
+  color: #EEEEEE;
+  -webkit-text-stroke: 1px #333333; /* Dark stroke effect */
+}
+.card-price-po {
+  font-family: "Merienda", cursive;
+  font-size: 1rem;
+  font-weight: bold;
+  color: #EEEEEE;
+ 
+}
+
   
   .card-description {
     font-size: 12px;
