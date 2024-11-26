@@ -131,8 +131,10 @@
 import { useCharacterBackground } from "@/stores/useCharacterBackground"; // Adjust path as needed
 import { supabase } from '@/lib/supabase'; // Import Supabase client
 import router from "@/router/index";
+import { useAudioAdventure } from "@/stores/adventureAudio";
 
 export default {
+    
     data() {
         return {
             selectedJob: null,
@@ -184,7 +186,11 @@ export default {
             characterBackground: "",
         };
     },
+
+   
     methods: {
+
+
         chooseJob(job) {
             this.selectedJob = job;
             this.setJobTraits(job.name);
@@ -280,6 +286,8 @@ export default {
         },
         async insertIntoDB() {
             try {
+                const adventureAudio = useAudioAdventure();
+                adventureAudio.playClick(); 
                 const userId = localStorage.getItem('user_id'); // Get user_id from localStorage
 
                 // Insert into adventures table

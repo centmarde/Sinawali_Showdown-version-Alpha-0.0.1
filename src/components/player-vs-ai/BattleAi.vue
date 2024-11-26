@@ -10,8 +10,8 @@
         <v-col cols="8" lg="4" sm="4" md="5" class="text-center skip ">
           <div @click="openDialog(card91)" style="cursor: pointer;">
 
-            <img src="../../assets/images/charge.png" style="width: 50px;"></img>
-            <span class="bar">charge mana</span>
+            <img src="../../assets/images/charge.png" style="width: 80px;"></img>
+            <span class="bar">charge Energy</span>
 
           </div>
         </v-col>
@@ -858,9 +858,9 @@ export default {
 }
 
 .skip {
-  top: 17.3rem;
+  top: 18.3rem;
   position: fixed;
-  left: 38rem;
+  left: 35rem;
 }
 
 .bag {
@@ -872,8 +872,10 @@ export default {
 
 .bar {
   position: absolute;
-  left: 1rem;
-  font-size: 10px;
+  left: 1.6rem;
+  font-size: 15px;
+  bottom: 2rem;
+  font-family:  "Merienda", cursive;
 
 }
 @media (max-width: 1300px) {
@@ -883,9 +885,9 @@ export default {
 }
 @media (max-width: 600px) {
   .skip {
-    top: -17.5rem;
+    top: -15.5rem;
     position: fixed;
-    left: 7.2rem;
+    left: 5.5rem;
   }
 
   .bag {
@@ -898,6 +900,7 @@ export default {
     display: none;
   }
 }
+
 
 //for cards CSS
 

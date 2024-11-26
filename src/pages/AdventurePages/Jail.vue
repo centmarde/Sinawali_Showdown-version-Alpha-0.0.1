@@ -79,7 +79,7 @@
   import Map from "@/components/StoryMode/Map.vue";
   import { supabase } from "@/lib/supabase";  // Correctly import supabase
   import router from "@/router";
-  
+  import { useAudioAdventure } from "@/stores/adventureAudio";
   export default {
     name: "Jail",
     components: { Map },
@@ -139,7 +139,7 @@
             this.stolenCard = cardDetails;
             this.cardToDeleteId = randomCard.card_id;
           } else {
-            console.warn("No cards available to delete.");
+            console.log("No cards available to delete.");
           }
         } catch (error) {
           console.error("Error with fetchCardToBeDeleted:", error);
@@ -147,6 +147,8 @@
       },
   
       async proceedAdventure() {
+        const audioAdventure = useAudioAdventure();
+        audioAdventure.playClick();
         const savedCharacterData = localStorage.getItem("characterData");
         const characterId = localStorage.getItem("character_id");
   

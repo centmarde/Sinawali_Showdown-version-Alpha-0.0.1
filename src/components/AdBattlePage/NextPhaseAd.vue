@@ -21,8 +21,8 @@
           <v-col cols="8" lg="4" sm="4" md="5" class="text-center skip ">
             <div @click="openDialog(card91)" style="cursor: pointer;">
   
-              <img src="../../assets/images/charge.png" style="width: 50px;"></img>
-              <span class="bar">charge mana</span>
+              <img src="../../assets/images/charge.png" style="width: 80px;"></img>
+            <span class="bar">charge Energy</span>
   
             </div>
           </v-col>
@@ -65,7 +65,7 @@
   
     <div class="battleground">
       <div class="bg1">
-        <p id="player2" class="text-center">PLayer 2</p>
+        <p id="player2" class="text-center">.</p>
         <v-row class="fill-height">
           <v-col cols="6">
             <div class="char1">
@@ -293,6 +293,7 @@
       onMounted(async () => {
         await fetchRandomCards();
         await fetchCard91(); // Fetch card 91 separately
+        audioStore.allPause();
       });
   
   
@@ -480,7 +481,7 @@
   
   
               // Constant character ID
-              const characterId = revertedCharacter.value;
+              const characterId = selectedCharacter.value;
               console.log(characterId);
   
   

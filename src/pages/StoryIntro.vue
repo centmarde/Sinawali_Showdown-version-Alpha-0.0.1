@@ -36,7 +36,9 @@
   import StoryDialog from "@/components/StoryMode/StoryDialog.vue";
   import Introduction from "@/components/StoryMode/Introduction.vue";
   import { supabase } from "@/lib/supabase";
-  import { useRouter } from 'vue-router'; // Import useRouter
+  import { useRouter } from 'vue-router';
+  import { useAudioAdventure } from "@/stores/adventureAudio";
+  import { useToast } from "vue-toastification";
   
   export default {
     name: "StoryBase",
@@ -55,6 +57,7 @@
     },
   
     methods: {
+      
       async fetchCharacterData() {
         try {
           const adventureId = localStorage.getItem("adventure_id");
@@ -81,6 +84,8 @@
   
       // Method to close the dialog and navigate to /deck_build
       async closeDialog() {
+        const toast = useToast();
+        useAudioAdventure().playClick();
         const userId = localStorage.getItem("user_id");
         const characterId = localStorage.getItem("character_id");
         

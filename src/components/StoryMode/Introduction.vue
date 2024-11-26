@@ -38,12 +38,13 @@ import { useIntroDay } from "@/stores/useIntroDay";
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "vue-router";
 import { useToast } from "vue-toastification";
+import { useAudioAdventure } from "@/stores/adventureAudio";
 
 const userId = localStorage.getItem("user_id");
 const adventureId = localStorage.getItem("adventure_id");
 const toast = useToast();
 const router = useRouter();
-
+const audioAdventure = useAudioAdventure();
 const IntroDay = useIntroDay();
 const dialogVisible = ref(true);
 
@@ -70,6 +71,7 @@ onMounted(async () => {
 });
 
 const closeDialog = () => {
+  audioAdventure.playClick();
   dialogVisible.value = false;
  
 };
