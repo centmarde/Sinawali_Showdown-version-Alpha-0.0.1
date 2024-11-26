@@ -1,137 +1,164 @@
 <template>
-    <!-- Header: "Build Your Hero" -->
-    <v-row justify="center">
-      <v-col cols="12" class="text-center">
-        <h1 class="mt-4">Create Your Legend</h1> <!-- Add Header Here -->
-      </v-col>
-    </v-row>
+    <v-img 
+      src="@/assets/images/bgCharacterBuild.jpg"
+      class="characterBuild-background"
+      alt="build"
+      cover
+    >
+      <!-- Header: "Build Your Hero" -->
+      <v-row justify="center">
+  <v-col cols="12" class="text-center">
+    <h1 class="mt-10" style="font-family: 'Merienda', cursive;">Create Your Legend</h1>
+  </v-col>
+</v-row>
+      <v-container>
+        <!-- Jobs Row: Separated Above Character Background -->
+        <v-row justify="center" class="mt-6"> <!-- Added margin top for spacing -->
+          <v-col cols="12" md="6">
+            <v-card class="pa-4" outlined>
+              <p class="font-weight-bold text-center mt-5" style="font-family: 'Merienda', cursive">SELECT A ROLE</p>
+              <v-divider></v-divider>
+              <!-- Jobs Row -->
+              <v-row justify="center" class="my-4">
+                <v-col v-for="(job, index) in jobs" :key="index" cols="12" md="4" class="my-2">
+                  <v-btn 
+                    @click="chooseJob(job)" 
+                    :color="selectedJob === job ? 'primary' : ''"
+                    class="d-flex justify-center align-center" 
+                    tile
+                  >
+                    <v-icon :size="40">{{ job.icon }}</v-icon>
+                    <span class="ml-2">{{ job.name }}</span>
+                  </v-btn>
+                </v-col>
+              </v-row>
+            </v-card>
+          </v-col>
+        </v-row>
   
-    <v-container>
-      <!-- Jobs Row: Separated Above Character Background -->
-      <v-row justify="center" class="mt-6"> <!-- Added margin top for spacing -->
-        <v-col cols="12" md="8">
-          <v-card class="pa-4" outlined>
-            <p class="font-weight-bold text-center mt-5">SELECT A ROLE</p>
-            <v-divider></v-divider>
-            <!-- Jobs Row -->
-            <v-row justify="center" class="my-4">
-              <v-col v-for="(job, index) in jobs" :key="index" cols="12" md="4" class="my-2">
-                <v-btn @click="chooseJob(job)" :color="selectedJob === job ? 'primary' : ''"
-                  class="d-flex justify-center align-center" tile>
-                  <v-icon :size="40">{{ job.icon }}</v-icon>
-                  <span class="ml-2">{{ job.name }}</span>
-                </v-btn>
-              </v-col>
-            </v-row>
-          </v-card>
-        </v-col>
-      </v-row>
+        <!-- Jobs & Personality Choices -->
+        <v-row>
+          <v-col>
+            <v-card class="pa-4" outlined>
+              <!-- Personality Choices -->
+              <p class="font-weight-bold text-center mt-5" style="font-family: 'Merienda', cursive">Define Your Hero’s Traits</p>
+              <v-divider></v-divider>
+              <v-row class="mt-4">
+                <v-col v-for="(personality, index) in personalities" :key="index" cols="12" md="4">
+                  <v-btn 
+                    @click="applyPersonality(personality)"
+                    :color="selectedPersonality.includes(personality) ? 'secondary' : ''"
+                    class="d-flex justify-center align-center" 
+                    tile
+                    :disabled="selectedPersonality.length >= 4 && !selectedPersonality.includes(personality)"
+                  >
+                    <v-icon :size="30">{{ personality.icon }}</v-icon>
+                    <span class="ml-2">{{ personality.name }}</span>
+                  </v-btn>
+                </v-col>
+              </v-row>
   
-      <!-- Jobs & Personality Choices -->
-      <v-row>
-        <v-col>
-          <v-card class="pa-4" outlined>
-            <!-- Personality Choices -->
-            <p class="font-weight-bold text-center mt-5">Define Your Hero’s Traits</p>
-            <v-divider></v-divider>
-            <v-row class="mt-4">
-              <v-col v-for="(personality, index) in personalities" :key="index" cols="12" md="4">
-                <v-btn @click="applyPersonality(personality)"
-                  :color="selectedPersonality.includes(personality) ? 'secondary' : ''"
-                  class="d-flex justify-center align-center" tile
-                  :disabled="selectedPersonality.length >= 4 && !selectedPersonality.includes(personality)">
-                  <v-icon :size="30">{{ personality.icon }}</v-icon>
-                  <span class="ml-2">{{ personality.name }}</span>
-                </v-btn>
-              </v-col>
-            </v-row>
+              <!-- Personality Limit Info -->
+              <v-row class="mt-4">
+                <v-col cols="12">
+                  <v-alert type="info" v-if="selectedPersonality.length >= 4" style="font-family: 'Merienda', cursive">
+                    You've reached the maximum of 4 personality choices.
+                  </v-alert>
+                </v-col>
+              </v-row>
   
-            <!-- Personality Limit Info -->
-            <v-row class="mt-4">
-              <v-col cols="12">
-                <v-alert type="info" v-if="selectedPersonality.length >= 4">
-                  You've reached the maximum of 4 personality choices.
-                </v-alert>
-              </v-col>
-            </v-row>
+              <!-- Reset Personality Button -->
+              <v-row class="mt-4">
+                <v-col cols="12">
+                  <v-btn @click="resetPersonality" color="error" class="w-100" style="font-family: 'Merienda', cursive">
+                    Reset Personality Choices
+                  </v-btn>
+                </v-col>
+              </v-row>
+            </v-card>
+          </v-col>
   
-            <!-- Reset Personality Button -->
-            <v-row class="mt-4">
-              <v-col cols="12">
-                <v-btn @click="resetPersonality" color="error" class="w-100">
-                  Reset Personality Choices
-                </v-btn>
-              </v-col>
-            </v-row>
-          </v-card>
-        </v-col>
+          <!-- Right Column: Traits Progress Bars -->
+          <v-col>
+            <v-card class="pa-4 text-center" style="font-family: 'Merienda', cursive"outlined>
+              <v-card-title>Character Traits</v-card-title>
+              <v-divider></v-divider>
+              <v-row class="mt-4">
+                <v-col v-for="(trait, index) in traits" :key="index" cols="12" md="12">
+                  <v-row>
+                    <v-col class="d-flex align-center">
+                      <v-icon :size="24">{{ trait.icon }}</v-icon>
+                      <span class="ml-2">{{ trait.name }}</span>
+                    </v-col>
+                    <v-col>
+                      <v-progress-linear
+                        class="mt-2 mb-4 text-overline font-weight-bold animated-progress"
+                        :model-value="traitValues[trait.name]" 
+                        max="100" 
+                        color="#ffd82b" 
+                        height="27"
+                        rounded
+                        :style="`--progress-shadow-color: rgba(255, 216, 43, ${traitValues[trait.name] / 100});`"
+                      >
+                      </v-progress-linear>
+                    </v-col>
+                  </v-row>
+                </v-col>
+              </v-row>
+            </v-card>
+          </v-col>
+        </v-row>
   
-        <!-- Right Column: Traits Progress Bars -->
-        <v-col>
-          <v-card class="pa-4" outlined>
-            <v-card-title>Character Traits</v-card-title>
-            <v-divider></v-divider>
-            <v-row class="mt-4">
-              <v-col v-for="(trait, index) in traits" :key="index" cols="12" md="12">
-                <v-row>
-                  <v-col class="d-flex align-center">
-                    <v-icon :size="24">{{ trait.icon }}</v-icon>
-                    <span class="ml-2">{{ trait.name }}</span>
-                  </v-col>
-                  <v-col>
-                    <v-progress-linear
-                      class="mt-2 mb-4 text-overline font-weight-bold animated-progress"
-                      :model-value="traitValues[trait.name]" max="100" color="#ffd82b" height="27"
-                      rounded
-                      :style="`--progress-shadow-color: rgba(255, 216, 43, ${traitValues[trait.name] / 100});`">
-                    </v-progress-linear>
-                  </v-col>
-                </v-row>
-              </v-col>
-            </v-row>
-          </v-card>
-        </v-col>
-      </v-row>
+        <!-- Character Background: Below Personality and Traits Sections -->
+        <v-row justify="center" class="mt-6">
+          <v-col cols="12" md="8">
+            <v-card class="pa-4" outlined style="font-family: 'Merienda', cursive">
+              <v-card-title> Craft Your Hero’s Story</v-card-title>
+              <v-row>
+                <v-col cols="12">
+                  <div 
+                    v-html="characterBackground" 
+                    style="max-height: 164px; padding:2rem; overflow-y: auto;"
+                  ></div>
+                </v-col>
+              </v-row>
   
-      <!-- Character Background: Below Personality and Traits Sections -->
-      <v-row justify="center" class="mt-6">
-        <v-col cols="12" md="8">
-          <v-card class="pa-4" outlined>
-            <v-card-title> Craft Your Hero’s Story</v-card-title>
-            <v-row>
-              <v-col cols="12">
-                <div v-html="characterBackground" style="max-height: 164px; padding:2rem; overflow-y: auto;"></div>
-              </v-col>
-            </v-row>
+              <!-- Button to Generate Background and Log Data -->
+              <v-row class="mt-4" justify="center">
+                <v-col cols="12" class="d-flex justify-center">
+                  <v-btn @click="generateCharacterBackground" color="primary" class="w-20">
+                    Generate
+                  </v-btn>
+                </v-col>
+              </v-row>
   
-            <!-- Button to Generate Background and Log Data -->
-            <v-row class="mt-4" justify="center">
-              <v-col cols="12" class="d-flex justify-center">
-                <v-btn @click="generateCharacterBackground" color="primary" class="w-20">
-                  Generate
-                </v-btn>
-              </v-col>
-            </v-row>
-  
-            <!-- Newly Added Section -->
-            <v-row justify="center">
-              <v-col cols="12" class="d-flex justify-center">
-                <v-btn class="mx-auto" style="width: 200px;" v-if="characterBackground"
-                  @click="insertIntoDB">Start</v-btn>
-              </v-col>
-            </v-row>
-          </v-card>
-        </v-col>
-      </v-row>
-  
-    </v-container>
+              <!-- Newly Added Section -->
+              <v-row justify="center">
+                <v-col cols="12" class="d-flex justify-center">
+                  <v-btn 
+                    class="mx-auto" 
+                    style="width: 200px;" 
+                    v-if="characterBackground"
+                    @click="insertIntoDB"  color="secondary"
+                  >
+                    Start
+                  </v-btn>
+                </v-col>
+              </v-row>
+            </v-card>
+          </v-col>
+        </v-row>
+      </v-container>
+    </v-img>
   </template>
+  
   
 <script>
 import { useCharacterBackground } from "@/stores/useCharacterBackground"; // Adjust path as needed
 import { supabase } from '@/lib/supabase'; // Import Supabase client
 import router from "@/router/index";
 import { useAudioAdventure } from "@/stores/adventureAudio";
+
 
 export default {
     
@@ -356,6 +383,7 @@ export default {
 };
 </script>
 
+
 <style scoped>
 .animated-progress {
     animation: brighten 2s infinite;
@@ -376,3 +404,4 @@ export default {
     }
 }
 </style>
+<link href="https://fonts.googleapis.com/css2?family=Merienda&display=swap" rel="stylesheet"></link>
