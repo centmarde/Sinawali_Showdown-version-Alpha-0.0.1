@@ -8,25 +8,30 @@
 
     <!-- Scenario Content -->
     <div class="scenario-content" v-if="IntroDay.scenario">
-      <p v-html="IntroDay.scenario"></p>
+      <p v-html="IntroDay.scenario" ></p>
 
       <!-- Option Buttons -->
       <div>
-        <v-btn @click="handleConfirm">Confirm</v-btn>
+        <v-btn @click="handleConfirm" style="font-family: 'Merienda', cursive">Confirm</v-btn>
       </div>
     </div>
 
     <!-- Dialog for displaying the scenario -->
-    <v-dialog v-model="dialogVisible" max-width="600" persistent>
-      <v-card>
-        <v-card-title class="text-h6">Fresh Start!</v-card-title>
+    <v-dialog v-model="dialogVisible" max-width="500" persistent>
+      <v-img class="align-center"
+              height="600"
+              width="900"
+              src="../../assets/images/freshstart.png"
+              cover
+            >
+        <v-card-title class="text-h6" style="font-family: 'Merienda', cursive">Fresh Start!</v-card-title>
         <v-card-text>
           <p v-html="IntroDay.scenario"></p>
         </v-card-text>
         <v-card-actions>
-          <v-btn @click="closeDialog">Close</v-btn>
+          <v-btn @click="closeDialog" style="font-family: 'Merienda', cursive">Close</v-btn>
         </v-card-actions>
-      </v-card>
+      </v-img>
     </v-dialog>
   </div>
 </template>
