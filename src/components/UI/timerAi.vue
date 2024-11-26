@@ -66,7 +66,7 @@
     </v-dialog>
 
     <!-- Dialog for Timer Completion -->
-    <v-dialog v-model="timeUpDialog" max-width="400">
+    <v-dialog v-model="timeUpDialog" max-width="400" persistent>
       <v-card>
         <v-card-title class="text-h5">Time's up!</v-card-title>
         <v-card-text>You are out of time!</v-card-text>
@@ -80,6 +80,7 @@
 
 <script>
 import { usePlayerStore } from "../../stores/healthBarAd"; // Adjust the import path as necessary
+import {useAudioStore} from "@/stores/audioStore";
 
 export default {
   data() {
@@ -125,6 +126,7 @@ export default {
       this.startTimer(); // Restart the timer
     },
     exitGame() {
+      useAudioStore(). allPause();
       this.dialog = false;
       this.$router.push("/"); // Redirect to the homepage or another route
     },

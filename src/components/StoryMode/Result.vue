@@ -75,6 +75,62 @@
   const closeDialog = async () => {
     try {
       // Retrieve character data from localStorage
+      const savedCharacterData = localStorage.getItem("characterData");
+      if (savedCharacterData) {
+        const character = JSON.parse(savedCharacterData);
+  
+        // Update the characters table
+        const { error: characterUpdateError } = await supabase
+          .from("characters")
+          .update({
+            mana: character.mana,
+            agility: character.agility,
+            defense: character.defense,
+            critical_rate: character.critical_rate,
+           
+          })
+          .eq("id", characterId); // Use the appropriate character ID from localStorage
+  
+        if (characterUpdateError) {
+          console.error("Error updating character:", characterUpdateError.message);
+        } else {
+          console.log("Character updated successfully.");
+        }
+      } else {
+        console.warn("No character data found in localStorage.");
+      }
+  
+      console.log("Resetting enemy stats...");
+      // Reset enemy stats in the database
+      const updates = [
+        { id: characterId, health: 40, mana: 40, agility: 5, defense: 0, critical_rate: 5 },
+      ];
+  
+      // Perform updates for each enemy ID
+      for (const update of updates) {
+        const { error } = await supabase
+          .from("enemies")
+          .update({
+            health: update.health,
+            mana: update.mana,
+            agility: update.agility,
+            defense: update.defense,
+            critical_rate: update.critical_rate,
+          })
+          .eq("id", update.id);
+  
+        if (error) {
+          console.error(`Error updating enemy with ID ${update.id}:`, error.message);
+          continue; // Skip to the next update in case of an error
+        }
+      }
+  
+      console.log("Enemy stats reset successfully.");
+    } catch (error) {
+      console.error("Error during closeDialog execution:", error.message);
+    }
+    try {
+      // Retrieve character data from localStorage
     
       console.log("Resetting enemy stats...");
       // Reset enemy stats in the database

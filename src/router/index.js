@@ -33,7 +33,7 @@ import NextPhaseAd from "@/components/AdBattlePage/NextPhaseAd.vue";
 import ResultBase from "@/pages/ResultBase.vue";
 import Save from "@/pages/Save.vue";
 import BustedBase from "@/pages/BustedBase.vue";
-
+import Store from "@/pages/AdventurePages/Store.vue";
 import Reward from "@/pages/AdventurePages/Reward.vue";
 import Jail from "@/pages/AdventurePages/Jail.vue";
 
@@ -169,6 +169,12 @@ const routes = setupLayouts([
     meta: { requiresAuth: true },
     name: "jail",
   },
+  {
+    path: "/store",
+    component: Store,
+    meta: { requiresAuth: true },
+    name: "store",
+  },
 ]);
 
 const router = createRouter({
@@ -205,6 +211,7 @@ router.beforeEach((to, from, next) => {
     "/defeated",
     "/reward",
     "/jail",
+    "/store",
   ];
   /* const nestedProtectedGroup = ["/online_character_select"]; */
 

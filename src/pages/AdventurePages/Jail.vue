@@ -139,7 +139,7 @@
             this.stolenCard = cardDetails;
             this.cardToDeleteId = randomCard.card_id;
           } else {
-            console.warn("No cards available to delete.");
+            console.log("No cards available to delete.");
           }
         } catch (error) {
           console.error("Error with fetchCardToBeDeleted:", error);
@@ -151,10 +151,11 @@
         audioAdventure.playClick();
         const savedCharacterData = localStorage.getItem("characterData");
         const characterId = localStorage.getItem("character_id");
-  
+        
+        
         if (savedCharacterData) {
           const character = JSON.parse(savedCharacterData);
-  
+          character.gold -= this.goldObtained;
           try {
             // Update character data in the database
             const { error: updateError } = await supabase
@@ -162,7 +163,7 @@
               .update({
                 mana: character.mana,
                 health: this.pointsRecovered,
-                gold: this.goldObtained,
+                gold: character.gold,
               })
               .eq("id", characterId);
   

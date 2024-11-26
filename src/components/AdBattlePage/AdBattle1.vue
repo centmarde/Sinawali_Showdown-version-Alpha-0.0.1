@@ -10,8 +10,8 @@
         <v-col cols="8" lg="4" sm="4" md="5" class="text-center skip ">
           <div @click="openDialog(card91)" style="cursor: pointer;">
 
-            <img src="../../assets/images/charge.png" style="width: 50px;"></img>
-            <span class="bar">charge mana</span>
+            <img src="../../assets/images/charge.png" style="width: 80px;"></img>
+            <span class="bar">charge Energy</span>
 
           </div>
         </v-col>
@@ -176,7 +176,7 @@ export default {
     const player2Ref = ref(null);
     const player1Ref = ref(null);
 
-   
+   const userId = localStorage.getItem("user_id");
 
     const fetchRandomCards = async () => {
       const { data: characterData, error: characterError } = await supabase
@@ -193,11 +193,12 @@ export default {
       if (!character || character.health <= 0) {
         return;
       }
-
+      console.log("Character ID:", selectedCharacter.value);
       // First, fetch the card_ids from the deck_builds table
       const { data: deckBuilds, error: deckBuildsError } = await supabase
         .from("deck_builds")
-        .select("card_id");
+        .select("*")
+        .eq("user_id", userId);
 
       if (deckBuildsError) {
         console.error("Error fetching deck builds:", deckBuildsError);
@@ -879,9 +880,9 @@ export default {
 }
 
 .skip {
-  top: 17.3rem;
+  top: 18.3rem;
   position: fixed;
-  left: 38rem;
+  left: 35rem;
 }
 
 .bag {
@@ -893,22 +894,22 @@ export default {
 
 .bar {
   position: absolute;
-  left: 1rem;
-  font-size: 10px;
+  left: 1.6rem;
+  font-size: 15px;
+  bottom: 2rem;
+  font-family:  "Merienda", cursive;
 
 }
-
 @media (max-width: 1300px) {
-  .battleground {
-    background-image: url("../../assets/background/bg-md.gif");
-  }
+.battleground{
+  background-image: url("../../assets/background/bg-md.gif");
 }
-
+}
 @media (max-width: 600px) {
   .skip {
-    top: -17.5rem;
+    top: -15.5rem;
     position: fixed;
-    left: 7.2rem;
+    left: 5.5rem;
   }
 
   .bag {
@@ -921,6 +922,7 @@ export default {
     display: none;
   }
 }
+
 
 //for cards CSS
 

@@ -19,7 +19,8 @@ export const useCardStore1 = defineStore("cardStore1", () => {
     try {
       const { data: deckBuilds, error: deckBuildsError } = await supabase
         .from("deck_builds")
-        .select("card_id");
+        .select("card_id")
+        .eq("user_id", localStorage.getItem("user_id"));
 
       if (deckBuildsError) {
         console.error("Error fetching deck builds:", deckBuildsError);

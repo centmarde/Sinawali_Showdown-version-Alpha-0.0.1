@@ -103,15 +103,17 @@
     methods: {
       generateRandomValues() {
         // Generate random health (20 to 60) and gold (1 to 10)
-        this.pointsRecovered = Math.floor(Math.random() * (60 - 20 + 1)) + 20;
-        this.goldObtained = Math.floor(Math.random() * (10 - 1 + 1)) + 1;
+        this.pointsRecovered = Math.floor(Math.random() * (70 - 20 + 1)) + 20;
+       /*  this.goldObtained = Math.floor(Math.random() * (15 - 1 + 1)) + 1; */
+       this.goldObtained = Math.floor(Math.random() * (25 - 1 + 1)) + 1;
       },
       async fetchRandomCard() {
         try {
           const { data, error } = await supabase
             .from("cards")
             .select("*")
-            .in("rarity", ["common", "rare"]);
+            .neq("id", 91);
+          /*   .in("rarity", ["common", "rare"]); */
   
           if (error) {
             console.error("Error fetching cards:", error.message);
@@ -141,13 +143,14 @@
           const character = JSON.parse(savedCharacterData);
   
           try {
+           character.gold += this.goldObtained;
             // Update the character data in the database
             const { error: updateError } = await supabase
               .from("characters")
               .update({
                 mana: character.mana,
                 health: this.pointsRecovered,
-                gold: this.goldObtained,
+                gold: character.gold,
               })
               .eq("id", characterId);
   
@@ -158,21 +161,49 @@
             }
   
             // Insert the obtained card into the cards_owned table
-            const { error: insertError } = await supabase
-              .from("cards_owned")
-              .insert([
-                {
-                  user_id: userId,
-                  character_id: characterId,
-                  card_id: this.card.id,
-                },
-              ]);
-  
-            if (insertError) {
-              console.error("Error inserting card into cards_owned:", insertError.message);
-            } else {
-              console.log("Card inserted into cards_owned successfully.");
-            }
+          // Check for duplicate entry
+// Assume `existingCards` is a JavaScript array holding the currently owned cards.
+// This could be populated from an initial fetch from Supabase or maintained locally.
+const existingCards = [
+  // Example structure of existing cards
+  { user_id: "user1", character_id: "char1", card_id: "card1" },
+  { user_id: "user1", character_id: "char2", card_id: "card2" },
+  // Add more records as needed
+];
+
+// Define the new card to insert
+const newCard = {
+  user_id: userId,
+  character_id: characterId,
+  card_id: this.card.id,
+};
+
+// Check for duplication
+const isDuplicate = existingCards.some(
+  (card) =>
+    card.user_id === newCard.user_id &&
+    card.character_id === newCard.character_id &&
+    card.card_id === newCard.card_id
+);
+
+if (isDuplicate) {
+  console.log("Duplicate card found. Skipping insertion.");
+} else {
+  // Proceed with insertion into Supabase
+  const { error: insertError } = await supabase
+    .from("cards_owned")
+    .insert([newCard]);
+
+  if (insertError) {
+    console.error("Error inserting card into cards_owned:", insertError.message);
+  } else {
+    console.log("Card inserted into cards_owned successfully.");
+    // Optionally, update the local list
+    existingCards.push(newCard);
+  }
+}
+
+
   
             router.push("/story_base");
           } catch (error) {

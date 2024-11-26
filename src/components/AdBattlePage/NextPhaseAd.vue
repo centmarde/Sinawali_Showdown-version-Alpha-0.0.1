@@ -21,8 +21,8 @@
           <v-col cols="8" lg="4" sm="4" md="5" class="text-center skip ">
             <div @click="openDialog(card91)" style="cursor: pointer;">
   
-              <img src="../../assets/images/charge.png" style="width: 50px;"></img>
-              <span class="bar">charge mana</span>
+              <img src="../../assets/images/charge.png" style="width: 80px;"></img>
+            <span class="bar">charge Energy</span>
   
             </div>
           </v-col>
@@ -481,7 +481,7 @@
   
   
               // Constant character ID
-              const characterId = revertedCharacter.value;
+              const characterId = selectedCharacter.value;
               console.log(characterId);
   
   
