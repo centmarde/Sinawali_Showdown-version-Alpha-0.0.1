@@ -79,8 +79,8 @@
 </template>
 
 <script>
-import { usePlayerStore } from "../../stores/healthBarAd"; // Adjust the import path as necessary
-
+import { usePlayerStore } from "../../stores/healthbar"; // Adjust the import path as necessary
+import {useAudioStore} from "@/stores/audioStore";
 export default {
   data() {
     return {
@@ -125,6 +125,7 @@ export default {
       this.startTimer(); // Restart the timer
     },
     exitGame() {
+      useAudioStore(). allPause();
       this.dialog = false;
       this.$router.push("/"); // Redirect to the homepage or another route
     },
