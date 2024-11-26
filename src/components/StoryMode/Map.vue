@@ -20,7 +20,7 @@
       <!-- Cards Container -->
       <div v-if="filteredCards.length > 0" class="cards-container pa-4">
         <v-img
-          v-for="(card, index) in filteredCards"
+          v-for="(card, index) in limitedCards"
           :key="index"
           :src="card.img"
           class="card-image"
@@ -121,6 +121,10 @@
         </v-progress-linear>
       </div>
     </v-img>
+
+    <div v-if="filteredCards.length > 4" class="card-plus text-center">
+      <h2>+{{ filteredCards.length - 4 }}</h2>
+    </div>
   </v-container>
 </template>
 
@@ -141,7 +145,6 @@ export default {
       ],
       cards: [], // Array to hold all cards
       deckBuilds: [], // Array to hold deck build data
-      filteredCards: [], // Array to hold filtered cards based on deck builds
       health: 0, // Character health
       mana: 0, // Character mana
       agility: 0, // Character agility
@@ -153,6 +156,9 @@ export default {
     filteredCards() {
       const deckCardIds = this.deckBuilds.map((build) => build.card_id);
       return this.cards.filter((card) => deckCardIds.includes(card.id));
+    },
+    limitedCards() {
+      return this.filteredCards.slice(0, 5);
     },
   },
   mounted() {
@@ -288,6 +294,23 @@ export default {
   border-radius: 10px;
   opacity: 0.8;
   margin-right: 5px;
+}
+
+.card-plus {
+  position: absolute;
+  top: 15px;
+  left: 372px;
+  width: 100px;
+  height: 121px;
+
+  background: rgba(0, 0, 0, 0.52);
+  backdrop-filter: blur(3px);
+  box-shadow: 5px 5px 40px rgba(0, 0, 0, 0.568);
+  -webkit-backdrop-filter: blur(3px);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .character-stats {
