@@ -139,7 +139,7 @@
             this.stolenCard = cardDetails;
             this.cardToDeleteId = randomCard.card_id;
           } else {
-            console.warn("No cards available to delete.");
+            console.log("No cards available to delete.");
           }
         } catch (error) {
           console.error("Error with fetchCardToBeDeleted:", error);
