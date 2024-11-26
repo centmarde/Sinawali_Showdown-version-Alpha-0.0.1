@@ -37,11 +37,11 @@ export const useContinueStatus = defineStore("continueStatus", {
           messages: [
             {
               role: "system",
-              content: `Create a continuing tale regarding the previous situation reflected to the user Choice. 
+              content: `summarize your answer in 2 paragraphs in 40 words. Create a continuing tale regarding the previous situation reflected to the user Choice. 
                    dont display the user choice in you response.
                    Make your narrative fascinating and relevant in perspective of Kidlat.
                    you must provide a option for the user to choose base on the situation. a=help, b=attack, c=ignore.
-                 
+                  
                 `,
             },
             {
