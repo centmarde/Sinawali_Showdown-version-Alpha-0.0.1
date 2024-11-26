@@ -209,17 +209,10 @@ const confirmAnswer = async () => {
         console.log("Random Enemy ID:", randomEnemyId);
         localStorage.setItem("enemy_id", randomEnemyId);
 
-        if (Math.random() < 0.1) {
-          continueStatusStore.initializeGroq(
-            "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"
-          );
-          isScenarioVisible.value = false;
-          isHelpDialogOpen.value = true;
-          await loadHelpScenario();
-        } else {
+      
           toast("To battle!");
           router.push("/ad_battle");
-        }
+        
       } else if (selectedOption.toUpperCase() === "C") {
         if (Math.random() < 0.8) {
           isHelpDialogOpen.value = false;

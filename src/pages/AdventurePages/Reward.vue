@@ -103,8 +103,9 @@
     methods: {
       generateRandomValues() {
         // Generate random health (20 to 60) and gold (1 to 10)
-        this.pointsRecovered = Math.floor(Math.random() * (60 - 20 + 1)) + 20;
-        this.goldObtained = Math.floor(Math.random() * (15 - 1 + 1)) + 1;
+        this.pointsRecovered = Math.floor(Math.random() * (70 - 20 + 1)) + 20;
+       /*  this.goldObtained = Math.floor(Math.random() * (15 - 1 + 1)) + 1; */
+       this.goldObtained = Math.floor(Math.random() * (25 - 1 + 1)) + 1;
       },
       async fetchRandomCard() {
         try {
@@ -141,13 +142,14 @@
           const character = JSON.parse(savedCharacterData);
   
           try {
+           character.gold += this.goldObtained;
             // Update the character data in the database
             const { error: updateError } = await supabase
               .from("characters")
               .update({
                 mana: character.mana,
                 health: this.pointsRecovered,
-                gold: this.goldObtained,
+                gold: character.gold,
               })
               .eq("id", characterId);
   

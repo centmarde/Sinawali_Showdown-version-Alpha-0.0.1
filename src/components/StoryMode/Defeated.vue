@@ -85,6 +85,9 @@
           .from("characters")
           .update({
             mana: character.mana,
+            agility: character.agility,
+            defense: character.defense,
+            critical_rate: character.critical_rate,
            
           })
           .eq("id", characterId); // Use the appropriate character ID from localStorage
