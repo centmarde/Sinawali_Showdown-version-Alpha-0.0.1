@@ -26,8 +26,17 @@
     <h5 class="top-right-icon5">{{ gold }}</h5>
 
     <!-- Child Components -->
-    <Map :key="mapKey" @pinClicked="handlePinClicked" />
-
+        <Map :key="mapKey" @pinClicked="handlePinClicked"/>
+       <!-- StoryDialog in v-dialog wrapped with v-card -->
+    <v-dialog v-model="dialogVisible" max-width="600" persistent>
+      <v-card>
+        <v-card-title class="text-h6">Scenario</v-card-title>
+        <v-card-text class="scrollable">
+          <!-- StoryDialog content -->
+          <StoryDialog :key="storyDialogKey" />
+        </v-card-text>
+      </v-card>
+    </v-dialog>
     <!-- Menu Dialog -->
     <v-dialog
       v-model="menuDialogVisible"
@@ -115,7 +124,7 @@ export default {
   },
   methods: {
     async handlePinClicked(area) {
-      this.audioStore.playClick();
+    
       this.audioStore.playClick(); // Play click sound
       const gameScenarioStore = useGameScenarioStore();
       gameScenarioStore.initializeGroq(
@@ -146,6 +155,12 @@ export default {
       this.audioStore.playClick();
       // Close the menu dialog
       this.menuDialogVisible = false;
+    },
+    reloadMap() {
+      this.mapKey += 1; // Update the key to trigger remount of Map
+    },
+    reloadStoryDialog() {
+      this.storyDialogKey += 1; // Update the key to trigger remount of StoryDialog
     },
     exitToMainMenu() {
       this.audioStore.playClick();
