@@ -481,7 +481,7 @@
   
   
               // Constant character ID
-              const characterId = revertedCharacter.value;
+              const characterId = selectedCharacter.value;
               console.log(characterId);
   
   
