@@ -254,7 +254,7 @@ const player2HealthColor = computed(() => {
       triggerSoftUpdate();
       intervalVictoryCheck = setInterval(() => {
         checkVictoryCondition();
-      }, 1000);
+      }, 1500);
     });
 
     onUnmounted(() => {

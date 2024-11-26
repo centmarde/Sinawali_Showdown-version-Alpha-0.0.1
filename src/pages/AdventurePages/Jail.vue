@@ -151,10 +151,11 @@
         audioAdventure.playClick();
         const savedCharacterData = localStorage.getItem("characterData");
         const characterId = localStorage.getItem("character_id");
-  
+        
+        
         if (savedCharacterData) {
           const character = JSON.parse(savedCharacterData);
-  
+          character.gold -= this.goldObtained;
           try {
             // Update character data in the database
             const { error: updateError } = await supabase
@@ -162,7 +163,7 @@
               .update({
                 mana: character.mana,
                 health: this.pointsRecovered,
-                gold: this.goldObtained,
+                gold: character.gold,
               })
               .eq("id", characterId);
   

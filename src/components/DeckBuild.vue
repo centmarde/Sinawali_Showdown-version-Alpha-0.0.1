@@ -84,7 +84,7 @@
             <v-btn color="secondary" @click="goBack" style="position: fixed; left: 20px; bottom: 20px; z-index: 20">
               Back
             </v-btn>
-            <v-btn style="position: fixed; left: 7rem; bottom: 20px; z-index: 20" color="danger" @click="resetDeck">Reset Deck</v-btn>
+           <!--  <v-btn style="position: fixed; left: 7rem; bottom: 20px; z-index: 20" color="danger" @click="resetDeck">Reset Deck</v-btn> -->
             <!-- Floating Confirmation button -->
             <v-btn v-if="deck.length > 0" color="primary" @click="confirmDeck"
               :disabled="loading || deck.length < 1 || deck.length > 10"
@@ -137,6 +137,7 @@ const selectedCard = ref({});
 const userId = localStorage.getItem("user_id");
 // Fetch cards from the Supabase `cards` table
 onMounted(async () => {
+  resetDeck();
   console.log(userId);
   const { data: deckBuilds, error: deckBuildsError } = await supabase
   .from("cards_owned")
@@ -258,9 +259,7 @@ const confirmDeck = async () => {
 
       if (insertError) {
         console.error("Error inserting card into deck:", insertError);
-      } else {
-        toast("Inserted successfully!");
-      }
+      } 
     }
   }
 
@@ -359,11 +358,7 @@ const getTextShadowStyle = (card) => {
 const resetDeck = async () => {
   try {
     // Show a confirmation before resetting the deck
-    const confirmReset = confirm("Are you sure you want to reset your deck?");
-    if (!confirmReset) {
-      return; // Exit the function if the user cancels
-    }
-
+  
     // Delete all the cards in the deck for the current user
     const { error } = await supabase
       .from("deck_builds")
@@ -372,10 +367,15 @@ const resetDeck = async () => {
 
     if (error) {
       console.error("Error resetting deck:", error);
-      toast("An error occurred while resetting your deck.");
+      toast.left("An error occurred while resetting your deck.", {
+  position: "top-left",  
+});
     } else {
       console.log("Deck has been successfully reset.");
-      toast("Your deck has been reset.");
+      toast("Your deck has been reset.", {
+  position: "top-left",  
+});
+
     }
   } catch (err) {
     console.error("Unexpected error during deck reset:", err);
