@@ -21,7 +21,7 @@
                 <div>
                   <h3 class="card-title">{{ card.name }}</h3>
                   <p class="card-price">Price: ${{ card.price }}</p>
-                  <v-btn @click="openCardDescription(card)">
+                  <v-btn class="me-3" @click="openCardDescription(card)">
                     <v-icon>mdi-eye</v-icon>
                   </v-btn>
                   <v-btn color="primary" @click="purchaseCard(card)">

@@ -92,7 +92,7 @@ export const useCharacterStatusStore = defineStore("characterStatus", {
     async fetchCharacter(characterId) {
       const { data, error } = await supabase
         .from("enemies")
-        .select("health, defense, agility")
+        .select(" defense, agility,critical_rate")
         .eq("id", characterId)
         .single();
 

@@ -90,11 +90,12 @@ export const useCharacterStatusStore2 = defineStore("characterStatus2", {
     },
 
     async fetchCharacter(characterId) {
+      console.log(characterId);
       const { data, error } = await supabase
         .from("enemies")
-        .select("health, defense, agility")
-        .eq("id", characterId)
-        .single();
+        .select("*")
+        .eq("id", characterId);
+      /*  .single(); */
 
       if (error) {
         console.error("Error fetching character:", error);
