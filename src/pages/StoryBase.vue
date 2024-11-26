@@ -1,27 +1,82 @@
 <template>
   <div>
     <!-- Fixed Icons -->
-    <v-img class="top-right-icon1" src="../assets/adventure/cards.png" @click="invokeChildOneMethod">CARDS</v-img>
-    <v-img class="top-right-icon2" src="../assets/adventure/book.png" @click="invokeChildTwoMethod">MENU</v-img>
-    <v-img class="top-right-icon3" src="../assets/adventure/book.png" @click="invokeChildTwoMethod">SHOP</v-img>
+    <v-img
+      class="top-right-icon1"
+      src="../assets/adventure/cards.png"
+      @click="invokeChildOneMethod"
+    >
+      CARDS
+    </v-img>
+    <v-img
+      class="top-right-icon2"
+      src="../assets/adventure/book.png"
+      @click="invokeChildTwoMethod"
+    >
+      MENU
+    </v-img>
+    <v-img
+      class="top-right-icon3"
+      src="../assets/adventure/wow.png"
+      @click="invokeChildThreeMethod"
+    >
+      SHOP
+    </v-img>
     <v-img class="top-right-icon4" src="../assets/adventure/Golds.png"></v-img>
     <h5 class="top-right-icon5">{{ gold }}</h5>
 
     <!-- Child Components -->
     <Map :key="mapKey" @pinClicked="handlePinClicked" />
 
-    <!-- StoryDialog in v-dialog wrapped with v-card -->
-    <v-dialog v-model="dialogVisible" max-width="600" persistent>
-      <v-card>
-        <v-card-title class="text-h6">Scenario</v-card-title>
-        <v-card-text class="scrollable">
-          <!-- StoryDialog content -->
-          <StoryDialog :key="storyDialogKey" />
-        </v-card-text>
-      </v-card>
+    <!-- Menu Dialog -->
+    <v-dialog
+      v-model="menuDialogVisible"
+      max-width="700"
+      persistent
+      :overlay="true"
+      :style="{ zIndex: 99999 }"
+    >
+      <v-img
+        class="align-end text-white"
+        src="../assets/background/main-menu.png"
+        cover
+      >
+        <v-container
+          class="d-flex game-pause"
+          style="position: absolute; top: 0; left: 0; right: 0; bottom: 0"
+        >
+          <v-row justify="center" align="center">
+            <v-col cols="12" class="text-center">
+              <h1 class="pb-2">Game Paused</h1>
+              <div class="d-flex flex-column">
+                <v-btn
+                  class="merienda"
+                  size="large"
+                  variant="tonal"
+                  color="#6f3433"
+                  @click="resumeGame"
+                >
+                  Resume
+                </v-btn>
+                
+                <v-btn
+                  class="merienda"
+                  size="large"
+                  variant="tonal"
+                  color="#6f3433"
+                  @click="exitToMainMenu"
+                >
+                  Main Menu
+                </v-btn>
+              </div>
+            </v-col>
+          </v-row>
+        </v-container>
+      </v-img>
     </v-dialog>
   </div>
 </template>
+
 
 <script>
 import Map from "@/components/StoryMode/Map.vue";
@@ -31,7 +86,7 @@ import { supabase } from "@/lib/supabase";
 import { useGameScenarioStore } from "@/stores/useGameScenarioStore";
 import { useAudioAdventure } from "@/stores/adventureAudio";
 import { onMounted } from "vue";
-
+import { useAudioStore } from "@/stores/audioStore";
 export default {
   name: "StoryBase",
   components: { Map, StoryDialog },
@@ -41,11 +96,12 @@ export default {
       mapKey: 0, // Unique key for the Map component
       storyDialogKey: 0, // Unique key for the StoryDialog component
       gold: 0, // Default gold value
+      menuDialogVisible: false,
     };
   },
   setup() {
     const audioStore = useAudioAdventure();
-
+    const audioStore2 = useAudioStore();
     // Play "village" audio when the component is mounted
     onMounted(() => {
       audioStore.playVillage();
@@ -54,10 +110,12 @@ export default {
 
     return {
       audioStore,
+      audioStore2,
     };
   },
   methods: {
     async handlePinClicked(area) {
+      this.audioStore.playClick();
       this.audioStore.playClick(); // Play click sound
       const gameScenarioStore = useGameScenarioStore();
       gameScenarioStore.initializeGroq(
@@ -77,10 +135,31 @@ export default {
     },
 
     invokeChildOneMethod() {
+      this.audioStore.playClick();
       router.push("/deck_build");
     },
+    invokeChildThreeMethod() {
+      this.audioStore.playClick();
+      router.push("/store");
+    },
+    resumeGame() {
+      this.audioStore.playClick();
+      // Close the menu dialog
+      this.menuDialogVisible = false;
+    },
+    exitToMainMenu() {
+      this.audioStore.playClick();
+      this.audioStore. pauseAdBg();
+      this.audioStore. pauseVillage();
+      this.audioStore2.allPause();
+      // Logic to navigate to the main menu
+      console.log("Exiting to main menu...");
+      this.$router.push("/landing");
+    },
     invokeChildTwoMethod() {
-      console.log("invokeChildTwoMethod triggered");
+      this.audioStore.playClick();
+      // Open the menu dialog
+      this.menuDialogVisible = true;
     },
 
     async fetchAdventureIntro() {
@@ -244,10 +323,50 @@ export default {
  
 }
 
-
   .scrollable {
     max-height: 400px; /* Adjust the height as needed */
     overflow-y: auto;
   }
+
+  .pause_btn {
+  position: absolute;
+  top: 75px; /* Adjust this value to position the timer slightly away from the top */
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: inherit;
+}
+
+.game-pause {
+  width: 300px;
+}
+
+.game-pause h1 {
+  font-family: "Merienda", cursive;
+  font-optical-sizing: auto;
+  font-weight: 700;
+  font-style: normal;
+  animation: fadeIn 2s ease-out;
+  color: #6f3433;
+}
+
+.game-pause-btn {
+  width: 300px;
+}
+
+.game-pause .v-btn {
+  font-weight: 800 !important;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
   </style>
   
