@@ -133,13 +133,14 @@ const cardsPerPage = 8;
 // Dialog state
 const dialog = ref(false);
 const selectedCard = ref({});
-
+const userId = localStorage.getItem("user_id");
 // Fetch cards from the Supabase `cards` table
 onMounted(async () => {
- 
+  console.log(userId);
   const { data: deckBuilds, error: deckBuildsError } = await supabase
   .from("cards_owned")
-  .select("*"); // Adjust the select statement as necessary to retrieve the relevant data
+  .select("*")
+  .eq("user_id", userId);
 
 if (deckBuildsError) {
   console.error("Error fetching deck builds:", deckBuildsError);

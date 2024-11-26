@@ -132,7 +132,10 @@
       // Fetch adventures
       const fetchAdventures = async () => {
         try {
-          const { data, error } = await supabase.from("adventures").select("*");
+          const { data, error } = await supabase.from("adventures")
+          .select("*")
+          .eq("user_id", localStorage.getItem("user_id"))
+          ;
           if (error) throw error;
           adventures.value = data;
         } catch (error) {
