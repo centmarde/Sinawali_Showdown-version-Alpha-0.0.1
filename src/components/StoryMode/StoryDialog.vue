@@ -171,7 +171,7 @@ const confirmAnswer = async () => {
 
       // Insert into the scenarios table
       const { error: insertError } = await supabase.from("scenarios").insert({
-        scene: sceneToInsert,
+        scene: sceneToInsert && selectedChoice,
         prev_scene: prevScene,
         user_id: userId,
         choice: selectedAnswer.value || selectedHelpAnswer.value,

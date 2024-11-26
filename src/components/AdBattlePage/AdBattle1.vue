@@ -176,7 +176,7 @@ export default {
     const player2Ref = ref(null);
     const player1Ref = ref(null);
 
-   
+   const userId = localStorage.getItem("user_id");
 
     const fetchRandomCards = async () => {
       const { data: characterData, error: characterError } = await supabase
@@ -193,11 +193,12 @@ export default {
       if (!character || character.health <= 0) {
         return;
       }
-
+      console.log("Character ID:", selectedCharacter.value);
       // First, fetch the card_ids from the deck_builds table
       const { data: deckBuilds, error: deckBuildsError } = await supabase
         .from("deck_builds")
-        .select("card_id");
+        .select("*")
+        .eq("user_id", userId);
 
       if (deckBuildsError) {
         console.error("Error fetching deck builds:", deckBuildsError);
