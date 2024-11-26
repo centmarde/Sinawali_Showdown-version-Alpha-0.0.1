@@ -104,14 +104,14 @@
       generateRandomValues() {
         // Generate random health (20 to 60) and gold (1 to 10)
         this.pointsRecovered = Math.floor(Math.random() * (60 - 20 + 1)) + 20;
-        this.goldObtained = Math.floor(Math.random() * (10 - 1 + 1)) + 1;
+        this.goldObtained = Math.floor(Math.random() * (15 - 1 + 1)) + 1;
       },
       async fetchRandomCard() {
         try {
           const { data, error } = await supabase
             .from("cards")
             .select("*")
-            .in("rarity", ["common", "rare"]);
+          /*   .in("rarity", ["common", "rare"]); */
   
           if (error) {
             console.error("Error fetching cards:", error.message);

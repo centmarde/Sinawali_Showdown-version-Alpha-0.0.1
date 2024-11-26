@@ -85,7 +85,7 @@
           .from("characters")
           .update({
             mana: character.mana,
-            health: character.health,
+           
           })
           .eq("id", characterId); // Use the appropriate character ID from localStorage
   

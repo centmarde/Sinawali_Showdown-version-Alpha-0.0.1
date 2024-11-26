@@ -103,9 +103,9 @@
       const attack = () => {
         frameY = 2;
         drawPlayer();
-        if (gameFrame % staggerFrames === 0) frameX = frameX < 7 ? frameX + 1 : 0;
+        if (gameFrame % staggerFrames === 0) frameX = frameX < 6 ? frameX + 1 : 0;
         gameFrame++;
-        if (frameX < 7) {
+        if (frameX < 6) {
           this.animationFrame = requestAnimationFrame(attack);
         } else {
           frameX = 0;
