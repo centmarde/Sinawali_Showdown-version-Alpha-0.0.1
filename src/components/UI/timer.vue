@@ -79,7 +79,7 @@
 </template>
 
 <script>
-import { usePlayerStore } from "../../stores/healthbar"; // Adjust the import path as necessary
+import { usePlayerStore } from "@/stores/healtbar"; // Adjust the import path as necessary
 import {useAudioStore} from "@/stores/audioStore";
 export default {
   data() {
