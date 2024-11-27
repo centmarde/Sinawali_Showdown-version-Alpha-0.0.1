@@ -285,10 +285,13 @@ const textShadowStyle = computed(() => {
 // Computed property to get the bottom value for the card rarity based on the card rarity, type, and name
 const cardTypeBottom = computed(() => {
   if (!activeCard.value) return "156px"; // Default bottom value
+  if (activeCard.value.name === "Strength Surge") return "156px";
+  if (activeCard.value.name === "Refresher") return "156px";
   if (activeCard.value.rarity === "rare") return "149px";
   if (activeCard.value.rarity === "special") return "158px";
   if (activeCard.value.type === "energy") return "145px";
   if (activeCard.value.name === "Charge Energy") return "145px";
+
   return "156px";
 });
 

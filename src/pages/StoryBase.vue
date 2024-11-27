@@ -28,15 +28,16 @@
     <!-- Child Components -->
         <Map :key="mapKey" @pinClicked="handlePinClicked"/>
        <!-- StoryDialog in v-dialog wrapped with v-card -->
-    <v-dialog v-model="dialogVisible" max-width="600" persistent>
-      <v-card>
-        <v-card-title class="text-h6">Scenario</v-card-title>
-        <v-card-text class="scrollable">
-          <!-- StoryDialog content -->
-          <StoryDialog :key="storyDialogKey" />
-        </v-card-text>
-      </v-card>
-    </v-dialog>
+       <v-dialog v-model="dialogVisible" max-width="600" persistent style="font-family: 'Merienda', cursive;">
+  <v-card>
+    <v-card-title class="text-h6">Scenario</v-card-title>
+    <v-card-text class="scrollable">
+      <!-- StoryDialog content -->
+      <StoryDialog :key="storyDialogKey" />
+    </v-card-text>
+  </v-card>
+</v-dialog>
+
     <!-- Menu Dialog -->
     <v-dialog
       v-model="menuDialogVisible"
@@ -87,6 +88,7 @@
     <div class="circle-circle"></div>
   </div>
 </template>
+
 <script>
 import Map from "@/components/StoryMode/Map.vue";
 import StoryDialog from "@/components/StoryMode/StoryDialog.vue";
@@ -94,8 +96,9 @@ import router from "@/router";
 import { supabase } from "@/lib/supabase";
 import { useGameScenarioStore } from "@/stores/useGameScenarioStore";
 import { useAudioAdventure } from "@/stores/adventureAudio";
-import { onMounted } from "vue";
+import { onMounted, onBeforeUnmount, ref } from "vue";
 import { useAudioStore } from "@/stores/audioStore";
+import { useManor } from "@/stores/useManor";
 
 export default {
   name: "StoryBase",
@@ -105,14 +108,15 @@ export default {
       dialogVisible: false, // Control dialog visibility
       mapKey: 0, // Unique key for the Map component
       storyDialogKey: 0, // Unique key for the StoryDialog component
-      gold: 0, // Default gold value
+      gold: ref(0), // Default gold value
       menuDialogVisible: false,
+      goldChannel: null, // Store the channel for real-time updates
     };
   },
   setup() {
     const audioStore = useAudioAdventure();
     const audioStore2 = useAudioStore();
-
+    
     const fetchAndSaveCharacterData = async () => {
       try {
         const characterId = localStorage.getItem("character_id");
@@ -157,24 +161,70 @@ export default {
   },
   methods: {
     async handlePinClicked(area) {
-      this.audioStore.playClick(); // Play click sound
-      const gameScenarioStore = useGameScenarioStore();
-      gameScenarioStore.initializeGroq(
-        "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"
-      );
+      try {
+        const useManorStore = useManor();
+        const gameScenarioStore = useGameScenarioStore();
 
-      // Fetch adventure intro and pass it as bio parameter
-      const bio = await this.fetchAdventureIntro();
+        // Save selected area to localStorage
+        localStorage.setItem("locationName", area);
+        console.log("Area clicked:", area);
 
-      gameScenarioStore.startScenario(area, bio); // Pass the area and bio to startScenario
-      this.dialogVisible = true; // Open the StoryDialog
+        // Play click sound
+        this.audioStore.playClick();
 
-      // Fetch character data and save to localStorage
-      await this.fetchAndSaveCharacterData();
+        // Handle specific area actions
+        switch (area) {
+          case "manor":
+            console.log("Generate energy potion");
+            useManorStore.generateReward();
+            break;
+          case "tribe":
+            console.log("Handle tribe area logic here");
+            // Add any logic specific to "tribe"
+            break;
+          case "woods":
+            console.log("Handle woods area logic here");
+            // Add any logic specific to "woods"
+            break;
+          case "remnants":
+            console.log("Handle remnants area logic here");
+            // Add any logic specific to "remnants"
+            break;
+          case "river":
+            console.log("Handle river area logic here");
+            // Add any logic specific to "river"
+            break;
+          case "village":
+            console.log("Handle village area logic here");
+            // Add any logic specific to "village"
+            break;
+          default:
+            console.warn(`Unhandled area: ${area}`);
+        }
 
-      this.reloadStoryDialog();
+        // Initialize game scenario with the given API key
+        gameScenarioStore.initializeGroq(
+          "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"
+        );
+
+        // Fetch adventure intro and use it as bio
+        const bio = await this.fetchAdventureIntro();
+
+        // Start the scenario with the area and bio
+        gameScenarioStore.startScenario(area, bio);
+
+        // Show the StoryDialog
+        this.dialogVisible = true;
+
+        // Fetch and save character data
+       /*  await this.fetchAndSaveCharacterData(); */
+
+        // Reload StoryDialog
+        this.reloadStoryDialog();
+      } catch (error) {
+        console.error("Error in handlePinClicked:", error);
+      }
     },
-
     invokeChildOneMethod() {
       this.audioStore.playClick();
       router.push("/deck_build");
@@ -194,19 +244,64 @@ export default {
     reloadStoryDialog() {
       this.storyDialogKey += 1; // Update the key to trigger remount of StoryDialog
     },
-    exitToMainMenu() {
-      this.audioStore.playClick();
-      this.audioStore.pauseAdBg();
-      this.audioStore.pauseVillage();
-      this.audioStore2.allPause();
-      // Logic to navigate to the main menu
-      console.log("Exiting to main menu...");
-      this.$router.push("/landing");
+    async fetchGold() {
+      try {
+        const characterId = localStorage.getItem("character_id");
+        if (!characterId) {
+          console.warn("No character ID found in localStorage.");
+          return;
+        }
+
+        const { data: characterData, error } = await supabase
+          .from("characters")
+          .select("gold")
+          .eq("id", characterId)
+          .single();
+
+        if (error) {
+          console.error("Error fetching gold data:", error.message);
+          return;
+        }
+
+        this.gold = characterData.gold ?? 0; // Default to 0 if gold is null/undefined
+        console.log("Fetched gold:", this.gold);
+      } catch (error) {
+        console.error("Error in fetchGold:", error.message);
+      }
     },
-    invokeChildTwoMethod() {
-      this.audioStore.playClick();
-      // Open the menu dialog
-      this.menuDialogVisible = true;
+
+    setupRealtimeUpdates() {
+      const characterId = localStorage.getItem("character_id");
+      if (!characterId) {
+        console.warn("No character ID found in localStorage.");
+        return;
+      }
+
+      this.goldChannel = supabase.channel('custom-update-channel')
+        .on(
+          'postgres_changes',
+          { 
+            event: '*', 
+            schema: 'public', 
+            table: 'characters',
+            filter: `id=eq.${characterId}` // Listen only for updates to this character
+          },
+          (payload) => {
+            console.log('Change received!', payload);
+            if (payload.new.gold !== undefined) {
+              this.gold = payload.new.gold;
+              console.log("Updated gold:", this.gold);
+            }
+          }
+        )
+        .subscribe();
+    },
+
+    teardownRealtimeUpdates() {
+      if (this.goldChannel) {
+        this.goldChannel.unsubscribe();
+        console.log("Unsubscribed from real-time updates.");
+      }
     },
 
     async fetchAdventureIntro() {
@@ -236,64 +331,17 @@ export default {
         return null;
       }
     },
-    async fetchGold() {
-      try {
-        const characterId = localStorage.getItem("character_id");
-        if (!characterId) {
-          console.warn("No character ID found in localStorage.");
-          return;
-        }
-
-        // Fetch the gold value from the database
-        const { data: characterData, error } = await supabase
-          .from("characters")
-          .select("gold")
-          .eq("id", characterId)
-          .single();
-
-        if (error) {
-          console.error("Error fetching gold data:", error.message);
-          return;
-        }
-
-        // Update the gold property dynamically
-        this.gold = characterData.gold ?? 0; // If gold is null or undefined, set to 0
-        console.log("Fetched gold:", this.gold);
-      } catch (error) {
-        console.error("Error in fetchGold:", error.message);
-      }
-    },
-    async fetchAndSaveCharacterData() {
-      try {
-        const characterId = localStorage.getItem("character_id");
-        if (!characterId) {
-          console.warn("No character ID found in localStorage.");
-          return;
-        }
-
-        // Fetch character data from the database
-        const { data: characterData, error } = await supabase
-          .from("characters")
-          .select("*")
-          .eq("id", characterId)
-          .single();
-
-        if (error) {
-          console.error("Error fetching character data:", error.message);
-          return;
-        }
-
-        // Save character data to `localStorage` as a JSON string
-        localStorage.setItem("characterData", JSON.stringify(characterData));
-        console.log("Character data saved to localStorage:", characterData);
-      } catch (error) {
-        console.error("Error in fetchAndSaveCharacterData:", error.message);
-      }
-    },
   },
   mounted() {
     // Fetch gold when the component is mounted
     this.fetchGold();
+
+    // Start listening for real-time updates on gold changes
+    this.setupRealtimeUpdates();
+  },
+  beforeUnmount() {
+    // Cleanup: stop listening for real-time updates when the component is destroyed
+    this.teardownRealtimeUpdates();
   },
 };
 </script>

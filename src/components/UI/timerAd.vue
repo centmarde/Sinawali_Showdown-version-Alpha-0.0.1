@@ -121,7 +121,7 @@ import {useAudioStore} from "@/stores/audioStore";
       exitGame() {
         useAudioStore(). allPause();
         this.dialog = false;
-        this.$router.push("/"); // Redirect to the homepage or another route
+        window.location.href = "/"; // Redirect to the homepage or another route
       },
       proceedToNextPhase() {
         this.timeUpDialog = false;
