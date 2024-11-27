@@ -197,13 +197,14 @@ const player2HealthColor = computed(() => {
        
        
 
-          router.push("/defeated");
+        window.location.href = "/defeated";
 
        
       } else if (player2.health <= 0) {
       
        
-          router.push("/result_base");
+        window.location.href = "/result_base";
+
       
       }
     };

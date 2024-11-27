@@ -114,7 +114,7 @@ import router from "@/router/index";
 import { useAudioAdventure } from "@/stores/adventureAudio";
 
 export default {
-    
+
     data() {
         return {
             selectedJob: null,
@@ -126,7 +126,9 @@ export default {
                 { name: 'Burglar', icon: 'mdi-lock' },
                 { name: 'Farmer', icon: 'mdi-sprout' },
                 { name: 'Royalty', icon: 'mdi-crown' },
-                { name: 'Exile', icon: 'mdi-gate' },
+                { name: 'Assassin', icon: 'mdi-knife' },
+                { name: 'Engineer', icon: 'mdi-tools' }, 
+                { name: 'Chef', icon: 'mdi-silverware-fork-knife' }
             ],
             traits: [
                 { name: 'Strength', icon: 'mdi-arm-flex' },
@@ -154,6 +156,13 @@ export default {
                 { name: 'Romantic', icon: 'mdi-heart' },
                 { name: 'Curious', icon: 'mdi-magnify' },
                 { name: 'Honorable', icon: 'mdi-star' },
+                { name: 'Impulsive', icon: 'mdi-arrow-decision' }, 
+                { name: 'Compassionate', icon: 'mdi-heart-circle' }, 
+                { name: 'Stoic', icon: 'mdi-account-cog' }, 
+                { name: 'Insecure', icon: 'mdi-eye' }, 
+                { name: 'Ambitious', icon: 'mdi-rocket' }, 
+                { name: 'Eccentric', icon: 'mdi-pyramid' }, 
+                { name: 'Self-sufficient', icon: 'mdi-hammer-wrench' } 
             ],
             traitValues: {
                 Strength: 0,
@@ -167,7 +176,7 @@ export default {
         };
     },
 
-   
+
     methods: {
 
 
@@ -178,13 +187,15 @@ export default {
         },
         setJobTraits(jobName) {
             const jobTraits = {
-                Soldier: { Strength: 60, Wisdom: 60, Dexterity: 50, Charisma: 20, Constitution: 50, Intelligence: 20 },
-                Warrior: { Strength: 70, Wisdom: 40, Dexterity: 60, Charisma: 30, Constitution: 60, Intelligence: 20 },
-                Musician: { Strength: 30, Wisdom: 60, Dexterity: 40, Charisma: 80, Constitution: 40, Intelligence: 50 },
-                Burglar: { Strength: 40, Wisdom: 50, Dexterity: 80, Charisma: 60, Constitution: 40, Intelligence: 60 },
-                Farmer: { Strength: 50, Wisdom: 50, Dexterity: 40, Charisma: 40, Constitution: 60, Intelligence: 30 },
-                Royalty: { Strength: 30, Wisdom: 70, Dexterity: 50, Charisma: 90, Constitution: 40, Intelligence: 50 },
-                Exile: { Strength: 50, Wisdom: 40, Dexterity: 60, Charisma: 30, Constitution: 50, Intelligence: 30 },
+                Soldier: { Strength: 50, Wisdom: 50, Dexterity: 50, Charisma: 50, Constitution: 50, Intelligence: 50 },
+    Warrior: { Strength: 86, Wisdom: 20, Dexterity: 60, Charisma: 10, Constitution: 75, Intelligence: 20 },
+    Musician: { Strength: 36, Wisdom: 60, Dexterity: 55, Charisma: 80, Constitution: 40, Intelligence: 30 },
+    Burglar: { Strength: 40, Wisdom: 50, Dexterity: 80, Charisma: 20, Constitution: 40, Intelligence: 10 },
+    Farmer: { Strength: 80, Wisdom: 50, Dexterity: 40, Charisma: 40, Constitution: 60, Intelligence: 30 },
+    Royalty: { Strength: 26, Wisdom: 70, Dexterity: 30, Charisma: 90, Constitution: 40, Intelligence: 63 },
+    Assassin: { Strength: 40, Wisdom: 20, Dexterity: 89, Charisma: 30, Constitution: 50, Intelligence: 30 },
+    Engineer: { Strength: 50, Wisdom: 40, Dexterity: 70, Charisma: 40, Constitution: 60, Intelligence: 70 },
+    Chef: { Strength: 40, Wisdom: 60, Dexterity: 50, Charisma: 70, Constitution: 50, Intelligence: 30 } 
             };
             this.traitValues = { ...jobTraits[jobName] };
         },
@@ -267,7 +278,7 @@ export default {
         async insertIntoDB() {
             try {
                 const adventureAudio = useAudioAdventure();
-                adventureAudio.playClick(); 
+                adventureAudio.playClick();
                 const userId = localStorage.getItem('user_id'); // Get user_id from localStorage
 
                 // Insert into adventures table

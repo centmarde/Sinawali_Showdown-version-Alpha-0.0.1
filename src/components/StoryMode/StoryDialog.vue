@@ -54,7 +54,7 @@
           </div>
 
           <!-- Scenario Display -->
-          <div v-if="continueStatusStore.scenario">
+          <div v-if="continueStatusStore.scenario" style="font-family: 'Merienda', cursive;">
             <div class="my-4">
               <p v-html="continueStatusStore.scenario" class="text-body-1"></p>
             </div>
@@ -300,5 +300,9 @@ button:disabled {
 
 .error {
   color: red;
+}
+
+.text-body-1{
+  font-family: "Merienda", cursive;
 }
 </style>
