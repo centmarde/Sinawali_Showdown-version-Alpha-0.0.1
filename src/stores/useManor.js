@@ -1,14 +1,14 @@
 import { defineStore } from "pinia";
 import { useToast } from "vue-toastification";
 import { ref } from "vue";
-import { supabase } from "@/lib/supabase"; // Adjust this import to your project's structure
+import { supabase } from "@/lib/supabase";
 
-export const useEnergyPotionStore = defineStore("energyPotion", () => {
+export const useManor = defineStore("Manor", () => {
   const toast = useToast();
   const energyPotionValue = ref(null);
 
-  const potionChance = 0.45; // 20% chance for a potion
-  const goldChance = 0.02; // 30% chance for gold
+  const potionChance = 0.09; // 20% chance for a potion
+  const goldChance = 0.5; // 30% chance for gold
   const noRewardChance = 1 - (potionChance + goldChance); // Remaining chance for no reward
 
   const generateReward = async () => {
