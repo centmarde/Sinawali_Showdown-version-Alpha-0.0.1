@@ -194,7 +194,7 @@ const confirmAnswer = async () => {
 
       if (selectedOption.toUpperCase() === "A") {
        
-      energyPotionStore.generateEnergyPotion();
+      energyPotionStore.generateReward();
     
         audioAdventure.playNotif();
         continueStatusStore.initializeGroq(

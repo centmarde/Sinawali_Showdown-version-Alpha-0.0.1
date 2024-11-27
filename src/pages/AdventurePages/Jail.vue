@@ -100,7 +100,7 @@
       generateRandomValues() {
         // Stolen gold is negative and points recovered is a random number
         this.pointsRecovered = Math.floor(Math.random() * (20 + 1));  // Random points recovered
-        this.goldObtained = (Math.floor(Math.random() * (10 - 1 + 1)) + 1) * -1; // Negative gold stolen
+        this.goldObtained = (Math.floor(Math.random() * (10 - 1 + 1)) + 1); // Negative gold stolen
       },
   
       async fetchCardToBeDeleted() {

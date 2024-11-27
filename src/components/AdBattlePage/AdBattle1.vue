@@ -156,6 +156,7 @@ export default {
       }  else if (locationName === 'remnants') {
         return 'battleground3'; // Apply bg2 class if locationName is 'fields'
       } else if (locationName === 'manor') {
+        
         return 'battleground4'; // Apply bg2 class if locationName is 'fields'
       } else if (locationName === 'river') {
         return 'battleground5'; // Apply bg2 class if locationName is 'fields'

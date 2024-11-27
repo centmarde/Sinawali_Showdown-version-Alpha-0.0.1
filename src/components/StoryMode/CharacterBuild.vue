@@ -8,8 +8,10 @@
         </v-row>
 
         <v-row>
+            
             <!-- Left Column: Jobs & Personality Choices -->
             <v-col>
+                
                 <v-card class="pa-4" outlined>
                     <!-- Jobs Row -->
                     <v-row>
@@ -48,11 +50,21 @@
 
                     <!-- Reset Personality Button -->
                     <v-row class="mt-4">
-                        <v-col cols="12">
-                            <v-btn @click="resetPersonality" color="error" class="w-100">
+                        <v-col cols="6">
+                            <v-btn @click="resetPersonality" color="error" class=" merienda w-100">
                                 Reset Personality Choices
                             </v-btn>
+                            
                         </v-col>
+                        <v-col cols="6">
+                            <router-link to="/save"><v-btn
+      class="floating-button2 merienda w-100"
+      color="secondary"
+    >
+      Go Back
+    </v-btn></router-link>
+                        </v-col>
+                        
                     </v-row>
                 </v-card>
             </v-col>
@@ -94,14 +106,17 @@
                     <!-- Button to Generate Background and Log Data -->
                     <v-row class="mt-4">
                         <v-col cols="12">
-                            <v-btn @click="generateCharacterBackground" color="primary" class="w-100">
+                            <v-btn @click="generateCharacterBackground" color="primary" class="merienda w-100">
                                 Generate Character Background
                             </v-btn>
                         </v-col>
                     </v-row>
                 </v-card>
+                
             </v-col>
+            
         </v-row>
+        
     </v-container>
 </template>
 
