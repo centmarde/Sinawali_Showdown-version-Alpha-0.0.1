@@ -51,12 +51,18 @@
     <!-- Fixed Floating Button -->
     <v-btn
       class="floating-button merienda"
-      color="secondary"
+      color="success"
       @click="createNewAdventure"
     >
       Create New Adventure
     </v-btn>
-
+    <router-link to="/"><v-btn
+      class="floating-button2 merienda"
+      color="secondary"
+    >
+      Main Menu
+    </v-btn></router-link>
+    
     <!-- Delete Confirmation Dialog -->
     <v-dialog
       v-model="dialogVisible"
@@ -312,6 +318,13 @@
   position: fixed;
   bottom: 24px;
   right: 24px;
+  z-index: 1000;
+  font-weight: bold;
+}
+.floating-button2 {
+  position: fixed;
+  bottom: 24px;
+  right: 17rem;
   z-index: 1000;
   font-weight: bold;
 }

@@ -63,7 +63,7 @@
   
     </div>
   
-    <div class="battleground">
+    <div :class="backgroundClass">
       <div class="bg1">
         <p id="player2" class="text-center">.</p>
         <v-row class="fill-height">
@@ -144,7 +144,29 @@
       Player2,
       Enemy1,
     },
-  
+    computed: {
+    // Computed property to determine the background class
+    backgroundClass() {
+      const locationName = localStorage.getItem('locationName');
+      
+      // Check the location name and return the appropriate class
+      if (locationName === 'tribe') {
+        return 'battleground1'; // Apply bg1 class if locationName is 'woods'
+      } else if (locationName === 'woods') {
+        return 'battleground2'; // Apply bg2 class if locationName is 'fields'
+      }  else if (locationName === 'remnants') {
+        return 'battleground3'; // Apply bg2 class if locationName is 'fields'
+      } else if (locationName === 'manor') {
+        return 'battleground4'; // Apply bg2 class if locationName is 'fields'
+      } else if (locationName === 'river') {
+        return 'battleground5'; // Apply bg2 class if locationName is 'fields'
+      } else if (locationName === 'village') {
+        return 'battleground6'; // Apply bg2 class if locationName is 'fields'
+      }else {
+        return ''; // Default to no class if locationName is anything else
+      }
+    }
+  },
   
     setup() {
       const characterStatusStore2 = useCharacterStatusStore2();
@@ -804,17 +826,78 @@
   
   
   <style lang="scss" scoped>
-  .battleground {
-    position: relative;
-    overflow: hidden;
-    width: 100vw;
-    height: 100vh;
-    background-image: url("../../assets/background/bg.gif");
-    background-size: cover;
-    background-position: bottom;
-    background-repeat: no-repeat;
-  }
-  
+.battleground1 {
+  position: relative;
+  overflow: hidden;
+  width: 100vw;
+  height: 100vh;
+  background-image: url("../../assets/background/bg.gif");
+  background-size: cover;
+  background-position: bottom;
+  background-repeat: no-repeat;
+  overflow-x: hidden;
+
+}
+.battleground2 {
+  position: relative;
+  overflow: hidden;
+  width: 100vw;
+  height: 100vh;
+  background-image: url("../../assets/background/forest.gif");
+  background-size: 140%;
+  background-position: center -41rem; /* Position the background 20px from the top */
+  background-repeat: no-repeat;
+  overflow-x: hidden;
+
+}
+.battleground3 {
+  position: relative;
+  overflow: hidden;
+  width: 100vw;
+  height: 100vh;
+  background-image: url("../../assets/background/remnants.gif");
+  background-size:125%;
+  background-position: center -6rem; /* Position the background 20px from the top */
+  background-repeat: no-repeat;
+  overflow-x: hidden;
+
+}
+
+.battleground4 {
+  position: relative;
+  overflow: hidden;
+  width: 100vw;
+  height: 100vh;
+  background-image: url("../../assets/background/manor.gif");
+  background-size: 125%; /* Stretch to 150% of the container's height */
+  background-position: center -15rem; /* Adjust the vertical position of the background */
+  background-repeat: no-repeat;
+  overflow-x: hidden;
+}
+
+.battleground5 {
+  position: relative;
+  overflow: hidden;
+  width: 100vw;
+  height: 100vh;
+  background-image: url("../../assets/background/mountains.gif");
+  background-size: 130% 200%; /* Stretch to 120% horizontally and 130% vertically */
+  background-position: left -38.5rem; /* Move background to the left and adjust vertical position */
+  background-repeat: no-repeat;
+  overflow-x: hidden;
+}
+.battleground6 {
+  position: relative;
+  overflow: hidden;
+  width: 100vw;
+  height: 100vh;
+  background-image: url("../../assets/background/village.gif");
+  background-size: cover; /* Stretch to 120% horizontally and 130% vertically */
+  background-position: left -25rem; /* Move background to the left and adjust vertical position */
+  background-repeat: no-repeat;
+  overflow-x: hidden;
+}
+
   .bg1 {
     position: relative;
     overflow: hidden;
