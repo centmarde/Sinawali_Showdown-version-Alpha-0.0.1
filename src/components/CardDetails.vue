@@ -33,29 +33,31 @@
 
     <!-- Card Stats -->
     <div class="mt-5 me-10">
-      <div class="d-flex justify-content-between">
-        <small class="text-uppercase font-weight-medium">Power</small>
-        <small class="text-uppercase font-weight-medium"
-          >{{ activeCard.power }}%</small
+      <div v-if="activeCard.type !== 'buff'">
+        <div class="d-flex justify-content-between">
+          <small class="text-uppercase font-weight-medium">Power</small>
+          <small class="text-uppercase font-weight-medium"
+            >{{ activeCard.power }}%</small
+          >
+        </div>
+        <v-progress-linear
+          class="mt-2 mb-4 text-button font-weight-bold animated-progress"
+          :model-value="activeCard.power"
+          max="50"
+          :color="progressColor"
+          height="18"
+          rounded
+          :style="[
+            {
+              '--progress-shadow-color': `rgba(255, 216, 43, ${
+                activeCard.power / 50
+              })`,
+            },
+            rarityStyles,
+          ]"
         >
+        </v-progress-linear>
       </div>
-      <v-progress-linear
-        class="mt-2 mb-4 text-button font-weight-bold animated-progress"
-        :model-value="activeCard.power"
-        max="30"
-        :color="progressColor"
-        height="18"
-        rounded
-        :style="[
-          {
-            '--progress-shadow-color': `rgba(255, 216, 43, ${
-              activeCard.power / 30
-            })`,
-          },
-          rarityStyles,
-        ]"
-      >
-      </v-progress-linear>
 
       <div class="d-flex justify-content-between">
         <small class="text-uppercase font-weight-medium">Energy Cost</small>
@@ -66,14 +68,14 @@
       <v-progress-linear
         class="mt-2 mb-4 text-button font-weight-bold animated-progress"
         :model-value="activeCard.mana_cost"
-        max="50"
+        max="100"
         :color="progressColor"
         height="18"
         rounded
         :style="[
           {
             '--progress-shadow-color': `rgba(255, 216, 43, ${
-              activeCard.mana_cost / 50
+              activeCard.mana_cost / 100
             })`,
           },
           rarityStyles,

@@ -3,6 +3,7 @@
     <v-img
       src="@/assets/maps/map1.jpeg"
       class="map-background"
+      style="filter: brightness(1.2)"
       alt="DND Map"
       cover
     >
@@ -11,7 +12,7 @@
         <v-btn
           class="circle-btn"
           @click="handlePinClick(pin.name)"
-          elevation="3"
+          elevation="24"
         >
           {{ pin.name }}
         </v-btn>
@@ -27,98 +28,116 @@
         />
       </div>
 
-      <!-- Character Stats -->
-      <div class="character-stats pa-3">
-        <small class="text-uppercase font-weight-medium">Max Points</small>
-        <v-progress-linear
-          class="mt-2 mb-4 text-overline font-weight-bold animated-progress"
-          :model-value="health"
-          max="100"
-          color="red"
-          height="20"
-          rounded
-          :style="`--progress-shadow-color: rgba(255, 0, 0, ${health / 100});`"
-        >
-          <template v-slot:default>
-            <div class="progress-content">
-              <strong>{{ health }}%</strong>
-            </div>
-          </template>
-        </v-progress-linear>
+      <!-- Drawer Button -->
+      <v-btn
+        prepend-icon="mdi-chart-bar"
+        @click="toggleDrawer"
+        size="large"
+        elevation="24"
+        class="toggle-drawer-btn merienda pe-10"
+      >
+        Stats
+      </v-btn>
 
-        <small class="text-uppercase font-weight-medium">Max Energy</small>
-        <v-progress-linear
-          class="mt-2 mb-4 text-overline font-weight-bold animated-progress"
-          :model-value="mana"
-          max="100"
-          color="blue"
-          height="20"
-          rounded
-          :style="`--progress-shadow-color: rgba(0, 0, 255, ${mana / 100});`"
-        >
-          <template v-slot:default>
-            <div class="progress-content">
-              <strong>{{ mana }}%</strong>
-            </div>
-          </template>
-        </v-progress-linear>
+      <!-- Drawer -->
+      <div :class="['character-stats-drawer', { open: drawerOpen }]">
+        <!-- Character Stats -->
+        <div class="character-stats pa-3">
+          <small class="text-uppercase font-weight-medium">Max Points</small>
+          <v-progress-linear
+            class="mt-2 mb-4 text-overline font-weight-bold animated-progress"
+            :model-value="health"
+            max="100"
+            color="red"
+            height="20"
+            rounded
+            :style="`--progress-shadow-color: rgba(255, 0, 0, ${
+              health / 100
+            });`"
+          >
+            <template v-slot:default>
+              <div class="progress-content">
+                <strong>{{ health }}%</strong>
+              </div>
+            </template>
+          </v-progress-linear>
 
-        <small class="text-uppercase font-weight-medium">Max Agility</small>
-        <v-progress-linear
-          class="mt-2 mb-4 text-overline font-weight-bold animated-progress"
-          :model-value="agility"
-          max="100"
-          color="green"
-          height="20"
-          rounded
-          :style="`--progress-shadow-color: rgba(0, 0, 255, ${agility / 100});`"
-        >
-          <template v-slot:default>
-            <div class="progress-content">
-              <strong>{{ agility }}%</strong>
-            </div>
-          </template>
-        </v-progress-linear>
+          <small class="text-uppercase font-weight-medium">Max Energy</small>
+          <v-progress-linear
+            class="mt-2 mb-4 text-overline font-weight-bold animated-progress"
+            :model-value="mana"
+            max="100"
+            color="blue"
+            height="20"
+            rounded
+            :style="`--progress-shadow-color: rgba(0, 0, 255, ${mana / 100});`"
+          >
+            <template v-slot:default>
+              <div class="progress-content">
+                <strong>{{ mana }}%</strong>
+              </div>
+            </template>
+          </v-progress-linear>
 
-        <small class="text-uppercase font-weight-medium"
-          >Max Critical Rate</small
-        >
-        <v-progress-linear
-          class="mt-2 mb-4 text-overline font-weight-bold animated-progress"
-          :model-value="critical_rate"
-          max="100"
-          color="orange"
-          height="20"
-          rounded
-          :style="`--progress-shadow-color: rgba(128, 0, 128, ${
-            critical_rate / 100
-          });`"
-        >
-          <template v-slot:default>
-            <div class="progress-content">
-              <strong>{{ critical_rate }}%</strong>
-            </div>
-          </template>
-        </v-progress-linear>
+          <small class="text-uppercase font-weight-medium">Max Agility</small>
+          <v-progress-linear
+            class="mt-2 mb-4 text-overline font-weight-bold animated-progress"
+            :model-value="agility"
+            max="100"
+            color="green"
+            height="20"
+            rounded
+            :style="`--progress-shadow-color: rgba(0, 0, 255, ${
+              agility / 100
+            });`"
+          >
+            <template v-slot:default>
+              <div class="progress-content">
+                <strong>{{ agility }}%</strong>
+              </div>
+            </template>
+          </v-progress-linear>
 
-        <small class="text-uppercase font-weight-medium">Max Defense</small>
-        <v-progress-linear
-          class="mt-2 mb-4 text-overline font-weight-bold animated-progress"
-          :model-value="defense"
-          max="100"
-          color="purple"
-          height="20"
-          rounded
-          :style="`--progress-shadow-color: rgba(255, 165, 0, ${
-            defense / 100
-          });`"
-        >
-          <template v-slot:default>
-            <div class="progress-content">
-              <strong>{{ defense }}%</strong>
-            </div>
-          </template>
-        </v-progress-linear>
+          <small class="text-uppercase font-weight-medium"
+            >Max Critical Rate</small
+          >
+          <v-progress-linear
+            class="mt-2 mb-4 text-overline font-weight-bold animated-progress"
+            :model-value="critical_rate"
+            max="100"
+            color="orange"
+            height="20"
+            rounded
+            :style="`--progress-shadow-color: rgba(128, 0, 128, ${
+              critical_rate / 100
+            });`"
+          >
+            <template v-slot:default>
+              <div class="progress-content">
+                <strong>{{ critical_rate }}%</strong>
+              </div>
+            </template>
+          </v-progress-linear>
+
+          <small class="text-uppercase font-weight-medium">Max Defense</small>
+          <v-progress-linear
+            class="mt-2 mb-4 text-overline font-weight-bold animated-progress"
+            :model-value="defense"
+            max="100"
+            color="purple"
+            height="20"
+            rounded
+            :style="`--progress-shadow-color: rgba(255, 165, 0, ${
+              defense / 100
+            });`"
+          >
+            <template v-slot:default>
+              <div class="progress-content">
+                <strong>{{ defense }}%</strong>
+              </div>
+            </template>
+          </v-progress-linear>
+        </div>
       </div>
     </v-img>
 
@@ -150,6 +169,7 @@ export default {
       agility: 0, // Character agility
       defense: 0, // Character defense
       critical_rate: 0, // Character critical rate
+      drawerOpen: false, // Drawer visibility
     };
   },
   computed: {
@@ -246,6 +266,10 @@ export default {
         transform: "translate(-50%, -50%)",
       };
     },
+
+    toggleDrawer() {
+      this.drawerOpen = !this.drawerOpen;
+    },
   },
 };
 </script>
@@ -264,15 +288,18 @@ export default {
 }
 
 .circle-btn {
-  width: 50px;
-  height: 50px;
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
   display: flex;
   justify-content: center;
   align-items: center;
   font-size: 0.75rem;
   color: white;
-  background-color: #4646462f;
+  background: rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(2px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.675);
+  -webkit-backdrop-filter: blur(2px);
 }
 
 .cards-container {
@@ -314,14 +341,38 @@ export default {
 }
 
 .character-stats {
-  /* From https://css.glass */
   background: rgba(0, 0, 0, 0.435);
   backdrop-filter: blur(3px);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
   -webkit-backdrop-filter: blur(3px);
   position: absolute;
-  top: 140px;
+  top: 188px;
   width: 230px;
+}
+
+.character-stats-drawer {
+  position: fixed;
+  top: 10px;
+  left: -300px; /* Start off-screen */
+  width: 300px;
+  transition: transform 0.3s ease-in-out;
+}
+
+.character-stats-drawer.open {
+  transform: translateX(300px); /* Move into view */
+}
+
+.toggle-drawer-btn {
+  position: absolute;
+  top: 138px;
+  z-index: 1000;
+
+  background: rgba(0, 0, 0, 0.435);
+  backdrop-filter: blur(3px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.675);
+  -webkit-backdrop-filter: blur(3px);
+  border-top-right-radius: 50px;
+  border-bottom-right-radius: 50px;
 }
 
 .progress-content {
