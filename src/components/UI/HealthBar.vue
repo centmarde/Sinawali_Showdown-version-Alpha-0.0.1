@@ -195,16 +195,17 @@ const player2HealthColor = computed(() => {
       console.log("Checking victory condition");
       if (player1.health <= 0) {
        
-        setTimeout(() => {
+       
 
-          router.push("/defeated");
+        window.location.href = "/defeated";
 
-        }, 1500);
+       
       } else if (player2.health <= 0) {
       
-        setTimeout(() => {
-          router.push("/result_base");
-        }, 1500);
+       
+        window.location.href = "/result_base";
+
+      
       }
     };
 
@@ -254,7 +255,7 @@ const player2HealthColor = computed(() => {
       triggerSoftUpdate();
       intervalVictoryCheck = setInterval(() => {
         checkVictoryCondition();
-      }, 1000);
+      }, 1500);
     });
 
     onUnmounted(() => {

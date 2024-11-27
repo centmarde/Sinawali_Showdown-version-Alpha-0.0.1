@@ -54,7 +54,7 @@
           </div>
 
           <!-- Scenario Display -->
-          <div v-if="continueStatusStore.scenario">
+          <div v-if="continueStatusStore.scenario" style="font-family: 'Merienda', cursive;">
             <div class="my-4">
               <p v-html="continueStatusStore.scenario" class="text-body-1"></p>
             </div>
@@ -93,7 +93,10 @@ import { useRouter } from "vue-router";
 import { supabase } from "@/lib/supabase.js";
 import { useToast } from "vue-toastification";
 import { useAudioAdventure } from "@/stores/adventureAudio";
+import { useEnergyPotionStore } from '@/stores/useEnergyPotionStore';
 
+
+const energyPotionStore = useEnergyPotionStore();
 const router = useRouter();
 const toast = useToast();
 const isScenarioVisible = ref(true);
@@ -190,6 +193,9 @@ const confirmAnswer = async () => {
       const selectedOption = selectedAnswer.value || selectedHelpAnswer.value;
 
       if (selectedOption.toUpperCase() === "A") {
+       
+      energyPotionStore.generateEnergyPotion();
+    
         audioAdventure.playNotif();
         continueStatusStore.initializeGroq(
           "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"
@@ -203,17 +209,10 @@ const confirmAnswer = async () => {
         console.log("Random Enemy ID:", randomEnemyId);
         localStorage.setItem("enemy_id", randomEnemyId);
 
-        if (Math.random() < 0.3) {
-          continueStatusStore.initializeGroq(
-            "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"
-          );
-          isScenarioVisible.value = false;
-          isHelpDialogOpen.value = true;
-          await loadHelpScenario();
-        } else {
+      
           toast("To battle!");
           router.push("/ad_battle");
-        }
+        
       } else if (selectedOption.toUpperCase() === "C") {
         if (Math.random() < 0.8) {
           isHelpDialogOpen.value = false;
@@ -301,5 +300,9 @@ button:disabled {
 
 .error {
   color: red;
+}
+
+.text-body-1{
+  font-family: "Merienda", cursive;
 }
 </style>

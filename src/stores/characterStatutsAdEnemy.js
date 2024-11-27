@@ -90,11 +90,12 @@ export const useCharacterStatusStore2 = defineStore("characterStatus2", {
     },
 
     async fetchCharacter(characterId) {
+      console.log(characterId);
       const { data, error } = await supabase
-        .from("enemies")
-        .select("health, defense, agility")
-        .eq("id", characterId)
-        .single();
+        .from("characters")
+        .select("*")
+        .eq("id", characterId);
+      /*  .single(); */
 
       if (error) {
         console.error("Error fetching character:", error);
@@ -105,7 +106,7 @@ export const useCharacterStatusStore2 = defineStore("characterStatus2", {
 
     async updateCharacter(characterId, character) {
       const { error } = await supabase
-        .from("enemies")
+        .from("characters")
         .update({
           health: character.health,
           defense: character.defense,
