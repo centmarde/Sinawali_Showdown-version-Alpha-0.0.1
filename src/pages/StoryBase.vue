@@ -249,6 +249,21 @@ export default {
     reloadStoryDialog() {
       this.storyDialogKey += 1; // Update the key to trigger remount of StoryDialog
     },
+
+    exitToMainMenu() {
+      this.audioStore.playClick();
+      this.audioStore.pauseAdBg();
+      this.audioStore.pauseVillage();
+      this.audioStore2.allPause();
+      // Logic to navigate to the main menu
+      console.log("Exiting to main menu...");
+      this.$router.push("/landing");
+    },
+    invokeChildTwoMethod() {
+      this.audioStore.playClick();
+      // Open the menu dialog
+      this.menuDialogVisible = true;
+    },
     async fetchGold() {
       try {
         const characterId = localStorage.getItem("character_id");
