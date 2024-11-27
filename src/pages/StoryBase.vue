@@ -26,8 +26,8 @@
     <h5 class="top-right-icon5">{{ gold }}</h5>
 
     <!-- Child Components -->
-        <Map :key="mapKey" @pinClicked="handlePinClicked"/>
-       <!-- StoryDialog in v-dialog wrapped with v-card -->
+    <Map :key="mapKey" @pinClicked="handlePinClicked" />
+    <!-- StoryDialog in v-dialog wrapped with v-card -->
     <v-dialog v-model="dialogVisible" max-width="600" persistent>
       <v-card>
         <v-card-title class="text-h6">Scenario</v-card-title>
@@ -59,7 +59,7 @@
               <h1 class="pb-2">Game Paused</h1>
               <div class="d-flex flex-column">
                 <v-btn
-                  class="merienda"
+                  class="merienda mb-5"
                   size="large"
                   variant="tonal"
                   color="#6f3433"
@@ -297,7 +297,6 @@ export default {
   },
 };
 </script>
-
 
 <style scoped>
 .top-right-icon1 {

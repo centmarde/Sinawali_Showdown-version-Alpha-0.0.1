@@ -44,7 +44,7 @@
         <!-- Character Stats -->
         <div class="character-stats pa-3">
           <!-- Max Points -->
-          <small class="text-uppercase font-weight-medium">Max Points</small>
+          <small class="text-uppercase font-weight-medium">Points</small>
           <v-progress-linear
             class="mt-2 mb-4 text-overline font-weight-bold animated-progress"
             :model-value="health"
@@ -64,7 +64,7 @@
           </v-progress-linear>
 
           <!-- Max Energy -->
-          <small class="text-uppercase font-weight-medium">Max Energy</small>
+          <small class="text-uppercase font-weight-medium">Energy</small>
           <v-progress-linear
             class="mt-2 mb-4 text-overline font-weight-bold animated-progress"
             :model-value="mana"
@@ -82,7 +82,7 @@
           </v-progress-linear>
 
           <!-- Max Agility -->
-          <small class="text-uppercase font-weight-medium">Max Agility</small>
+          <small class="text-uppercase font-weight-medium">Agility</small>
           <v-progress-linear
             class="mt-2 mb-4 text-overline font-weight-bold animated-progress"
             :model-value="agility"
@@ -102,9 +102,7 @@
           </v-progress-linear>
 
           <!-- Max Critical Rate-->
-          <small class="text-uppercase font-weight-medium"
-            >Max Critical Rate</small
-          >
+          <small class="text-uppercase font-weight-medium">Critical Rate</small>
           <v-progress-linear
             class="mt-2 mb-4 text-overline font-weight-bold animated-progress"
             :model-value="critical_rate"
@@ -124,7 +122,7 @@
           </v-progress-linear>
 
           <!-- Max Defense -->
-          <small class="text-uppercase font-weight-medium">Max Defense</small>
+          <small class="text-uppercase font-weight-medium">Defense</small>
           <v-progress-linear
             class="mt-2 mb-4 text-overline font-weight-bold animated-progress"
             :model-value="defense"
@@ -146,8 +144,8 @@
       </div>
     </v-img>
 
-    <div v-if="filteredCards.length > 4" class="card-plus text-center">
-      <h2>+{{ filteredCards.length - 4 }}</h2>
+    <div v-if="filteredCards.length > 5" class="card-plus text-center">
+      <h2>+{{ filteredCards.length - 5 }}</h2>
     </div>
   </v-container>
 </template>
@@ -313,7 +311,7 @@ export default {
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
   -webkit-backdrop-filter: blur(3px);
   position: absolute;
-
+  top: -2px;
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
@@ -321,8 +319,8 @@ export default {
 }
 
 .card-image {
-  height: 90px;
-  width: 80px;
+  height: 80px;
+  width: 70px;
   border-radius: 10px;
   opacity: 0.8;
   margin-right: 5px;
@@ -330,10 +328,10 @@ export default {
 
 .card-plus {
   position: absolute;
-  top: 15px;
-  left: 372px;
-  width: 100px;
-  height: 121px;
+  top: 16px;
+  left: 326px;
+  width: 96px;
+  height: 109px;
 
   background: rgba(0, 0, 0, 0.52);
   backdrop-filter: blur(3px);
