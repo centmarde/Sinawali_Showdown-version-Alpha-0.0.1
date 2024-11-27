@@ -28,15 +28,16 @@
     <!-- Child Components -->
         <Map :key="mapKey" @pinClicked="handlePinClicked"/>
        <!-- StoryDialog in v-dialog wrapped with v-card -->
-    <v-dialog v-model="dialogVisible" max-width="600" persistent>
-      <v-card>
-        <v-card-title class="text-h6">Scenario</v-card-title>
-        <v-card-text class="scrollable">
-          <!-- StoryDialog content -->
-          <StoryDialog :key="storyDialogKey" />
-        </v-card-text>
-      </v-card>
-    </v-dialog>
+       <v-dialog v-model="dialogVisible" max-width="600" persistent style="font-family: 'Merienda', cursive;">
+  <v-card>
+    <v-card-title class="text-h6">Scenario</v-card-title>
+    <v-card-text class="scrollable">
+      <!-- StoryDialog content -->
+      <StoryDialog :key="storyDialogKey" />
+    </v-card-text>
+  </v-card>
+</v-dialog>
+
     <!-- Menu Dialog -->
     <v-dialog
       v-model="menuDialogVisible"
@@ -157,6 +158,8 @@ export default {
   },
   methods: {
     async handlePinClicked(area) {
+      localStorage.setItem('locationName', area);
+      console.log("Area clicked:", area);
       this.audioStore.playClick(); // Play click sound
       const gameScenarioStore = useGameScenarioStore();
       gameScenarioStore.initializeGroq(

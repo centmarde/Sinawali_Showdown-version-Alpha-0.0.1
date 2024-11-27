@@ -164,7 +164,7 @@ export default {
         { name: "remnants", x: 300, y: 500 },
         { name: "village", x: 800, y: 500 },
         { name: "manor", x: 850, y: 250 },
-        { name: "fields", x: 1200, y: 350 },
+        { name: "river", x: 1200, y: 350 },
         { name: "woods", x: 600, y: 100 },
       ],
       cards: [], // Array to hold all cards
@@ -260,8 +260,11 @@ export default {
     },
 
     handlePinClick(locationName) {
-      this.$emit("pinClicked", locationName);
-    },
+  // Save locationName to localStorage
+  // Emit the event
+  this.$emit("pinClicked", locationName);
+}
+,
 
     getPinStyle(pin) {
       return {
