@@ -43,6 +43,7 @@
       <div :class="['character-stats-drawer', { open: drawerOpen }]">
         <!-- Character Stats -->
         <div class="character-stats pa-3">
+          <!-- Max Points -->
           <small class="text-uppercase font-weight-medium">Max Points</small>
           <v-progress-linear
             class="mt-2 mb-4 text-overline font-weight-bold animated-progress"
@@ -62,6 +63,7 @@
             </template>
           </v-progress-linear>
 
+          <!-- Max Energy -->
           <small class="text-uppercase font-weight-medium">Max Energy</small>
           <v-progress-linear
             class="mt-2 mb-4 text-overline font-weight-bold animated-progress"
@@ -79,6 +81,7 @@
             </template>
           </v-progress-linear>
 
+          <!-- Max Agility -->
           <small class="text-uppercase font-weight-medium">Max Agility</small>
           <v-progress-linear
             class="mt-2 mb-4 text-overline font-weight-bold animated-progress"
@@ -87,7 +90,7 @@
             color="green"
             height="20"
             rounded
-            :style="`--progress-shadow-color: rgba(0, 0, 255, ${
+            :style="`--progress-shadow-color: rgba(0, 128, 0, ${
               agility / 100
             });`"
           >
@@ -98,6 +101,7 @@
             </template>
           </v-progress-linear>
 
+          <!-- Max Critical Rate-->
           <small class="text-uppercase font-weight-medium"
             >Max Critical Rate</small
           >
@@ -108,7 +112,7 @@
             color="orange"
             height="20"
             rounded
-            :style="`--progress-shadow-color: rgba(128, 0, 128, ${
+            :style="`--progress-shadow-color: rgba(255, 165, 0, ${
               critical_rate / 100
             });`"
           >
@@ -119,6 +123,7 @@
             </template>
           </v-progress-linear>
 
+          <!-- Max Defense -->
           <small class="text-uppercase font-weight-medium">Max Defense</small>
           <v-progress-linear
             class="mt-2 mb-4 text-overline font-weight-bold animated-progress"
@@ -127,7 +132,7 @@
             color="purple"
             height="20"
             rounded
-            :style="`--progress-shadow-color: rgba(255, 165, 0, ${
+            :style="`--progress-shadow-color: rgba(128, 0, 128, ${
               defense / 100
             });`"
           >
