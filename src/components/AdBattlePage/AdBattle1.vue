@@ -64,7 +64,7 @@
         <v-card-subtitle :style="{ position: 'relative', zIndex: 1 }">Type: {{ selectedCard?.type }}</v-card-subtitle>
         <v-card-text :style="{ position: 'relative', zIndex: 1 }">
           <p>Power: {{ selectedCard?.power }}</p>
-          <p>Mana Cost: {{ selectedCard?.mana_cost }}</p>
+          <p>Energy Cost: {{ selectedCard?.mana_cost }}</p>
           <p>Description: {{ selectedCard?.description }}</p>
         </v-card-text>
 
