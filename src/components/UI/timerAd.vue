@@ -44,18 +44,16 @@
                   >Resume</v-btn
                 >
 
-                <router-link to="story_base">
-                  <v-btn
-                    class="merienda mb-5"
-                    size="large"
-                    variant="tonal"
-                    color="#6f3433"
-                    @click="goBack"
-                  >
-                    Go Back
-                  </v-btn></router-link
+                <v-btn
+                  to="story_base"
+                  class="merienda"
+                  size="large"
+                  variant="tonal"
+                  color="#6f3433"
+                  @click="goBack"
                 >
-
+                  Go Back
+                </v-btn>
                 <v-btn
                   class="merienda"
                   size="large"
