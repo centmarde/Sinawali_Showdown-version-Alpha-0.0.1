@@ -1,19 +1,33 @@
 <template>
-  <div id="ygar" @click="handleUserInteraction" @touchstart="handleUserInteraction">
+  <div
+    id="ygar"
+    @click="handleUserInteraction"
+    @touchstart="handleUserInteraction"
+  >
     <!-- Background should always be visible -->
     <Background />
-    
-    <!-- HomeMenu Component -->
-    <HomeMenu />
-    
+
+    <!-- MainMenu Component -->
+    <MainMenu />
+
     <!-- Loader conditionally displayed (if needed) -->
-    <div v-if="isLoading" class="loading-indicator">
-      Loading...
-    </div>
+    <div v-if="isLoading" class="loading-indicator">Loading...</div>
 
     <!-- Logout Link in the top right corner -->
-    <a href="#" style="position: fixed; top: 10px; right: 15px; z-index: 9999; font-size: 10px;" @click.prevent="logout" class="logout-link">Logout</a>
-    
+    <a
+      href="#"
+      style="
+        position: fixed;
+        top: 10px;
+        right: 15px;
+        z-index: 9999;
+        font-size: 10px;
+      "
+      @click.prevent="logout"
+      class="logout-link"
+      >Logout</a
+    >
+
     <!-- Correctly defined audio for the skip button -->
     <audio ref="skipAudio">
       <source src="../assets/audio/click.mp3" type="audio/mp3" />
@@ -26,7 +40,7 @@
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import Background from "@/components/landingpage/Background.vue";
-import HomeMenu from "@/components/Menu/HomeMenu.vue";
+import MainMenu from "@/components/menu/MainMenu.vue";
 import { useAudioStore } from "@/stores/audioStore";
 import { doLogout } from "@/lib/supabase"; // Import the doLogout function
 
