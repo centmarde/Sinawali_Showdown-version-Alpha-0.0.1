@@ -27,6 +27,9 @@
             height="12"
             color="light-blue"
           >
+            <template v-slot:default>
+              <div class="mana-text">{{ currentPlayerMana }}/100</div>
+            </template>
           </v-progress-linear>
         </div>
       </v-col>
@@ -64,6 +67,9 @@
             reverse
             color="light-blue"
           >
+            <template v-slot:default>
+              <div class="mana-text">{{ currentPlayer2Mana }}/100</div>
+            </template>
           </v-progress-linear>
         </div>
       </v-col>
@@ -370,6 +376,10 @@ onMounted(() => {
 .hp {
   position: fixed; /* Fixed positioning */
   z-index: 9999; /* Ensure it appears on top */
+}
+
+.mana-text {
+  font-size: 10px;
 }
 
 @keyframes fadeInOutBorder {

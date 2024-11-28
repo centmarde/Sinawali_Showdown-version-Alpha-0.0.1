@@ -39,7 +39,7 @@
         <v-card-subtitle>Type: {{ selectedCard?.type }}</v-card-subtitle>
         <v-card-text>
           <p>Power: {{ selectedCard?.power }}</p>
-          <p>Mana Cost: {{ selectedCard?.mana_cost }}</p>
+          <p>Energy Cost: {{ selectedCard?.mana_cost }}</p>
           <p>Description: {{ selectedCard?.description }}</p>
         </v-card-text>
         <v-card-actions>

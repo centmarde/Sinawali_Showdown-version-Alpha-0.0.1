@@ -1,4 +1,5 @@
-<<template>
+<
+<template>
   <div class="timer">
     <v-progress-circular
       :value="(timeLeft / totalTime) * 100"
@@ -42,7 +43,17 @@
                   @click="resumeTimer"
                   >Resume</v-btn
                 >
-                
+
+                <v-btn
+                  to="story_base"
+                  class="merienda"
+                  size="large"
+                  variant="tonal"
+                  color="#6f3433"
+                  @click="goBack"
+                >
+                  Go Back
+                </v-btn>
                 <v-btn
                   class="merienda"
                   size="large"
@@ -69,149 +80,152 @@
       </v-card>
     </v-dialog>
   </div>
-</template>s
-  
-  <script>
-// import { usePlayerStore } from "../../stores/healthBarAd";
-import {useAudioStore} from "@/stores/audioStore";
+</template>
+s
 
-  export default {
-    data() {
-      return {
-        timeLeft: 60, // Initial countdown time in seconds
-        totalTime: 60,
-        dialog: false, // Dialog for Pause
-        timeUpDialog: false, // Dialog for Time's up
-        timer: null,
-        isPaused: false, // State to track whether the timer is paused
-      };
+<script>
+// import { usePlayerStore } from "../../stores/healthBarAd";
+import { useAudioStore } from "@/stores/audioStore";
+
+export default {
+  data() {
+    return {
+      timeLeft: 60, // Initial countdown time in seconds
+      totalTime: 60,
+      dialog: false, // Dialog for Pause
+      timeUpDialog: false, // Dialog for Time's up
+      timer: null,
+      isPaused: false, // State to track whether the timer is paused
+    };
+  },
+  computed: {
+    timerColor() {
+      if (this.timeLeft <= 10) {
+        return "red";
+      } else if (this.timeLeft <= 20) {
+        return "orange";
+      } else {
+        return "#00897B";
+      }
     },
-    computed: {
-      timerColor() {
-        if (this.timeLeft <= 10) {
-          return "red";
-        } else if (this.timeLeft <= 20) {
-          return "orange";
-        } else {
-          return "#00897B";
+  },
+  methods: {
+    startTimer() {
+      this.timer = setInterval(() => {
+        if (this.timeLeft > 0 && !this.isPaused) {
+          this.timeLeft--;
+        } else if (this.timeLeft === 0) {
+          this.timeUpDialog = true;
+          clearInterval(this.timer);
         }
-      },
+      }, 1000);
     },
-    methods: {
-      startTimer() {
-        this.timer = setInterval(() => {
-          if (this.timeLeft > 0 && !this.isPaused) {
-            this.timeLeft--;
-          } else if (this.timeLeft === 0) {
-            this.timeUpDialog = true;
-            clearInterval(this.timer);
-          }
-        }, 1000);
-      },
-      pauseTimer() {
-        this.isPaused = true;
-        this.dialog = true;
-        clearInterval(this.timer); // Stop the timer when paused
-      },
-      resumeTimer() {
-        this.isPaused = false;
-        this.dialog = false;
-        this.startTimer(); // Restart the timer
-      },
-      exitGame() {
-        useAudioStore(). allPause();
-        this.dialog = false;
-        window.location.href = "/"; // Redirect to the homepage or another route
-      },
-      proceedToNextPhase() {
-        this.timeUpDialog = false;
-        if (this.$route.path === "/next_phase_ad") {
-          this.$router.push("/ad_battle");
-        } else {
-          this.$router.push("/next_phase_ad");
-        }
-      },
+    pauseTimer() {
+      this.isPaused = true;
+      this.dialog = true;
+      clearInterval(this.timer); // Stop the timer when paused
     },
-    mounted() {
-      this.startTimer();
+    resumeTimer() {
+      this.isPaused = false;
+      this.dialog = false;
+      this.startTimer(); // Restart the timer
     },
-    beforeDestroy() {
-      clearInterval(this.timer);
+    exitGame() {
+      useAudioStore().allPause();
+      this.dialog = false;
+      window.location.href = "/"; // Redirect to the homepage or another route
     },
-  };
-  </script>
-  
-  <style scoped>
-  .v-progress-circular span {
-    font-size: 24px;
-    font-weight: bold;
+    proceedToNextPhase() {
+      this.timeUpDialog = false;
+      if (this.$route.path === "/next_phase_ad") {
+        this.$router.push("/ad_battle");
+      } else {
+        this.$router.push("/next_phase_ad");
+      }
+    },
+
+    goBack() {
+      this.audioStore.playClick();
+    },
+  },
+  mounted() {
+    this.startTimer();
+  },
+  beforeDestroy() {
+    clearInterval(this.timer);
+  },
+};
+</script>
+
+<style scoped>
+.v-progress-circular span {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.v-dialog {
+  z-index: 99999 !important; /* Ensure dialog overlays on top of other elements */
+}
+
+.v-btn {
+  margin-top: 20px;
+}
+.timer {
+  position: fixed;
+  top: 20px; /* Adjust this value to position the timer slightly away from the top */
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000; /* Ensure it stays on top */
+}
+.stroke-red {
+  border: 2px solid darkred; /* Darker stroke for red */
+}
+
+.stroke-orange {
+  border: 2px solid darkorange; /* Darker stroke for orange */
+}
+
+.stroke-green {
+  border: 2px solid darkgreen; /* Darker stroke for green */
+}
+.pause_btn {
+  position: absolute;
+  top: 75px; /* Adjust this value to position the timer slightly away from the top */
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: inherit;
+}
+
+.game-pause {
+  width: 300px;
+}
+
+.game-pause h1 {
+  font-family: "Merienda", cursive;
+  font-optical-sizing: auto;
+  font-weight: 700;
+  font-style: normal;
+  animation: fadeIn 2s ease-out;
+  color: #6f3433;
+}
+
+.game-pause-btn {
+  width: 300px;
+}
+
+.game-pause .v-btn {
+  font-weight: 800 !important;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
   }
-  
-  .v-dialog {
-    z-index: 99999 !important; /* Ensure dialog overlays on top of other elements */
+  to {
+    opacity: 1;
   }
-  
-  .v-btn {
-    margin-top: 20px;
-  }
-  .timer {
-    position: fixed;
-    top: 20px; /* Adjust this value to position the timer slightly away from the top */
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 1000; /* Ensure it stays on top */
-  }
-  .stroke-red {
-    border: 2px solid darkred; /* Darker stroke for red */
-  }
-  
-  .stroke-orange {
-    border: 2px solid darkorange; /* Darker stroke for orange */
-  }
-  
-  .stroke-green {
-    border: 2px solid darkgreen; /* Darker stroke for green */
-  }
-  .pause_btn {
-    position: absolute;
-    top: 75px; /* Adjust this value to position the timer slightly away from the top */
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 1000;
-    background: transparent !important;
-    box-shadow: none !important;
-    color: inherit;
-  }
-  
-  .game-pause {
-    width: 300px;
-  }
-  
-  .game-pause h1 {
-    font-family: "Merienda", cursive;
-    font-optical-sizing: auto;
-    font-weight: 700;
-    font-style: normal;
-    animation: fadeIn 2s ease-out;
-    color: #6f3433;
-  }
-  
-  .game-pause-btn {
-    width: 300px;
-  }
-  
-  .game-pause .v-btn {
-    font-weight: 800 !important;
-  }
-  
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
-  }
-  </style>
-  
-  
+}
+</style>
