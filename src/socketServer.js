@@ -11,8 +11,8 @@ const io = new Server(httpServer, {
 });
 
 // Ensure the server listens on port 3001
-httpServer.listen(3001, () => {
-  console.log("Socket.io server running on port 3001");
+httpServer.listen(3002, () => {
+  console.log("Socket.io server running on port 3002");
 });
 
 io.on("connection", (socket) => {

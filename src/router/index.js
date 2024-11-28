@@ -25,6 +25,17 @@ import Landing from "@/pages/Landing.vue";
 import MultiPlayer from "@/pages/MultiPlayer.vue";
 import OnlineBase from "@/pages/OnlineBase.vue";
 import DeckBuild from "@/components/DeckBuild.vue";
+import StoryBase from "@/pages/StoryBase.vue";
+import StoryIntro from "@/pages/StoryIntro.vue";
+import StoryCharacter from "@/pages/StoryCharacter.vue";
+import AdBattle from "@/pages/AdBattle.vue";
+import NextPhaseAd from "@/components/AdBattlePage/NextPhaseAd.vue";
+import ResultBase from "@/pages/ResultBase.vue";
+import Save from "@/pages/Save.vue";
+import BustedBase from "@/pages/BustedBase.vue";
+import Store from "@/pages/AdventurePages/Store.vue";
+import Reward from "@/pages/AdventurePages/Reward.vue";
+import Jail from "@/pages/AdventurePages/Jail.vue";
 
 const toast = useToast();
 
@@ -97,6 +108,73 @@ const routes = setupLayouts([
     component: DeckBuild,
     meta: { requiresAuth: true },
   },
+  {
+    path: "/story_base",
+    component: StoryBase,
+    meta: { requiresAuth: true },
+    name: "story_base",
+  },
+  {
+    path: "/story_intro",
+    component: StoryIntro,
+    meta: { requiresAuth: true },
+    name: "story_intro",
+  },
+  {
+    path: "/story_character",
+    component: StoryCharacter,
+    meta: { requiresAuth: true },
+    name: "story_character",
+  },
+  {
+    path: "/ad_battle",
+    component: AdBattle,
+    meta: { requiresAuth: true },
+    name: "ad_battle",
+  },
+  {
+    path: "/next_phase_ad",
+    component: NextPhaseAd,
+    meta: { requiresAuth: true },
+    name: "next_phase_ad",
+  },
+  {
+    path: "/result_base",
+    component: ResultBase,
+    meta: { requiresAuth: true },
+    name: "result_base",
+  },
+
+  {
+    path: "/defeated",
+    component: BustedBase,
+    meta: { requiresAuth: true },
+    name: "defeated",
+  },
+  {
+    path: "/save",
+    component: Save,
+    meta: { requiresAuth: true },
+    name: "save",
+  },
+  {
+    path: "/reward",
+    component: Reward,
+    meta: { requiresAuth: true },
+    name: "reward",
+  },
+  {
+    path: "/jail",
+    component: Jail,
+    meta: { requiresAuth: true },
+    name: "jail",
+  },
+  {
+    path: "/store",
+    component: Store,
+    meta: { requiresAuth: true },
+    name: "store",
+  },
 ]);
 
 const router = createRouter({
@@ -123,6 +201,17 @@ router.beforeEach((to, from, next) => {
     "/next_phase_ai",
     "/battle_area_ai",
     "/deck_build",
+    "/story_base",
+    "/story_character",
+    "/story_intro",
+    "/ad_battle",
+    "/next_phase_ad",
+    "/result_base",
+    "/save",
+    "/defeated",
+    "/reward",
+    "/jail",
+    "/store",
   ];
   /* const nestedProtectedGroup = ["/online_character_select"]; */
 

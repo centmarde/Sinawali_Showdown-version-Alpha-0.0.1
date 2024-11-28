@@ -2,7 +2,10 @@
   <v-app class="zoomed">
     <v-main>
       <div v-if="isLoading" class="loading-screen">
-        <v-progress-circular indeterminate color="primary"></v-progress-circular>
+        <v-progress-circular
+          indeterminate
+          color="primary"
+        ></v-progress-circular>
         <p>Loading...</p>
       </div>
       <router-view v-else />
@@ -11,16 +14,17 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue';
+import { ref, onMounted, onBeforeUnmount } from "vue";
 
 const isLoading = ref(true);
 
 // Prevent zooming functions
 const preventZoom = (event) => {
   if (
-    (event.ctrlKey && (event.key === '+' || event.key === '-' || event.key === '0')) || // Ctrl + / Ctrl - / Ctrl 0
-    (event.metaKey && (event.key === '=' || event.key === '-')) || // Cmd + / Cmd -
-    (event.type === 'wheel' && event.ctrlKey) // Ctrl + Mouse scroll
+    (event.ctrlKey &&
+      (event.key === "+" || event.key === "-" || event.key === "0")) || // Ctrl + / Ctrl - / Ctrl 0
+    (event.metaKey && (event.key === "=" || event.key === "-")) || // Cmd + / Cmd -
+    (event.type === "wheel" && event.ctrlKey) // Ctrl + Mouse scroll
   ) {
     event.preventDefault();
   }
@@ -38,23 +42,33 @@ onMounted(() => {
     isLoading.value = false;
   }, 2000);
 
-  document.addEventListener('wheel', preventZoom, { passive: false });
-  document.addEventListener('keydown', preventZoom, { passive: false });
-  document.addEventListener('gesturestart', preventPinchZoom, { passive: false });
-  document.addEventListener('gesturechange', preventPinchZoom, { passive: false });
+  document.addEventListener("wheel", preventZoom, { passive: false });
+  document.addEventListener("keydown", preventZoom, { passive: false });
+  document.addEventListener("gesturestart", preventPinchZoom, {
+    passive: false,
+  });
+  document.addEventListener("gesturechange", preventPinchZoom, {
+    passive: false,
+  });
 });
 
 onBeforeUnmount(() => {
-  document.removeEventListener('wheel', preventZoom);
-  document.removeEventListener('keydown', preventZoom);
-  document.removeEventListener('gesturestart', preventPinchZoom);
-  document.removeEventListener('gesturechange', preventPinchZoom);
+  document.removeEventListener("wheel", preventZoom);
+  document.removeEventListener("keydown", preventZoom);
+  document.removeEventListener("gesturestart", preventPinchZoom);
+  document.removeEventListener("gesturechange", preventPinchZoom);
 });
 </script>
 
 <style>
+@import url("https://fonts.googleapis.com/css2?family=Merienda:wght@300..900&family=Rock+Salt&display=swap");
+
+.merienda {
+  font-family: "Merienda", cursive;
+}
+
 .zoomed {
-  transform: scale(1.00); /* Set default zoom to 125% */
+  transform: scale(1); /* Set default zoom to 125% */
   transform-origin: top left; /* Ensure the zoom starts from the top left */
   overflow: hidden;
 }

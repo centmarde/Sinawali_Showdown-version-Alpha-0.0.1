@@ -7,7 +7,13 @@
     <div class="victory-overlay">
       <h3>{{ winnerName }}</h3>
       <span>has won the battle!</span>
-      <v-btn @click="goToBattleArea" color="primary">Back to main Menu</v-btn>
+      <PrimBtn
+        @click="goToBattleArea"
+        content="Back to main Menu"
+        width="200px"
+        marginLeft="5px"
+      />
+      <!-- <v-btn @click="goToBattleArea" color="#e6d011">Back to main Menu</v-btn> -->
     </div>
   </div>
 </template>
@@ -16,6 +22,7 @@
 import { useAudioStore } from "@/stores/audioStore";
 import { onMounted, ref } from "vue";
 import { supabase } from "@/lib/supabase";
+import PrimBtn from "@/components/buttons/PrimBtn.vue";
 import router from "@/router";
 
 export default {
@@ -47,7 +54,6 @@ export default {
       await this.resetCharacters();
 
       window.location.href = "/";
-     
     },
 
     async resetCharacters() {
@@ -58,7 +64,7 @@ export default {
           mana: 100,
           agility: 10,
           defense: 0,
-          critical_rate: 50,
+          critical_rate: 30,
         })
         .eq("id", 1);
 
@@ -72,7 +78,7 @@ export default {
         .update({
           health: 100,
           mana: 100,
-          agility: 50,
+          agility: 30,
           defense: 0,
           critical_rate: 10,
         })
@@ -125,9 +131,6 @@ export default {
 };
 </script>
 
-
-
-
 <style scoped>
 .victory-container {
   position: relative;
@@ -147,7 +150,7 @@ export default {
 
 .victory-overlay {
   position: absolute;
-  top: 150px;
+  top: 180px;
   left: 0;
   right: 0;
   bottom: 0;
@@ -157,7 +160,7 @@ export default {
   justify-content: center;
   text-align: center;
   color: white;
-  animation: zoomIn 3s ease-in-out;
+  animation: zoomIn 2s ease-in-out;
 }
 
 @keyframes zoomIn {
@@ -177,7 +180,6 @@ p {
 
 .v-btn {
   margin-top: 20px;
-  padding: 10px 20px;
-  font-size: 1rem;
+  font-size: 14px;
 }
 </style>

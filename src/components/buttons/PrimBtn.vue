@@ -2,7 +2,11 @@
   <v-btn
     class="Btn"
     :data-content="dynamicContent"
-    :style="{ width: buttonWidth, height: buttonHeight }"
+    :style="{
+      width: buttonWidth,
+      height: buttonHeight,
+      '--button-margin-left': buttonMarginLeft,
+    }"
   ></v-btn>
 </template>
 
@@ -22,11 +26,16 @@ const props = defineProps({
     type: String,
     default: "40px",
   },
+  marginLeft: {
+    type: String,
+    default: "3px",
+  },
 });
 
 const dynamicContent = computed(() => props.content);
 const buttonWidth = computed(() => props.width);
 const buttonHeight = computed(() => props.height);
+const buttonMarginLeft = computed(() => props.marginLeft);
 </script>
 
 <style scoped>
@@ -61,7 +70,7 @@ const buttonHeight = computed(() => props.height);
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-left: 3px;
+  margin-left: var(--button-margin-left);
   width: 95%;
   height: 88%;
   border-radius: 8px;

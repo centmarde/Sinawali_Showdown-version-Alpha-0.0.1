@@ -1,19 +1,12 @@
 <template>
   <health_bar class="hp" />
+  
   <div class="floating-card-container">
+   
     <v-container v-if="showCards">
+      
       <v-row class="d-flex justify-center">
-        <div class="container" id="container">
-          <div v-for="(card, index) in onHandCards" :key="card.id" class="card" tabindex="0"
-            :style="`--i: ${index - Math.floor(onHandCards.length / 2)}; background-image: url(${card.img}); background-size: cover; background-position: center;`"
-            @click="openDialog(card)">
-            <div id="card_title" >{{ card.name }}</div>
-            <div class="type">Type: {{ card.type }}</div>
-            <div class="power">Power: {{ card.power }}</div>
-            <div class="mana">Mana Cost: {{ card.mana_cost }}</div>
-            
-          </div>
-        </div>
+        <FloatingCards :cards="onHandCards" :openDialog="openDialog" />
       </v-row>
 
 
@@ -22,8 +15,8 @@
         <v-col cols="8" lg="4" sm="4" md="5" class="text-center skip ">
           <div @click="openDialog(card91)" style="cursor: pointer;">
 
-            <img src="../../assets/images/charge.png" style="width: 50px;"></img>
-            <span class="bar">charge mana</span>
+            <img src="../../assets/images/charge.png" style="width: 80px;"></img>
+            <span class="bar">charge Energy</span>
 
           </div>
         </v-col>
@@ -46,7 +39,7 @@
         <v-card-subtitle>Type: {{ selectedCard?.type }}</v-card-subtitle>
         <v-card-text>
           <p>Power: {{ selectedCard?.power }}</p>
-          <p>Mana Cost: {{ selectedCard?.mana_cost }}</p>
+          <p>Energy Cost: {{ selectedCard?.mana_cost }}</p>
           <p>Description: {{ selectedCard?.description }}</p>
         </v-card-text>
         <v-card-actions>
@@ -68,13 +61,17 @@
 
   <div class="battleground">
     <div class="bg1">
+      <p id="player1" class="text-center">.</p>
       <v-row class="fill-height">
+        
         <v-col cols="6">
           <div class="char1">
+           
             <Player1 v-if="selectedCharacter === 1" ref="player1Ref" />
             <player2mirror v-if="selectedCharacter === 2" ref="player_variant1Ref" />
           </div>
         </v-col>
+      
         <v-col cols="6">
           <div class="char2">
             <Player2 v-if="selectedCharacter === 1" ref="player2Ref" />
@@ -91,6 +88,7 @@
 </template>
 
 <script>
+import FloatingCards from './FloatingCards.vue';
 import Player1 from "../Characters/Player1.vue";
 import Player2 from "../Characters/Player2.vue";
 import player2mirror from "../Characters/player2mirror.vue";
@@ -104,11 +102,12 @@ import { useCharacterStatusStore } from "../../stores/characterStatus";
 import { useAudioStore } from '@/stores/audioStore';
 import { useToast } from "vue-toastification";
 import { useVideoStore } from '@/stores/videoStore';
-
-
+import { useAudioEffectsStore } from "@/stores/audioEffects";
+import { usebuffStatusStore } from "@/stores/buffStatus";
 
 export default {
   components: {
+    FloatingCards,
     Player1,
     Player2,
     player2mirror,
@@ -117,12 +116,14 @@ export default {
   setup() {
     const toast = useToast();
     const characterStatusStore = useCharacterStatusStore();
+    const buffStatusStore = usebuffStatusStore();
+    const audioEffectsStore = useAudioEffectsStore();
     const audioStore = useAudioStore();
     const videoStore = useVideoStore();
     const showCards = ref(true);
     const cardStore = useCardStore1();
     const { onHandCards, addCard, removeCardAndAddNew } = cardStore;
-
+    const handlePlay = ref(false);
     const selectedCharacter = ref(
       Number(localStorage.getItem("selectedCharacter"))
     );
@@ -259,19 +260,21 @@ export default {
   }
 
   if (dataVideo && dataVideo.video_src) {
-    const videoUrl = dataVideo.video_src;
+        const videoUrl = dataVideo.video_src;
 
-    // Play the video preview before the attack animation
-    videoStore.playVideo(videoUrl);
+        // Play the video preview before the attack animation
+        videoStore.playVideo(videoUrl);
 
-    // Wait for the video to finish (e.g., 5 seconds), then proceed
-    await new Promise(resolve => setTimeout(resolve, 5000));
+        // Play a random sound effect while the video is playing
+        audioEffectsStore.playRandomEffect();
 
-    // Stop the video after the delay
-    videoStore.stopVideo();
-  } else {
-    console.error('No video URL found for the selected card');
-  }
+        // Wait for the video to finish (e.g., 5 seconds), then proceed
+        await new Promise(resolve => setTimeout(resolve, 5000));
+
+        // Stop the video and any playing sound effect after the delay
+        videoStore.stopVideo();
+        audioEffectsStore.stopEffect();
+      }
         try {
           // Fetch the character's mana
           const { data: EnergyChar, error: errorEnergy } = await supabase
@@ -287,26 +290,7 @@ export default {
 
           // Check if character's mana is sufficient
           const currentMana = EnergyChar.mana;
-          if (currentMana <= 0) {
-            toast(`You're out of energy!`, {
-              type: 'error',
-              position: 'top-left',
-              timeout: 3000,
-              closeOnClick: true,
-            });
-
-            toast(`You've missed your chance to make a move!`, {
-              type: 'warning',
-              position: 'top-left',
-              timeout: 3000,
-              closeOnClick: true,
-            });
-
-            setTimeout(() => {
-              router.push({ name: "next_phase" });
-            }, 1000); // 1000 milliseconds = 1 second
-            return;
-          }
+         
 
           // Check if the character has enough mana for the selected card
           if (selectedCard.value.mana_cost > currentMana) {
@@ -493,6 +477,7 @@ export default {
         // Show message for the damage dealt
         if (isCriticalHit) {
           showMessage(`Critical Hit! You dealt ${finalDamage} damage!`);
+          await new Promise((resolve) => setTimeout(resolve, 1000));
         } else {
 
           showMessage(`You dealt ${finalDamage} damage.`);
@@ -519,13 +504,13 @@ export default {
       }
 
       if (selectedCard.value && selectedCard.value.type === "buff") {
-        const { data: EnergyChar, error: errorEnergy } = await supabase
+        const { data: EnergyChar1, error: errorEnergy } = await supabase
           .from("characters")
           .select("mana")
           .eq("id", selectedCharacter.value)
           .single();
-          console.log(selectedCharacter.value);
-          console.log(revertedCharacter.value);
+        console.log(selectedCharacter.value); //caster
+        console.log(revertedCharacter.value); //enemy
         if (errorEnergy) {
           console.error("Error fetching character mana details:", errorEnergy);
           return;
@@ -533,16 +518,16 @@ export default {
 
         // Assuming card91 is the card being used and has an is_mana property
         if (card91.value && card91.value.is_mana) {
-         
+
           // Calculate the new mana value
-          const newMana = EnergyChar.mana + card91.value.is_mana;
-         
+          const newMana = EnergyChar1.mana + card91.value.is_mana;
+
           // Update the character's mana in the database
           const { data: updateData, error: updateError } = await supabase
             .from("characters")
             .update({ mana: newMana })
             .eq("id", selectedCharacter.value);
-            
+
           if (updateError) {
             console.error("Error updating character mana:", updateError);
             return;
@@ -553,27 +538,8 @@ export default {
 
 
         // Check if character's mana is sufficient
-        const currentMana = EnergyChar.mana;
-        if (currentMana <= 0) {
-          toast(`You're out of energy!`, {
-            type: 'error',
-            position: 'top-left',
-            timeout: 3000,
-            closeOnClick: true,
-          });
+        const currentMana = EnergyChar1.mana;
 
-          toast(`You've missed your chance to make a move!`, {
-            type: 'warning',
-            position: 'top-left',
-            timeout: 3000,
-            closeOnClick: true,
-          });
-
-          setTimeout(() => {
-            router.push({ name: "next_phase" });
-          }, 1000); // 1000 milliseconds = 1 second
-          return;
-        }
 
         // Check if the character has enough mana for the selected card
         if (selectedCard.value.mana_cost > currentMana) {
@@ -611,7 +577,7 @@ export default {
           if (errorEnergyMinus) {
             console.error("Error updating character mana:", errorEnergyMinus);
           }
-        } 
+        }
 
 
         // Check if a character has won the battle
@@ -649,42 +615,34 @@ export default {
         if (dataChar && dataChar.length > 0) {
           // Convert the first result row into an array
           const cardEffectsArray = [
-            dataChar[0].is_poison,
-            dataChar[0].is_burn,
-            dataChar[0].is_def_debuff,
-            dataChar[0].is_agil_debuff,
-            dataChar[0].turn_count,
-            dataChar[0].is_stunned,
+        
             dataChar[0].is_def_amp,
             dataChar[0].is_agil_amp,
             dataChar[0].is_crit_amp,
           ];
 
           // Add effects to the character status store
-          const characterStatusStore = useCharacterStatusStore();
-          characterStatusStore.addEffect({
-            is_poison: cardEffectsArray[0],
-            is_burn: cardEffectsArray[1],
-            is_def_debuff: cardEffectsArray[2],
-            is_agil_debuff: cardEffectsArray[3],
-            turn_count: cardEffectsArray[4],
-            is_stunned: cardEffectsArray[5],
-            is_def_amp: cardEffectsArray[6],
-            is_agil_amp: cardEffectsArray[7],
-            is_crit_amp: cardEffectsArray[8],
+          const buffStatus = usebuffStatusStore();
+         buffStatus.addEffect({
+        
+            is_def_amp: cardEffectsArray[0],
+            is_agil_amp: cardEffectsArray[1],
+            is_crit_amp: cardEffectsArray[2],
+           
           });
 
           // Constant character ID
-          const characterId = revertedCharacter.value;
+          const characterId = selectedCharacter.value;
 
           // Function to process game turn for the character
           async function gameTurn() {
-            await characterStatusStore.applyEffects(characterId);
+            await buffStatus.applyEffects(characterId);
 
             // Log the updated character stats
-            const updatedCharacter = await characterStatusStore.fetchCharacter(characterId);
+            const updatedCharacter = await buffStatus.fetchCharacter(characterId);
+            buffStatus.decrementTurnCounts();
           }
-
+         
           // Call gameTurn
           await gameTurn();
 
@@ -695,6 +653,10 @@ export default {
       }
 
 
+      async function handlePlay() {
+      const dataVideo = { video_src: "path_to_your_video.mp4" }; // Replace with your video source data
+      await playVideoWithEffect(dataVideo);
+    }
       // Always navigate to the next phase
       closeDialog();
       await new Promise((resolve) => setTimeout(resolve, 200));
@@ -702,9 +664,7 @@ export default {
     };
 
     return {
-
       card91,
-
       showCards,
       cards,
       dialog,
@@ -727,6 +687,7 @@ export default {
       filteredOnHandCards,
       audioStore,
       videoStore,
+      handlePlay,
 
     };
 
@@ -774,7 +735,7 @@ export default {
 
 .char1,
 .char2 {
-  margin-top: 5rem;
+  margin-top: -1.5rem;
 }
 
 .floating-card-container {
@@ -833,16 +794,22 @@ export default {
 
 .bar {
   position: absolute;
-  left: 1rem;
-  font-size: 10px;
+  left: 1.6rem;
+  font-size: 15px;
+  bottom: 2rem;
+  font-family:  "Merienda", cursive;
 
 }
-
+@media (max-width: 1300px) {
+.battleground{
+  background-image: url("../../assets/background/bg-md.gif");
+}
+}
 @media (max-width: 600px) {
   .skip {
     top: -15.5rem;
     position: fixed;
-    left: 7.2rem;
+    left: 5.5rem;
   }
 
   .bag {
@@ -970,6 +937,14 @@ export default {
   .type{
     right: 8px;
   }
+  #player1 {
+  top: 1rem;
+  font-size: 1.2rem;
+  z-index: 99999;
+ 
+}
+
+  
 }
 
 .video-overlay {
@@ -1017,5 +992,15 @@ export default {
     max-height: 95vh;
   }
 }
+#player1 {
+  margin-top: 70px;
+  color: #151515;
+  margin-right: 18px;
+}
 
+@media (max-width: 400px) {
+  #player2 {
+  margin-right: 0px;
+}
+}
 </style>
