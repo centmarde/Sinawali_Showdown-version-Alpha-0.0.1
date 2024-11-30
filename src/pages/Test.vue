@@ -1,11 +1,14 @@
 <template>
-  <div>
-
-  </div>
+ <v-container>
+  <v-row>
+    <v-col> <Player1 /></v-col>
+    <v-col></v-col>
+  </v-row>
+ </v-container>
 </template>
 
 <script>
-
+import Player1 from "@/components/Characters/Player1.vue";
 
 
 </script>
