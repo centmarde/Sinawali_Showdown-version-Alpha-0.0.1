@@ -27,11 +27,14 @@
             height="12"
             color="light-blue"
           >
+            <template v-slot:default>
+              <div class="mana-text">{{ currentPlayerMana }}/100</div>
+            </template>
           </v-progress-linear>
         </div>
       </v-col>
       <v-col cols="1">
-        <TimerAd/>
+        <TimerAd />
       </v-col>
       <!-- Player 2 Health Bar -->
       <v-col cols="4" lg="4" md="4">
@@ -62,6 +65,9 @@
             reverse
             color="light-blue"
           >
+            <template v-slot:default>
+              <div class="mana-text">{{ currentPlayer2Mana }}/100</div>
+            </template>
           </v-progress-linear>
         </div>
       </v-col>
@@ -100,7 +106,8 @@ export default {
   setup() {
     const route = useRoute();
     const playerStore = usePlayerStore();
-    const { player1, player2, updatePlayerMana, updatePlayerHealth } = playerStore;
+    const { player1, player2, updatePlayerMana, updatePlayerHealth } =
+      playerStore;
     const selectedChar = localStorage.getItem("character_id");
     const characterId = localStorage.getItem("character_id");
     const enemyId = localStorage.getItem("enemy_id");
@@ -114,50 +121,58 @@ export default {
     console.log(characterId);
 
     if (selectedChar === characterId) {
-  import("../../assets/anim/red-av.png").then((module) => {
-    player1Image.value = module.default;
-  });
-  import("../../assets/anim/Black-av.png").then((module) => {
-    player2Image.value = module.default;
-  });
-} else {
-  import("../../assets/anim/Black-av.png").then((module) => {
-    player1Image.value = module.default;
-  });
-  import("../../assets/anim/red-av.png").then((module) => {
-    player2Image.value = module.default;
-  });
-}
+      import("../../assets/anim/red-av.png").then((module) => {
+        player1Image.value = module.default;
+      });
+      import("../../assets/anim/Black-av.png").then((module) => {
+        player2Image.value = module.default;
+      });
+    } else {
+      import("../../assets/anim/Black-av.png").then((module) => {
+        player1Image.value = module.default;
+      });
+      import("../../assets/anim/red-av.png").then((module) => {
+        player2Image.value = module.default;
+      });
+    }
 
+    const currentPlayerHealth = computed(() =>
+      selectedChar === player1.id ? player1.health : player2.health
+    );
+    const currentPlayer2Health = computed(() =>
+      selectedChar === player1.id ? player2.health : player1.health
+    );
+    const currentPlayerMana = computed(() =>
+      selectedChar === player1.id ? player1.mana : player2.mana
+    );
+    const currentPlayer2Mana = computed(() =>
+      selectedChar === player1.id ? player2.mana : player1.mana
+    );
 
-    const currentPlayerHealth = computed(() => (selectedChar === player1.id ? player1.health : player2.health));
-    const currentPlayer2Health = computed(() => (selectedChar === player1.id ? player2.health : player1.health));
-    const currentPlayerMana = computed(() => (selectedChar === player1.id ? player1.mana : player2.mana));
-    const currentPlayer2Mana = computed(() => (selectedChar === player1.id ? player2.mana : player1.mana));
+    const player1Name = computed(() =>
+      selectedChar === characterId ? "Kidlat" : "aggressor"
+    );
+    const player2Name = computed(() =>
+      selectedChar === characterId ? "aggressor" : "Kidlat"
+    );
 
-    const player1Name = computed(() => (selectedChar === characterId ? "Kidlat" : "aggressor"));
-const player2Name = computed(() => (selectedChar === characterId ? "aggressor" : "Kidlat"));
+    const isPlayer1Turn = computed(() => route.name === "ad_battle");
+    const isPlayer2Turn = computed(() => route.name === "next_phase_ad");
 
-const isPlayer1Turn = computed(() => route.name === "ad_battle");
-const isPlayer2Turn = computed(() => route.name === "next_phase_ad");
+    // Computed properties for dynamic health bar colors
+    const player1HealthColor = computed(() => {
+      const health = currentPlayerHealth.value;
+      if (health > 75) return "#e6d011"; // Full health color
+      if (health > 35) return "orange"; // Middle health color
+      return "red"; // Low health color
+    });
 
-
-
-// Computed properties for dynamic health bar colors
-const player1HealthColor = computed(() => {
-  const health = currentPlayerHealth.value;
-  if (health > 75) return "#e6d011"; // Full health color
-  if (health > 35) return "orange"; // Middle health color
-  return "red"; // Low health color
-});
-
-const player2HealthColor = computed(() => {
-  const health = currentPlayer2Health.value;
-  if (health > 75) return "#e6d011"; // Full health color
-  if (health > 35) return "orange"; // Middle health color
-  return "red"; // Low health color
-});
-
+    const player2HealthColor = computed(() => {
+      const health = currentPlayer2Health.value;
+      if (health > 75) return "#e6d011"; // Full health color
+      if (health > 35) return "orange"; // Middle health color
+      return "red"; // Low health color
+    });
 
     const fetchCharacterData = async () => {
       try {
@@ -194,48 +209,47 @@ const player2HealthColor = computed(() => {
     const checkVictoryCondition = () => {
       console.log("Checking victory condition");
       if (player1.health <= 0) {
-       
-       
-
         window.location.href = "/defeated";
-
-       
       } else if (player2.health <= 0) {
-      
-       
         window.location.href = "/result_base";
-
-      
       }
     };
 
     const setupPlayer1RealtimeSubscription = () => {
       supabase
         .channel("public:characters")
-        .on("postgres_changes", { event: "*", schema: "public", table: "characters" }, async (payload) => {
-          const { id, health, mana } = payload.new;
-          if (id === selectedChar) {
-            updatePlayerHealth(1, health);
-            updatePlayerMana(1, mana);
-            player1.health = health;
-            player1.mana = mana;
+        .on(
+          "postgres_changes",
+          { event: "*", schema: "public", table: "characters" },
+          async (payload) => {
+            const { id, health, mana } = payload.new;
+            if (id === selectedChar) {
+              updatePlayerHealth(1, health);
+              updatePlayerMana(1, mana);
+              player1.health = health;
+              player1.mana = mana;
+            }
           }
-        })
+        )
         .subscribe();
     };
 
     const setupPlayer2RealtimeSubscription = () => {
       supabase
         .channel("public:enemies")
-        .on("postgres_changes", { event: "*", schema: "public", table: "enemies" }, async (payload) => {
-          const { id, health, mana } = payload.new;
-          if (id === enemyId) {
-            updatePlayerHealth(2, health);
-            updatePlayerMana(2, mana);
-            player2.health = health;
-            player2.mana = mana;
+        .on(
+          "postgres_changes",
+          { event: "*", schema: "public", table: "enemies" },
+          async (payload) => {
+            const { id, health, mana } = payload.new;
+            if (id === enemyId) {
+              updatePlayerHealth(2, health);
+              updatePlayerMana(2, mana);
+              player2.health = health;
+              player2.mana = mana;
+            }
           }
-        })
+        )
         .subscribe();
     };
 
@@ -281,9 +295,6 @@ const player2HealthColor = computed(() => {
 };
 </script>
 
-  
-  
-  
 <style scoped>
 @import url("https://fonts.googleapis.com/css2?family=Rock+Salt&display=swap");
 
@@ -400,6 +411,10 @@ const player2HealthColor = computed(() => {
 .hp {
   position: fixed; /* Fixed positioning */
   z-index: 9999; /* Ensure it appears on top */
+}
+
+.mana-text {
+  font-size: 10px;
 }
 
 @keyframes fadeInOutBorder {

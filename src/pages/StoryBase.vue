@@ -26,17 +26,22 @@
     <h5 class="top-right-icon5">{{ gold }}</h5>
 
     <!-- Child Components -->
-        <Map :key="mapKey" @pinClicked="handlePinClicked"/>
-       <!-- StoryDialog in v-dialog wrapped with v-card -->
-       <v-dialog v-model="dialogVisible" max-width="600" persistent style="font-family: 'Merienda', cursive;">
-  <v-card>
-    <v-card-title class="text-h6">Scenario</v-card-title>
-    <v-card-text class="scrollable">
-      <!-- StoryDialog content -->
-      <StoryDialog :key="storyDialogKey" />
-    </v-card-text>
-  </v-card>
-</v-dialog>
+    <Map :key="mapKey" @pinClicked="handlePinClicked" />
+    <!-- StoryDialog in v-dialog wrapped with v-card -->
+    <v-dialog
+      v-model="dialogVisible"
+      max-width="600"
+      persistent
+      style="font-family: 'Merienda', cursive"
+    >
+      <v-card>
+        <v-card-title class="text-h6">Scenario</v-card-title>
+        <v-card-text class="scrollable">
+          <!-- StoryDialog content -->
+          <StoryDialog :key="storyDialogKey" />
+        </v-card-text>
+      </v-card>
+    </v-dialog>
 
     <!-- Menu Dialog -->
     <v-dialog
@@ -60,7 +65,7 @@
               <h1 class="pb-2">Game Paused</h1>
               <div class="d-flex flex-column">
                 <v-btn
-                  class="merienda"
+                  class="merienda mb-5"
                   size="large"
                   variant="tonal"
                   color="#6f3433"
@@ -116,7 +121,7 @@ export default {
   setup() {
     const audioStore = useAudioAdventure();
     const audioStore2 = useAudioStore();
-    
+
     const fetchAndSaveCharacterData = async () => {
       try {
         const characterId = localStorage.getItem("character_id");
@@ -217,7 +222,7 @@ export default {
         this.dialogVisible = true;
 
         // Fetch and save character data
-       /*  await this.fetchAndSaveCharacterData(); */
+        /*  await this.fetchAndSaveCharacterData(); */
 
         // Reload StoryDialog
         this.reloadStoryDialog();
@@ -243,6 +248,21 @@ export default {
     },
     reloadStoryDialog() {
       this.storyDialogKey += 1; // Update the key to trigger remount of StoryDialog
+    },
+
+    exitToMainMenu() {
+      this.audioStore.playClick();
+      this.audioStore.pauseAdBg();
+      this.audioStore.pauseVillage();
+      this.audioStore2.allPause();
+      // Logic to navigate to the main menu
+      console.log("Exiting to main menu...");
+      this.$router.push("/landing");
+    },
+    invokeChildTwoMethod() {
+      this.audioStore.playClick();
+      // Open the menu dialog
+      this.menuDialogVisible = true;
     },
     async fetchGold() {
       try {
@@ -277,17 +297,18 @@ export default {
         return;
       }
 
-      this.goldChannel = supabase.channel('custom-update-channel')
+      this.goldChannel = supabase
+        .channel("custom-update-channel")
         .on(
-          'postgres_changes',
-          { 
-            event: '*', 
-            schema: 'public', 
-            table: 'characters',
-            filter: `id=eq.${characterId}` // Listen only for updates to this character
+          "postgres_changes",
+          {
+            event: "*",
+            schema: "public",
+            table: "characters",
+            filter: `id=eq.${characterId}`, // Listen only for updates to this character
           },
           (payload) => {
-            console.log('Change received!', payload);
+            console.log("Change received!", payload);
             if (payload.new.gold !== undefined) {
               this.gold = payload.new.gold;
               console.log("Updated gold:", this.gold);
@@ -345,7 +366,6 @@ export default {
   },
 };
 </script>
-
 
 <style scoped>
 .top-right-icon1 {
