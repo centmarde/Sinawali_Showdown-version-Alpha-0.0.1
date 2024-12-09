@@ -107,6 +107,8 @@ creating a universally engaging and innovative experience.
 <p>3rd placer at DOST Level Up Game Dev Challenge 2024.</p>
 <img src="https://github.com/user-attachments/assets/dc47857c-0c5b-40b1-83d5-c80464237af8" alt="Achievement Image" width="500" style="display: block; margin: 0 auto;" />
 
+<br>
 
-
+<p>2024 © Centmarde Campado, Joren Verdad, Mardz Lidasan & Ian Penalver (BSIT) - Caraga State University - College of Computing and Information Sciences. All Rights Reserved.</p>
+<p><strong>Patent Pending. Unauthorized reproduction, distribution, or use of this material is strictly prohibited.</strong></p>
 
