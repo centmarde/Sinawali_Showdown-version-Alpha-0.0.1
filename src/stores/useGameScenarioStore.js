@@ -3,19 +3,16 @@ import { Groq } from "groq-sdk";
 
 export const useGameScenarioStore = defineStore("gameScenario", {
   state: () => ({
-    groq: null,
+    groq: new Groq({
+      apiKey: import.meta.env.VITE_GROQ_URL,
+      dangerouslyAllowBrowser: true,
+    }),
     scenario: "",
     loading: false,
     error: null,
   }),
 
   actions: {
-    initializeGroq(apiKey) {
-      this.groq = new Groq({
-        apiKey,
-        dangerouslyAllowBrowser: true,
-      });
-    },
 
     async startScenario(area, bio) {
       this.loading = true;
@@ -28,13 +25,13 @@ export const useGameScenarioStore = defineStore("gameScenario", {
             {
               role: "system",
               content: ` summarize your answer in 2 paragraphs in 40 words. You are the game master. Create a random scenario in the classical era timeline (Philippines). in the perspective of ${bio} who is skilled in arnis-stick martial arts.
-                        The scenario occurs in the area '${area}'. The scenario must have choices pattern. a= neutral, b=aggressive that its starts a fight, c=neglect. 
+                        The scenario occurs in the area '${area}'. The scenario must have choices pattern. a= neutral, b=aggressive that its starts a fight, c=neglect.
 
                         `,
             },
             { role: "user", content: "start" },
           ],
-          model: "llama3-8b-8192",
+          model: "llama-3.1-8b-instant",
           temperature: 1,
           max_tokens: 1024,
           top_p: 1,

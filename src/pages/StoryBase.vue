@@ -207,10 +207,6 @@ export default {
             console.warn(`Unhandled area: ${area}`);
         }
 
-        // Initialize game scenario with the given API key
-        gameScenarioStore.initializeGroq(
-          "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"
-        );
 
         // Fetch adventure intro and use it as bio
         const bio = await this.fetchAdventureIntro();

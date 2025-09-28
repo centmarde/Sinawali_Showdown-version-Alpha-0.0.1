@@ -2,7 +2,7 @@ import { defineStore } from "pinia";
 import { Groq } from "groq-sdk";
 
 const groq = new Groq({
-  apiKey: "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",
+  apiKey: import.meta.env.VITE_GROQ_URL,
   dangerouslyAllowBrowser: true,
 });
 
@@ -24,7 +24,7 @@ export const useTauntStore = defineStore("taunt", {
             content: "",
           },
         ],
-        model: "llama3-70b-8192",
+        model: "llama-3.1-8b-instant",
         temperature: 1,
         max_tokens: 1024,
         top_p: 1,

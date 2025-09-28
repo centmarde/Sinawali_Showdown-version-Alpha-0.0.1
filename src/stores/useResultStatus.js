@@ -3,7 +3,10 @@ import { Groq } from "groq-sdk";
 
 export const useResultStatus = defineStore("resultStatus", {
   state: () => ({
-    groq: null,
+    groq: new Groq({
+      apiKey: import.meta.env.VITE_GROQ_URL,
+      dangerouslyAllowBrowser: true,
+    }),
     scenario: "",
     loading: false,
     error: null,
@@ -11,22 +14,9 @@ export const useResultStatus = defineStore("resultStatus", {
   }),
 
   actions: {
-    // Initializes the Groq SDK with the provided API key
-    initializeGroq(apiKey) {
-      this.groq = new Groq({
-        apiKey,
-        dangerouslyAllowBrowser: true,
-      });
-    },
 
     // Starts the character background scenario generation process
     async resultVictory({ cont }) {
-      if (!this.groq) {
-        throw new Error(
-          "Groq is not initialized. Call 'initializeGroq' first."
-        );
-      }
-
       this.loading = true;
       this.error = null;
       this.scenario = "";
@@ -38,8 +28,8 @@ export const useResultStatus = defineStore("resultStatus", {
             {
               role: "system",
 
-              content: `The User choose B(dont include this in your response). Create a aftermath tale regarding the previous situation. 
-                   in which an opponent strikes. assume that kidlat wins. 
+              content: `The User choose B(dont include this in your response). Create a aftermath tale regarding the previous situation.
+                   in which an opponent strikes. assume that kidlat wins.
 
                    Make your narrative fascinating and relevant.
                    limit your response in 1 paragraph 50 words.
@@ -50,7 +40,7 @@ export const useResultStatus = defineStore("resultStatus", {
               content: cont, // Pass the raw intro content directly
             },
           ],
-          model: "llama3-8b-8192",
+          model: "llama-3.1-8b-instant",
           temperature: 1,
           max_tokens: 1024,
           top_p: 1,

@@ -1,20 +1,18 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
 import { supabase } from "../lib/supabase";
-import { Groq } from 'groq-sdk'; 
+import { Groq } from 'groq-sdk';
 
-
-const apiKey = process.env. VITE_GROQ_URL || 'default_api_key';
 const groq = new Groq({
-    apiKey,
+    apiKey: import.meta.env.VITE_GROQ_URL,
     dangerouslyAllowBrowser: true
-  });
+});
 export const useCardStore2 = defineStore("cardStore2", () => {
   const onHandCards = ref([]);
 
   const addCard = (card) => {
     if (
-      card.id !== 91 && 
+      card.id !== 91 &&
       onHandCards.value.length < 5 &&
       !onHandCards.value.some((c) => c.id === card.id)
     ) {
@@ -29,18 +27,18 @@ export const useCardStore2 = defineStore("cardStore2", () => {
         console.error("Error fetching cards:", error);
         return null;
       }
-  
+
       const availableCards = data.filter(
         (card) => card.id !== 91 && !onHandCards.value.some((c) => c.id === card.id)
       );
-  
+
       if (availableCards.length) {
         const weightedCards = [];
         availableCards.forEach((card) => {
           const drawCount = Math.floor(card.draw_chance / 10);
           for (let i = 0; i < drawCount; i++) weightedCards.push(card);
         });
-  
+
         const randomCard = weightedCards[Math.floor(Math.random() * weightedCards.length)];
         return randomCard;
       }
@@ -78,7 +76,7 @@ export const useCardStore2 = defineStore("cardStore2", () => {
 
       const chatCompletion = await groq.chat.completions.create({
         messages,
-        model: "llama3-8b-8192",
+        model: "llama-3.1-8b-instant",
         temperature: 1,
         max_tokens: 1024,
         top_p: 1,

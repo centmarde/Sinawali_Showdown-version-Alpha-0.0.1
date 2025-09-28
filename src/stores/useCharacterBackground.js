@@ -3,7 +3,10 @@ import { Groq } from "groq-sdk";
 
 export const useCharacterBackground = defineStore("characterBackground", {
   state: () => ({
-    groq: null,
+    groq: new Groq({
+      apiKey: import.meta.env.VITE_GROQ_URL,
+      dangerouslyAllowBrowser: true,
+    }),
     scenario: "",
     loading: false,
     error: null,
@@ -11,22 +14,9 @@ export const useCharacterBackground = defineStore("characterBackground", {
   }),
 
   actions: {
-    // Initializes the Groq SDK with the provided API key
-    initializeGroq(apiKey) {
-      this.groq = new Groq({
-        apiKey,
-        dangerouslyAllowBrowser: true,
-      });
-    },
 
     // Starts the character background scenario generation process
     async startScenario({ job, personalities }) {
-      if (!this.groq) {
-        throw new Error(
-          "Groq is not initialized. Call 'initializeGroq' first."
-        );
-      }
-
       this.loading = true;
       this.error = null;
       this.scenario = "";
@@ -53,7 +43,7 @@ export const useCharacterBackground = defineStore("characterBackground", {
               content: content, // Use the concatenated job and personality string
             },
           ],
-          model: "llama3-8b-8192",
+          model: "llama-3.1-8b-instant",
           temperature: 1,
           max_tokens: 1024,
           top_p: 1,

@@ -112,9 +112,6 @@ const isHelpDialogOpen = ref(false);
 const selectedAnswer = ref(null);
 const selectedHelpAnswer = ref(null);
 
-// Initialize Groq with the API key when the component is set up
-gameScenarioStore.initializeGroq("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");
-
 onMounted(async () => {
   const savedAnswer = localStorage.getItem("selectedAnswer");
   if (savedAnswer) {
@@ -193,13 +190,10 @@ const confirmAnswer = async () => {
       const selectedOption = selectedAnswer.value || selectedHelpAnswer.value;
 
       if (selectedOption.toUpperCase() === "A") {
-       
+
       energyPotionStore.generateReward();
-    
+
         audioAdventure.playNotif();
-        continueStatusStore.initializeGroq(
-          "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"
-        );
         isScenarioVisible.value = false;
         await loadHelpScenario();
         isHelpDialogOpen.value = true;
@@ -209,10 +203,10 @@ const confirmAnswer = async () => {
         console.log("Random Enemy ID:", randomEnemyId);
         localStorage.setItem("enemy_id", randomEnemyId);
 
-      
+
           toast("To battle!");
           router.push("/ad_battle");
-        
+
       } else if (selectedOption.toUpperCase() === "C") {
         if (Math.random() < 0.8) {
           isHelpDialogOpen.value = false;
@@ -223,9 +217,6 @@ const confirmAnswer = async () => {
           }, 3000);
         } else {
           toast("The locals seem uncomfortable with your presence.");
-          continueStatusStore.initializeGroq(
-            "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"
-          );
           isScenarioVisible.value = false;
           isHelpDialogOpen.value = true;
           await loadHelpScenario();
@@ -256,7 +247,7 @@ const loadHelpScenario = async () => {
   try {
     isHelpDialogOpen.value = true;
     const previousContent = gameScenarioStore.scenario;
-    
+
     await continueStatusStore.resultVictory({ cont: previousContent });
   } catch (error) {
     console.error("Error loading help scenario:", error);

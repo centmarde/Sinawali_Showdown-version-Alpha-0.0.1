@@ -14,49 +14,14 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from "vue";
+import { ref, onMounted } from "vue";
 
 const isLoading = ref(true);
 
-// Prevent zooming functions
-const preventZoom = (event) => {
-  if (
-    (event.ctrlKey &&
-      (event.key === "+" || event.key === "-" || event.key === "0")) || // Ctrl + / Ctrl - / Ctrl 0
-    (event.metaKey && (event.key === "=" || event.key === "-")) || // Cmd + / Cmd -
-    (event.type === "wheel" && event.ctrlKey) // Ctrl + Mouse scroll
-  ) {
-    event.preventDefault();
-  }
-};
-
-const preventPinchZoom = (event) => {
-  if (event.scale !== undefined && event.scale !== 1) {
-    event.preventDefault();
-  }
-};
-
-// Set up and remove event listeners
 onMounted(() => {
   setTimeout(() => {
     isLoading.value = false;
   }, 2000);
-
-  document.addEventListener("wheel", preventZoom, { passive: false });
-  document.addEventListener("keydown", preventZoom, { passive: false });
-  document.addEventListener("gesturestart", preventPinchZoom, {
-    passive: false,
-  });
-  document.addEventListener("gesturechange", preventPinchZoom, {
-    passive: false,
-  });
-});
-
-onBeforeUnmount(() => {
-  document.removeEventListener("wheel", preventZoom);
-  document.removeEventListener("keydown", preventZoom);
-  document.removeEventListener("gesturestart", preventPinchZoom);
-  document.removeEventListener("gesturechange", preventPinchZoom);
 });
 </script>
 

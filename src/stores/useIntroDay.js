@@ -3,7 +3,10 @@ import { Groq } from "groq-sdk";
 
 export const useIntroDay = defineStore("introDay", {
   state: () => ({
-    groq: null,
+    groq: new Groq({
+      apiKey: import.meta.env.VITE_GROQ_URL,
+      dangerouslyAllowBrowser: true,
+    }),
     scenario: "",
     loading: false,
     error: null,
@@ -11,22 +14,9 @@ export const useIntroDay = defineStore("introDay", {
   }),
 
   actions: {
-    // Initializes the Groq SDK with the provided API key
-    initializeGroq(apiKey) {
-      this.groq = new Groq({
-        apiKey,
-        dangerouslyAllowBrowser: true,
-      });
-    },
 
     // Starts the character background scenario generation process
     async startScenario({ intro }) {
-      if (!this.groq) {
-        throw new Error(
-          "Groq is not initialized. Call 'initializeGroq' first."
-        );
-      }
-
       this.loading = true;
       this.error = null;
       this.scenario = "";
@@ -45,7 +35,7 @@ export const useIntroDay = defineStore("introDay", {
               content: intro, // Pass the raw intro content directly
             },
           ],
-          model: "llama3-8b-8192",
+          model: "llama-3.1-8b-instant",
           temperature: 1,
           max_tokens: 1024,
           top_p: 1,

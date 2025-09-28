@@ -3,7 +3,10 @@ import { Groq } from "groq-sdk";
 
 export const useContinueStatus = defineStore("continueStatus", {
   state: () => ({
-    groq: null,
+    groq: new Groq({
+      apiKey: import.meta.env.VITE_GROQ_URL,
+      dangerouslyAllowBrowser: true,
+    }),
     scenario: "",
     loading: false,
     error: null,
@@ -11,22 +14,9 @@ export const useContinueStatus = defineStore("continueStatus", {
   }),
 
   actions: {
-    // Initializes the Groq SDK with the provided API key
-    initializeGroq(apiKey) {
-      this.groq = new Groq({
-        apiKey,
-        dangerouslyAllowBrowser: true,
-      });
-    },
 
     // Starts the character background scenario generation process
     async resultVictory({ cont }) {
-      if (!this.groq) {
-        throw new Error(
-          "Groq is not initialized. Call 'initializeGroq' first."
-        );
-      }
-
       this.loading = true;
       this.error = null;
       this.scenario = "";
@@ -37,11 +27,11 @@ export const useContinueStatus = defineStore("continueStatus", {
           messages: [
             {
               role: "system",
-              content: `summarize your answer in 2 paragraphs in 40 words. Create a continuing tale regarding the previous situation reflected to the user Choice. 
+              content: `summarize your answer in 2 paragraphs in 40 words. Create a continuing tale regarding the previous situation reflected to the user Choice.
                    dont display the user choice in you response.
                    Make your narrative fascinating and relevant in perspective of Kidlat.
                    you must provide a option for the user to choose base on the situation. a=help, b=attack, c=ignore.
-                  
+
                 `,
             },
             {
@@ -49,7 +39,7 @@ export const useContinueStatus = defineStore("continueStatus", {
               content: cont, // Pass the raw intro content directly
             },
           ],
-          model: "llama3-8b-8192",
+          model: "llama-3.1-8b-instant",
           temperature: 1,
           max_tokens: 1024,
           top_p: 1,
