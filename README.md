@@ -105,9 +105,11 @@ creating a universally engaging and innovative experience.
 
 <h1>🏆 Achievements</h1>
 <p>Nationals 3rd placer at DOST Level Up Game Dev Challenge 2024.</p>
-
 <img src="https://github.com/user-attachments/assets/dc47857c-0c5b-40b1-83d5-c80464237af8" alt="Achievement Image" width="500" style="display: block; margin: 0 auto;" />
-<img src="https://github.com/user-attachments/assets/36661a94-ef93-4071-9b96-1fa958cd32bd" alt="Achivement Image" width="500" styke="display: block; margin: 0 auto;" />
+<p>top 15 Finalist in DICT startup Challenge</p>
+<img src="https://github.com/user-attachments/assets/36661a94-ef93-4071-9b96-1fa958cd32bd" alt="Achivement Image" width="500" style="display: block; margin: 0 auto;" />
+<p>Champion in Regional DICT startup Challenge</p>
+<img src="https://github.com/user-attachments/assets/0c88a670-83e1-4487-8d46-e4023be1aa06" alt="champ image" width="500: style="display: block; margin: 0 auto;" />
 
 <br>
 
