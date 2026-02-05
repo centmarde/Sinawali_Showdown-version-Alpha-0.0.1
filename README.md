@@ -25,6 +25,41 @@ its principles, and its significance in Filipino culture, all while
 enjoying an engaging experience.
 <h5>
 <br>
+
+<h1>🚀 Setup Instructions</h1>
+
+<h5>Prerequisites:</h5>
+<ul>
+  <li>Node.js and npm installed on your machine</li>
+  <li>A Groq API key (get one at <a href="https://console.groq.com/keys">https://console.groq.com/keys</a>)</li>
+  <li>A Supabase project (create one at <a href="https://supabase.com">https://supabase.com</a>)</li>
+</ul>
+
+<h5>Environment Setup:</h5>
+<ol>
+  <li>Clone the repository</li>
+  <li>Copy <code>.env.example</code> to <code>.env</code>:
+    <pre>cp .env.example .env</pre>
+  </li>
+  <li>Edit <code>.env</code> and add your API keys:
+    <ul>
+      <li><code>VITE_GROQ_URL</code>: Your Groq API key (despite the name, this expects an API key like gsk_...)</li>
+      <li><code>VITE_SUPABASE_URL</code>: Your Supabase project URL</li>
+      <li><code>VITE_SUPABASE_ANON_KEY</code>: Your Supabase anonymous key</li>
+    </ul>
+  </li>
+  <li>Install dependencies:
+    <pre>npm install</pre>
+  </li>
+  <li>Run the development server:
+    <pre>npm run dev</pre>
+  </li>
+</ol>
+
+<h5>⚠️ Security Note:</h5>
+<p><strong>Never commit your <code>.env</code> file to version control!</strong> It contains sensitive API keys. The <code>.env</code> file is already in <code>.gitignore</code> to prevent accidental commits.</p>
+
+<br>
   
 <h1>🎮 How to play</h1>
   
