@@ -43,7 +43,7 @@ enjoying an engaging experience.
   </li>
   <li>Edit <code>.env</code> and add your API keys:
     <ul>
-      <li><code>VITE_GROQ_URL</code>: Your Groq API key</li>
+      <li><code>VITE_GROQ_URL</code>: Your Groq API key (despite the name, this expects an API key like gsk_...)</li>
       <li><code>VITE_SUPABASE_URL</code>: Your Supabase project URL</li>
       <li><code>VITE_SUPABASE_ANON_KEY</code>: Your Supabase anonymous key</li>
     </ul>
